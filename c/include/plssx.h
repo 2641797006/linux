@@ -13,8 +13,8 @@
 #include </home/lxll/c/git/include/pmanifd.h>
 #endif
 
-#ifndef _PDTUPLESET_H_
-#include </home/lxll/c/git/include/pdtupleset.h>
+#ifndef _PDTUPLES_H_
+#include </home/lxll/c/git/include/pdtuples.h>
 #endif
 
 

@@ -79,7 +79,6 @@ int ManifdInsert(MANIFD* L, int i, int data)
 	p0+=L->num;
 	while(p0>p1)
 		*p0=*(p0-1), p0--;
-
 	*p1=data;
 	L->num++;
 	return 0;
