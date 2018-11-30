@@ -55,7 +55,9 @@ void PrintManifd(MANIFD* L)
 	putchar('{');
 	for(i=1;i<n;i++)
 		printf("%d, ", *p++);
-	printf("%d}", *p);
+	if(n>0)
+		printf("%d", *p);
+	putchar('}');
 }
 
 #define PrintManifd_ln(L) (PrintManifd(L), putchar('\n'))
@@ -83,6 +85,47 @@ int ManifdInsert(MANIFD* L, int i, int data)
 	return 0;
 }
 
+int ManifdDelete(MANIFD* L, int i, int* p)
+{
+	int *p0, *p1;
+	if(i<1||i>L->num)
+		return -1;
+	p0=L->data+i-1;
+	p1=L->data+L->num-1;
+	p&&(*p=*p0);
+	do
+		*p0=*(p0+1);
+	while(++p0<p1);
+	L->num--;
+	return 0;
+}
+
+void SortManifd(MANIFD* L)
+{
+	int tmp;
+	int* Partition(int* left, int* right)
+	{
+		int pivot=*right, *tail;
+		for(tail=left;left<right;left++)
+			if(*left<=pivot){
+				tmp=*left;
+				*left=*tail;
+				*tail++=tmp;
+			}
+		tmp=*right, *right=*tail, *tail=tmp;
+		return tail;
+	}
+	void QuickSort(int* left, int*right)
+	{
+		if(left>=right)
+			return;
+		int *_pivot=Partition(left, right);
+		QuickSort(left, _pivot-1);
+		QuickSort(_pivot+1, right);
+	}
+	QuickSort(L->data, L->data+L->num-1);
+}
+
 int SetManifd(MANIFD* L, int n, ...)
 {
 	va_list ap;
@@ -92,10 +135,29 @@ int SetManifd(MANIFD* L, int n, ...)
 		if(ManifdInsert(L, L->num+1, va_arg(ap, int)))
 			return i;
 	va_end(ap);
+	SortManifd(L);
+	n=L->num;
+	p=L->data+1;
+	for(i=1;i<n;i++,p++)
+		if(*p==*(p-1))
+			ManifdDelete(L, i+1, NULL), i--, n--, p--;
 	return 0;
 }
 
-
+int CloneManifd(MANIFD* A, MANIFD* B)
+{
+	int *p;
+	p=malloc(B->memsize*sizeof(int));
+	if(!p)
+		return -1;
+	A->data=p;
+	A->num=B->num;
+	A->memsize=B->memsize;
+	int *p1=B->data, *end=B->data+B->num;
+	while(p1<end)
+		*p++=*p1++;
+	return 0;
+}
 
 
 
