@@ -5,6 +5,10 @@
 #include <malloc.h>
 #endif
 
+#ifndef _STDARG_H
+#include <stdarg.h>
+#endif
+
 typedef struct{
 	int *data;
 	int num;
@@ -45,6 +49,17 @@ int ManifdTraverse(MANIFD* L, int (*visit)(int*))
 	return 0;
 }
 
+void PrintManifd(MANIFD* L)
+{
+	int i, n=L->num, *p=L->data;
+	putchar('{');
+	for(i=1;i<n;i++)
+		printf("%d, ", *p++);
+	printf("%d}", *p);
+}
+
+#define PrintManifd_ln(L) (PrintManifd(L), putchar('\n'))
+
 int ManifdInsert(MANIFD* L, int i, int data)
 {
 	int *p0, *p1;
@@ -61,23 +76,23 @@ int ManifdInsert(MANIFD* L, int i, int data)
 	p1=p0+i-1;
 	p0+=L->num;
 	while(p0>p1)
-		*p0=*--p0;
+		*p0=*(p0-1), p0--;
+
 	*p1=data;
 	L->num++;
 	return 0;
 }
 
-
-
-
 int SetManifd(MANIFD* L, int n, ...)
 {
-	int i, *p=L->data, *val=&n+1;
-	for(i=0;i<n;i++)
-		*p++=*val++;
-	L->num=n;
-	L->memsize=n;
-	return i;
+	va_list ap;
+	va_start(ap, n);
+	int i, *p=L->data;
+	for(i=1;i<=n;i++)
+		if(ManifdInsert(L, L->num+1, va_arg(ap, int)))
+			return i;
+	va_end(ap);
+	return 0;
 }
 
 
