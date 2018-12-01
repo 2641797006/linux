@@ -10,6 +10,8 @@ typedef struct{
 	int e2;
 }DTUPLE;
 
+#define CopyDtuple(dt1, dt2) ((dt1)->e1=(dt2)->e1, (dt1)->e2=(dt2)->e2)
+
 typedef struct{
 	DTUPLE *dt;
 	int num;
@@ -79,21 +81,27 @@ int DtuplesInsert(DTUPLES* L, int i, DTUPLE* dt)
 	}
 	dt1=dt0+i-1;
 	dt0+=L->num;
-	while(dt0>dt1){
-		dt0->e1=(dt0-1)->e1;
-		dt0->e2=(dt0-1)->e2;
-		dt0--;
-	}
-	dt1->e1=dt->e1;
-	dt1->e2=dt->e2;
+	while(dt0>dt1)
+		CopyDtuple(dt0, dt0-1), dt0--;
+	CopyDtuple(dt1, dt);
 	L->num++;
 	return 0;
 }
 
-
-
-
-
+int DtuplesDelete(DTUPLES* L, int i, DTUPLE* dt)
+{
+	DTUPLE *dt0, *dt1;
+	if(i<1||i>L->num)
+		return -1;
+	dt0=L->dt+i-1;
+	dt1=L->dt+L->num-1;
+	dt&&CopyDtuple(dt, dt0);
+	do
+		CopyDtuple(dt0, dt0+1);
+	while(++dt0<dt1);
+	L->num--;
+	return 0;
+}
 
 
 

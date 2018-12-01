@@ -101,10 +101,10 @@ int ManifdDelete(MANIFD* L, int i, int* p)
 
 void SortManifd(MANIFD* L)
 {
-	int tmp;
+	int pivot, tmp, *tail;
 	int* Partition(int* left, int* right)
 	{
-		int pivot=*right, *tail;
+		pivot=*right;
 		for(tail=left;left<right;left++)
 			if(*left<=pivot){
 				tmp=*left;
