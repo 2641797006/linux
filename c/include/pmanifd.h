@@ -5,8 +5,8 @@
 #include <malloc.h>
 #endif
 
-#ifndef _STDARG_H
-#include <stdarg.h>
+#ifndef _P_SCAN_H_
+#include </home/lxll/c/git/include/p_scan.h>
 #endif
 
 typedef struct{
@@ -125,22 +125,33 @@ void SortManifd(MANIFD* L)
 	QuickSort(L->data, L->data+L->num-1);
 }
 
-int SetManifd(MANIFD* L, int n, ...)
+int SetManifd(MANIFD* L, char* emstr)
 {
-	va_list ap;
-	va_start(ap, n);
-	int i, *p=L->data;
-	for(i=1;i<=n;i++)
-		if(ManifdInsert(L, L->num+1, va_arg(ap, int)))
-			return i;
-	va_end(ap);
+	char *ems=emstr;
+	int *p=L->data;
+	DWORD i, c, dw, flag;
+	for(;;){
+		c=*ems++;
+		if(!c)
+			break;
+		if(!isdigit(c)&&(c!='+')&&(c!='-'))
+			continue;
+		c=_dw_scan(ems-1, &dw, &flag);
+		if(c<1||!(flag&SCAN_OK))
+			break;
+		i++;
+		ems=ems+c-1;
+		if(ManifdInsert(L, L->num+1, dw))
+			return -i;
+	}
+	c=i;
 	SortManifd(L);
-	n=L->num;
+	dw=L->num;
 	p=L->data+1;
-	for(i=1;i<n;i++,p++)
+	for(i=1;i<dw;i++,p++)
 		if(*p==*(p-1))
-			ManifdDelete(L, i+1, NULL), i--, n--, p--;
-	return 0;
+			ManifdDelete(L, i+1, NULL), i--, dw--, p--;
+	return c;
 }
 
 int CloneManifd(MANIFD* A, MANIFD* B)

@@ -129,7 +129,8 @@ int SetDtuples(DTUPLES* L, char* dtstr)
 			dt.e1=dw;
 		else{
 			dt.e2=dw;
-			DtuplesInsert(L, L->num+1, &dt);
+			if(DtuplesInsert(L, L->num+1, &dt))
+				return -num/2;
 		}
 	}
 	return num/2;
