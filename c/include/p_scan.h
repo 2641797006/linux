@@ -9,6 +9,10 @@
 #include </home/lxll/c/git/include/pctype.h>
 #endif
 
+#ifndef _DW_SCAN_H_
+#include </home/lxll/c/git/include/__scan/_dw_scan.h>
+#endif
+
 int _P_SCAN_;
 
 #define PLF_SIGN	0x0010
@@ -17,6 +21,8 @@ int _P_SCAN_;
 #define PLF_DECIMAL	0x0080
 
 #define _lf_scan(buffer, address) _p_lf_scan(buffer, address, (_P_SCAN_&=0|=sizeof(*(address))>>3, &_P_SCAN_))
+
+#ifdef _P_lf_scan
 int _p_lf_scan(const char* buffer0, void* address, int* flags)
 {
 	const BYTE *buffer=buffer0;
@@ -46,6 +52,7 @@ int _p_lf_scan(const char* buffer0, void* address, int* flags)
 
 
 }
+#endif
 
 
 

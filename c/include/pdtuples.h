@@ -5,6 +5,10 @@
 #include <malloc.h>
 #endif
 
+#ifndef _P_SCAN_H_
+#include </home/lxll/c/git/include/p_scan.h>
+#endif
+
 typedef struct{
 	int e1;
 	int e2;
@@ -103,12 +107,33 @@ int DtuplesDelete(DTUPLES* L, int i, DTUPLE* dt)
 	return 0;
 }
 
+#define link_dtuple(e1, e2) #e1","#e2
 
-
-
-
-
-
+int SetDtuples(DTUPLES* L, char* dtstr)
+{
+	char *dts=dtstr;
+	DWORD c, dw, flag, num=0;
+	DTUPLE dt;
+	for(;;){
+		c=*dts++;
+		if(!c)
+			break;
+		if(!isdigit(c)&&(c!='+')&&(c!='-'))
+			continue;
+		c=_dw_scan(dts-1, &dw, &flag);
+		if(c<1||!(flag&SCAN_OK))
+			break;
+		num++;
+		dts=dts+c-1;
+		if(num%2)
+			dt.e1=dw;
+		else{
+			dt.e2=dw;
+			DtuplesInsert(L, L->num+1, &dt);
+		}
+	}
+	return num/2;
+}
 
 
 
