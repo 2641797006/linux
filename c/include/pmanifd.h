@@ -129,7 +129,7 @@ int SetManifd(MANIFD* L, char* emstr)
 {
 	char *ems=emstr;
 	int *p=L->data;
-	DWORD i, c, dw, flag;
+	DWORD i=0, c, dw, flag;
 	for(;;){
 		c=*ems++;
 		if(!c)

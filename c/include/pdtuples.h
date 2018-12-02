@@ -14,7 +14,12 @@ typedef struct{
 	int e2;
 }DTUPLE;
 
-#define CopyDtuple(dt1, dt2) ((dt1)->e1=(dt2)->e1, (dt1)->e2=(dt2)->e2)
+#define CopyDtuple_O(dt1, dt2) (dt1->e1=dt2->e1, dt1->e2=dt2->e2)
+#define CopyDtuple(dt1, dt2) CopyDtuple_O((dt1), (dt2))
+#define CmpaDtuple_O(dt1, dt2) (dt1->e1==dt2->e1 ? \
+			CmpaElem(dt1->e2, dt2->e2) : \
+			CmpaElem(dt1->e1, dt2->e1))
+#define CmpaDtuple(dt1, dt2) CmpaDtuple_O((dt1), (dt2))
 
 typedef struct{
 	DTUPLE *dt;
@@ -109,11 +114,38 @@ int DtuplesDelete(DTUPLES* L, int i, DTUPLE* dt)
 
 #define link_dtuple(e1, e2) #e1","#e2
 
+void SortDtuples(DTUPLES* L)
+{
+	DTUPLE dtmp, *tail;
+	DTUPLE* Partition(DTUPLE* left, DTUPLE* right)
+	{
+		for(tail=left;left<right;left++)
+			if(CmpaDtuple(left, right)<=0){
+				CopyDtuple(&dtmp, left);
+				CopyDtuple(left, tail);
+				CopyDtuple(tail, &dtmp), tail++;
+			}
+		CopyDtuple(&dtmp, right);
+		CopyDtuple(right, tail);
+		CopyDtuple(tail, &dtmp);
+		return tail;
+	}
+	void QuickSort(DTUPLE* left, DTUPLE* right)
+	{
+		if(left>=right)
+			return;
+		DTUPLE *_pivot=Partition(left, right);
+		QuickSort(left, _pivot-1);
+		QuickSort(_pivot+1, right);
+	}
+	QuickSort(L->dt, L->dt+L->num-1);
+}
+
 int SetDtuples(DTUPLES* L, char* dtstr)
 {
 	char *dts=dtstr;
-	DWORD c, dw, flag, num=0;
-	DTUPLE dt;
+	DWORD c, dw, flag, i=0;
+	DTUPLE dt, *dtp;
 	for(;;){
 		c=*dts++;
 		if(!c)
@@ -123,17 +155,24 @@ int SetDtuples(DTUPLES* L, char* dtstr)
 		c=_dw_scan(dts-1, &dw, &flag);
 		if(c<1||!(flag&SCAN_OK))
 			break;
-		num++;
+		i++;
 		dts=dts+c-1;
-		if(num%2)
+		if(i%2)
 			dt.e1=dw;
 		else{
 			dt.e2=dw;
 			if(DtuplesInsert(L, L->num+1, &dt))
-				return -num/2;
+				return -i/2;
 		}
 	}
-	return num/2;
+	c=i;
+	SortDtuples(L);
+	dw=L->num;
+	dtp=L->dt+1;
+	for(i=1;i<dw;i++,dtp++)
+		if(CmpaDtuple(dtp, dtp-1)==0)
+			DtuplesDelete(L, i+1, NULL), i--, dw--, dtp--;
+	return c/2;
 }
 
 
