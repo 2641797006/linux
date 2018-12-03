@@ -175,6 +175,21 @@ int SetDtuples(DTUPLES* L, char* dtstr)
 	return c/2;
 }
 
+int CloneDtuples(DTUPLES* R1, DTUPLES* R2)
+{
+	DTUPLE *dtp;
+	dtp=malloc(R2->memsize*sizeof(DTUPLE));
+	if(!dtp)
+		return -1;
+	R1->dt=dtp;
+	R1->num=R2->num;
+	R1->memsize=R2->memsize;
+	DTUPLE *dtp2=R2->dt, *end=R2->dt+R2->num;
+	while(dtp2<end)
+		CopyDtuple(dtp, dtp2), dtp++, dtp2++;
+	return 0;
+}
+
 
 
 
