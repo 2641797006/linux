@@ -186,6 +186,19 @@ int IsTransfer_O(DTUPLES* R)
 
 #define IsTransfer(A, R) IsTransfer_O(R)
 
+int IsEquivalent(MANIFD* A, DTUPLES* R)
+{
+	if(IsReflexive(A, R)!=1)
+		return 0;
+	if(IsSymmetry(A, R)!=1)
+		return 0;
+	if(IsTransfer(A, R)!=1)
+		return 0;
+	return 1;
+}
+
+#define IsEqu(A, R) IsEquivalent(A, R)
+
 int Closure_r(MANIFD* A, DTUPLES* R)
 {
 	int i=0;
@@ -228,6 +241,21 @@ int Closure_t(MANIFD* A, DTUPLES* R)
 	DestroyDtuples(S);
 	DestroyDtuples(R1);
 	DestroyDtuples(Rn);
+	return 0;
+}
+
+int RelaDtuples(MANIFD* A, DTUPLES* R, int (*visit)(int, int))
+{
+	int *i, *j, *enda=A->data+A->num;
+	DTUPLE dt;
+	R->num=0;
+	for(i=A->data;i<enda;i++)
+		for(j=A->data;j<enda;j++)
+			if(!visit(*i, *j)){
+				dt.e1=*i, dt.e2=*j;
+				if(DtuplesInsert(R, R->num+1, &dt))
+					return -1;
+			}
 	return 0;
 }
 
