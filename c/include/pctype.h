@@ -21,7 +21,7 @@ typedef unsigned long long QWORD;
 #define QWORD	unsigned long long
 #endif
 
-#define CopyElem(dest, src) memcpy(dest, src, sizeof(src))
+#define CopyElem(dest, src) memcpy(dest, src, sizeof(*(src)))
 #define CmpaElem_O(x, y) (x<y ? -1 : (x==y ? 0 : 1))
 #define CmpaElem(x, y) CmpaElem_O((x), (y))
 

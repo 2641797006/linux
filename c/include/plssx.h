@@ -259,4 +259,5 @@ int RelaDtuples(MANIFD* A, DTUPLES* R, int (*visit)(int, int))
 	return 0;
 }
 
+
 #endif

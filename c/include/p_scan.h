@@ -9,6 +9,13 @@
 #include </home/lxll/c/git/include/pctype.h>
 #endif
 
+#define SC_OK		0x0001
+#define SC_SIGNOK	0x0002
+#define SC_SIGN		0x0010
+#define SC_DIGIT	0x0020
+#define SC_POINT	0x0040
+#define SC_DECIM	0x0080
+
 #ifndef _DW_SCAN_H_
 #include </home/lxll/c/git/include/__scan/_dw_scan.h>
 #endif
