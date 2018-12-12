@@ -38,7 +38,12 @@ void DestroyStack()
 	free(S->base);
 }
 
-int StackSize()
+void ClearStack()
+{
+	S->top=S->base;
+}
+
+int StackLength()
 {
 	return S->top-S->base;
 }
@@ -105,4 +110,5 @@ int PrintStack()
 }
 
 #undef S
+
 #endif
