@@ -56,6 +56,7 @@ void PrintMatrix(MATRIX* mat)
 		printf("\n");
 	}
 }
+#define PrintMatrix_ln(mat) ( PrintMatrix(mat), putchar('\n') )
 
 int MatrixTraverse(MATRIX* mat, int (*visit)(double*, int, int))
 {
@@ -68,6 +69,19 @@ int MatrixTraverse(MATRIX* mat, int (*visit)(double*, int, int))
 		if(ret)
 			return ret;
 	}
+	return 0;
+}
+
+int MatrixZero(MATRIX* mat)
+{
+	int f(double* p, int r, int col)
+	{
+		double *end;
+		for(end=p+col;p<end;p++)
+			*p=0;
+		return 0;
+	}
+	MatrixTraverse(mat, &f);
 	return 0;
 }
 
@@ -263,5 +277,6 @@ void PrintMatrixS(MATRIX* mat)
 		printf("\n");
 	}
 }
+#define PrintMatrixS_ln(mat) ( PrintMatrixS(mat), putchar('\n') )
 
 #endif
