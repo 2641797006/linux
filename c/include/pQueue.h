@@ -6,12 +6,16 @@
 #include <stdlib.h>
 #endif
 
+#ifndef _MEMORY_H
+#include <memory.h>
+#endif
+
 #ifndef QElemType
 #define QElemType int
 #endif
 
-#define QMAXSIZE 0x40
-#define QINCSIZE 0x100
+#define QMAXSIZE 0x4
+#define QINCSIZE 0x4
 
 typedef struct{
 	QElemType *base;
@@ -40,11 +44,28 @@ void DestroyQueue(Queue *Q)
 	Q->rear=NULL;
 }
 
+void ClearQueue(Queue *Q)
+{
+	Q->rear=Q->front;
+}
+
 int EnQueue(Queue *Q, QElemType e)
 {
-	if((Q->rear+1)==Q->front
-		||Q->rear==Q->end&&Q->front==Q->base)
-		return -1;
+	int size=Q->end-Q->base+1, front=Q->front-Q->base, rear=Q->rear-Q->base;
+	QElemType *p;
+	if((Q->rear+1)==Q->front || Q->rear==Q->end&&Q->front==Q->base){
+		p=realloc(Q->base, (size+QINCSIZE)*sizeof(QElemType));
+		if(!p)
+			return -1;
+		Q->base=p;
+		Q->end=p+size+QINCSIZE-1;
+		Q->front=p+front;
+		Q->rear=p+rear;
+		if(rear<front){
+			memcpy(Q->base+size, Q->base, rear*sizeof(QElemType));
+			Q->rear=Q->base+size+rear;
+		}
+	}
 	*Q->rear++=e;
 	if(Q->rear>Q->end)
 		Q->rear=Q->base;
@@ -60,14 +81,34 @@ int DeQueue(Queue *Q, QElemType *e)
 	return 0;
 }
 
+int QueueLength(Queue *Q)
+{
+	if(Q->rear>Q->front)
+		return Q->rear-Q->front;
+	else
+		return Q->end-Q->front+1+Q->rear-Q->base;
+}
 
+QElemType* GetHead(Queue *Q)
+{
+	if(Q->front==Q->rear)
+		return NULL;
+	return Q->front;
+}
 
-
-
-
-
-
-
+int QueueTraverse(Queue *Q, int (*visit)(QElemType*))
+{
+	int tmp;
+	QElemType *e=Q->front;
+	while(e!=Q->rear){
+		tmp=visit(e);
+		if(tmp)
+			return tmp;
+		if(++e>Q->end)
+			e=Q->base;
+	}
+	return 0;
+}
 
 
 
