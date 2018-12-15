@@ -17,6 +17,11 @@
 #define VertexType int
 #endif
 
+#define QElemType VertexType*
+#ifndef _PQUEUE_H_
+#include </home/lxll/c/git/include/pQueue.h>
+#endif
+
 #ifndef InfoType
 #define InfoType int
 #endif
@@ -79,12 +84,16 @@ VertexType* FirstAdjVex(MGraph *G, int i)
 int SetAdjM(MGraph *G, char *dtstr)
 {
 	char *dts=dtstr;
-	DWORD c, dw, flag, i=0, dt[2];
+	DWORD c, dw, flag, i=0, dt[2], dg=0;
 	AdjMatrix *M=G->arcs;
 	for(;;){
 		c=*dts++;
 		if(!c)
 			break;
+		if(c=='('){
+			dg=1;
+			continue;
+		}
 		if(!isdigit(c)&&(c!='+')&&(c!='-'))
 			continue;
 		c=_dw_scan(dts-1, &dw, &flag);
@@ -97,9 +106,68 @@ int SetAdjM(MGraph *G, char *dtstr)
 		else{
 			dt[1]=dw-1;
 			(M+dt[0]*G->vexnum+dt[1])->adj=1;
+			if(dg)
+				(M+dt[1]*G->vexnum+dt[0])->adj=1, dg=0;
 		}
 	}
 	return i/2;
+}
+
+int DFSTraverse(MGraph *G, int (*visit)(VertexType*))
+{
+	int i, j, tmp, n=G->vexnum, *visited=malloc(n*sizeof(int));
+	VertexType *vex=G->vexs;
+	AdjMatrix *M=G->arcs;
+	if(!visited)
+		return -1;
+	memset(visited, 0, n*sizeof(int));
+	int DFS(int i){
+		int j;
+		if(!*(visited+i)){
+			*(visited+i)=1, tmp=visit(vex+i);
+			if(tmp)
+				return tmp;
+		}
+		for(j=0;j<n;j++)
+			if((M+i*n+j)->adj&&!*(visited+j)){
+				*(visited+j)=1, tmp=visit(vex+j);
+				if(tmp)
+					return tmp;
+				if(tmp=DFS(j))
+					return tmp;
+			}
+		return 0;
+	}
+	for(i=0;i<n;i++)
+		if(tmp=DFS(i))
+			return tmp;
+	return 0;
+}
+
+int BFSTraverse(MGraph *G, int (*visit)(VertexType*))
+{
+	int i, j, k, tmp, n=G->vexnum, *visited=malloc(n*sizeof(int));
+	Queue Queue_Q, *Q=&Queue_Q;
+	VertexType *vex=G->vexs, *vex_t;
+	AdjMatrix *M=G->arcs;
+	if(!visited||InitQueue(Q))
+		return -1;
+	memset(visited, 0, n*sizeof(int));
+	for(i=0;i<n;i++){
+		if(!*(visited+i))
+			*(visited+i)=1, EnQueue(Q, vex+i);
+		else
+			continue;
+		while(!DeQueue(Q, &vex_t)){
+			j=vex_t-vex;
+			if(tmp=visit(vex+j))
+				return tmp;
+			for(k=0;k<n;k++)
+				if((M+j*n+k)->adj&&!*(visited+k))
+					*(visited+k)=1, EnQueue(Q, vex+k);
+		}	
+	}
+	return 0;
 }
 
 void PrintAdjMatrix(AdjMatrix *M, int n)
