@@ -14,8 +14,8 @@
 #define QElemType int
 #endif
 
-#define QMAXSIZE 0x4
-#define QINCSIZE 0x4
+#define QMAXSIZE 0x40
+#define QINCSIZE 0x100
 
 typedef struct{
 	QElemType *base;

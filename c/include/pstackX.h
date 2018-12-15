@@ -1,5 +1,5 @@
-#ifndef _PSTACK_H_
-#define _PSTACK_H_
+#ifndef _PSTACKX_H_
+#define _PSTACKX_H_
 
 #ifndef _STDLIB_H
 #include <stdlib.h>
