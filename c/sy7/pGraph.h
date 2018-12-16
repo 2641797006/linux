@@ -44,6 +44,7 @@ int InitGraph(MGraph *G, int vexnum)
 	if(!G->vexs||!G->arcs)
 		return -1;
 	G->vexnum=vexnum;
+	G->arcnum=0;
 	memset(G->arcs, 0, sizeof(AdjMatrix)*vexnum*vexnum);
 	return 0;
 }
@@ -81,11 +82,23 @@ VertexType* FirstAdjVex(MGraph *G, int i)
 	return NULL;
 }
 
-int SetAdjM(MGraph *G, char *dtstr)
+VertexType* NextAdjVex(MGraph *G, int i, VertexType *vex)
+{
+	int j, n=G->vexnum;
+	AdjMatrix *M=G->arcs+(i-1)*n;
+	for(j=vex-G->vexs+1;j<n;j++)
+		if((M+j)->adj)
+			return G->vexs+j;
+	return NULL;
+}
+
+int SetAdjM_O(MGraph *G, char *dtstr, int weight, AdjMatrix *arc)
 {
 	char *dts=dtstr;
 	DWORD c, dw, flag, i=0, dt[2], dg=0;
-	AdjMatrix *M=G->arcs;
+	AdjMatrix *M=G->arcs, *M_t;
+	if(arc)
+		weight=arc->adj;
 	for(;;){
 		c=*dts++;
 		if(!c)
@@ -105,12 +118,43 @@ int SetAdjM(MGraph *G, char *dtstr)
 			dt[0]=dw-1;
 		else{
 			dt[1]=dw-1;
-			(M+dt[0]*G->vexnum+dt[1])->adj=1;
-			if(dg)
-				(M+dt[1]*G->vexnum+dt[0])->adj=1, dg=0;
+			M_t=M+dt[0]*G->vexnum+dt[1];
+			if(!M_t->adj&&weight)
+				G->arcnum++;
+			else if(M_t->adj&&!weight)
+				G->arcnum--;
+			M_t->adj=weight;
+			if(arc)
+				M_t->info=arc->info;
+			if(dg){
+				M_t=M+dt[1]*G->vexnum+dt[0];
+				if(!M_t->adj&&weight)
+					G->arcnum++;
+				else if(M_t->adj&&!weight)
+					G->arcnum--;
+				M_t->adj=weight, dg=0;
+				if(arc)
+					M_t->info=arc->info;
+			}
 		}
 	}
 	return i/2;
+}
+#define SetAdjM(G, str) SetAdjM_O(G, str, 1, NULL)
+
+int InsertArc(MGraph *G, char *str)
+{
+	return SetAdjM_O(G, str, 1, NULL);
+}
+
+int DeleteArc(MGraph *G, char *str)
+{
+	return SetAdjM_O(G, str, 0, NULL);
+}
+
+int SetArc(MGraph *G, char *str, AdjMatrix *arc)
+{
+	return SetAdjM_O(G, str, 0, arc);
 }
 
 int DFSTraverse(MGraph *G, int (*visit)(VertexType*))

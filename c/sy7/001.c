@@ -13,12 +13,13 @@ int main()
 	VertexTraverse(G, &func);
 	PrintGraph_ln(G);
 
-	SetAdjM(G, "(1,2), (2,4), (4,8), (5,8), (1,3), (3,7), (6,7)");
+	SetAdjM(G, "(1,2), (1,3), (2,4), (2,5), (4,8), (5,8), (3,6), (3,7), (6,7), <2,3>");
 
+//	DeleteArc(G, "<1,2>");
 	PrintGraph_ln(G);
 
-	BFSTraverse(G, &visit);
-
+	DFSTraverse(G, &visit);
+printf("arcnum=%d\n", G->arcnum);
 	DestroyGraph(G);
 }
 
