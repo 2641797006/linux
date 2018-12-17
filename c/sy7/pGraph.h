@@ -103,7 +103,7 @@ VertexType* NextAdjVex(MGraph *G, VertexType *vex, VertexType *adjvex)
 	return NULL;
 }
 
-int SetAdjM_O(MGraph *G, char *dtstr, int weight, InfoType *info)
+int SetArc(MGraph *G, char *dtstr, int weight, InfoType *info)
 {
 	char *dts=dtstr;
 	DWORD c, dw, flag, i=0, dt[2], dg=0;
@@ -147,21 +147,15 @@ int SetAdjM_O(MGraph *G, char *dtstr, int weight, InfoType *info)
 	}
 	return i/2;
 }
-#define SetAdjM(G, str) SetAdjM_O(G, str, 1, NULL)
 
 int InsertArc(MGraph *G, char *str)
 {
-	return SetAdjM_O(G, str, 1, NULL);
+	return SetArc(G, str, 1, NULL);
 }
 
 int DeleteArc(MGraph *G, char *str)
 {
-	return SetAdjM_O(G, str, 0, NULL);
-}
-
-int SetArc(MGraph *G, char *str, int weight, InfoType *info)
-{
-	return SetAdjM_O(G, str, weight, info);
+	return SetArc(G, str, 0, NULL);
 }
 
 int DFSTraverse(MGraph *G, int (*visit)(VertexType*))

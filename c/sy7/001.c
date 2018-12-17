@@ -13,7 +13,7 @@ int main()
 	VertexTraverse(G, &func);
 	PrintGraph_ln(G);
 
-	SetAdjM(G, "(1,2), (1,3), (2,4), (2,5), (4,8), (5,8), (3,6), (3,7), (6,7), <2,3>");
+	InsertArc(G, "(1,2), (1,3), (2,4), (2,5), (4,8), (5,8), (3,6), (3,7), (6,7), <2,3>");
 
 //	DeleteArc(G, "<1,2>");
 	PrintGraph_ln(G);

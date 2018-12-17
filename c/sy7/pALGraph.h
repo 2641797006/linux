@@ -117,7 +117,9 @@ VertexType* FirstAdjVex(ALGraph *G, VertexType *vex)
 
 int SetArc_N(ALGraph *G, int v1, int v2, int add_del, InfoType *info)
 {
-	v1--, v2--;
+	if(v1==v2)
+		return 0;
+//0	v1--, v2--;
 	ArcNode *arc, *arc_t=NULL, *arc_n;
 	AdjList *L=G->vertices+v1;
 	arc=L->firstarc;
@@ -152,7 +154,7 @@ int SetArc_N(ALGraph *G, int v1, int v2, int add_del, InfoType *info)
 	return 0;
 }
 
-int SetAdjL_O(ALGraph *G, char *dtstr, int add_del, InfoType *info)
+int SetArc(ALGraph *G, char *dtstr, int add_del, InfoType *info)
 {
 	char *dts=dtstr;
 	DWORD c, dw, flag, i=0, dt[2], dg=0;
@@ -188,25 +190,35 @@ int SetAdjL_O(ALGraph *G, char *dtstr, int add_del, InfoType *info)
 	return i/2;
 }
 
+int InsertArc(ALGraph *G, char *str)
+{
+	return SetArc(G, str, 1, NULL);
+}
 
+int DeleteArc(ALGraph *G, char *str)
+{
+	return SetArc(G, str, 0, NULL);
+}
 
+void PrintGraph_O(ALGraph *G, int (*PrintVertex)(VertexType*))
+{
+	int i, n=G->vexnum;
+	ArcNode *arc;
+	for(i=0;i<n;i++){
+		if(PrintVertex)
+			PrintVertex(GetVex0(G, i));
+		else
+			printf("%2d: ", *GetVex0(G, i));
+		arc=(G->vertices+i)->firstarc;
+		while(arc){
+			printf("%d ", arc->adjvex);
+			arc=arc->nextarc;
+		}
+		puts("NUL");
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#define PrintGraph(G) PrintGraph_O(G, NULL)
 
 
 
