@@ -160,11 +160,9 @@ int DeleteArc(MGraph *G, char *str)
 
 int DFSTraverse(MGraph *G, int (*visit)(VertexType*))
 {
-	int i, j, tmp, n=G->vexnum, *visited=malloc(n*sizeof(int));
+	int i, j, tmp, n=G->vexnum, visited[n];
 	VertexType *vex=G->vexs;
 	AdjMatrix *M=G->arcs;
-	if(!visited)
-		return -1;
 	memset(visited, 0, n*sizeof(int));
 	int DFS(int i){
 		int j;
@@ -191,11 +189,11 @@ int DFSTraverse(MGraph *G, int (*visit)(VertexType*))
 
 int BFSTraverse(MGraph *G, int (*visit)(VertexType*))
 {
-	int i, j, k, tmp, n=G->vexnum, *visited=malloc(n*sizeof(int));
+	int i, j, k, tmp, n=G->vexnum, visited[n];
 	Queue Queue_Q, *Q=&Queue_Q;
 	VertexType *vex=G->vexs, *vex_t;
 	AdjMatrix *M=G->arcs;
-	if(!visited||InitQueue(Q))
+	if(InitQueue(Q))
 		return -1;
 	memset(visited, 0, n*sizeof(int));
 	for(i=0;i<n;i++){
@@ -206,13 +204,14 @@ int BFSTraverse(MGraph *G, int (*visit)(VertexType*))
 		while(!DeQueue(Q, &vex_t)){
 			j=vex_t-vex;
 			if(tmp=visit(vex+j))
-				return tmp;
+				break;
 			for(k=0;k<n;k++)
 				if((M+j*n+k)->adj&&!*(visited+k))
 					*(visited+k)=1, EnQueue(Q, vex+k);
 		}	
 	}
-	return 0;
+	DestroyQueue(Q);
+	return tmp;
 }
 
 void PrintAdjMatrix(AdjMatrix *M, int n)
