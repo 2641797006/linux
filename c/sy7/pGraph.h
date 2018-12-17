@@ -13,7 +13,7 @@
 #define VertexType int
 #endif
 
-#define QElemType VertexType*
+#define QElemType int
 #ifndef _PQUEUE_H_
 #include </home/lxll/c/git/include/pQueue.h>
 #endif
@@ -160,7 +160,7 @@ int DeleteArc(MGraph *G, char *str)
 
 int DFSTraverse(MGraph *G, int (*visit)(VertexType*))
 {
-	int i, j, tmp, n=G->vexnum, visited[n];
+	int i, tmp, n=G->vexnum, visited[n];
 	VertexType *vex=G->vexs;
 	AdjMatrix *M=G->arcs;
 	memset(visited, 0, n*sizeof(int));
@@ -172,13 +172,9 @@ int DFSTraverse(MGraph *G, int (*visit)(VertexType*))
 				return tmp;
 		}
 		for(j=0;j<n;j++)
-			if((M+i*n+j)->adj&&!*(visited+j)){
-				*(visited+j)=1, tmp=visit(vex+j);
-				if(tmp)
-					return tmp;
+			if((M+i*n+j)->adj&&!*(visited+j))
 				if(tmp=DFS(j))
 					return tmp;
-			}
 		return 0;
 	}
 	for(i=0;i<n;i++)
@@ -191,23 +187,22 @@ int BFSTraverse(MGraph *G, int (*visit)(VertexType*))
 {
 	int i, j, k, tmp, n=G->vexnum, visited[n];
 	Queue Queue_Q, *Q=&Queue_Q;
-	VertexType *vex=G->vexs, *vex_t;
+	VertexType *vex=G->vexs;
 	AdjMatrix *M=G->arcs;
 	if(InitQueue(Q))
 		return -1;
 	memset(visited, 0, n*sizeof(int));
 	for(i=0;i<n;i++){
 		if(!*(visited+i))
-			*(visited+i)=1, EnQueue(Q, vex+i);
+			*(visited+i)=1, EnQueue(Q, i);
 		else
 			continue;
-		while(!DeQueue(Q, &vex_t)){
-			j=vex_t-vex;
+		while(!DeQueue(Q, &j)){
 			if(tmp=visit(vex+j))
 				break;
 			for(k=0;k<n;k++)
 				if((M+j*n+k)->adj&&!*(visited+k))
-					*(visited+k)=1, EnQueue(Q, vex+k);
+					*(visited+k)=1, EnQueue(Q, k);
 		}	
 	}
 	DestroyQueue(Q);

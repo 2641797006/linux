@@ -2,6 +2,7 @@
 #include </home/lxll/c/sy7/pALGraph.h>
 
 int func(VertexType *vex, int i);
+int visit(VertexType *vex);
 
 int main()
 {
@@ -9,15 +10,22 @@ int main()
 	ALGraph _G, *G=&_G;
 	InitGraph(G, 8);
 	VertexTraverse(G, &func);
-	InsertArc(G, "(4,7), (4,3), (2,5), (2,3), (2,4), (2,2)");
+	InsertArc(G, "(1,3), (2,4), (2,5), (3,6), (3,7), (6,7), (4,8), (5,8)");
 	PrintGraph(G);
-printf("Fadj=%d\n", *FirstAdjVex(G, GetVex(G, 3)));
-printf("NextAdj=%d\n", *NextAdjVex(G, GetVex(G, 3), FirstAdjVex(G, GetVex(G, 3))));
+	putchar('\n');
+	BFSTraverse(G, &visit);
+printf("\narcnum=%d\n", G->arcnum);
 	DestroyGraph(G);
 }
 
 int func(VertexType *vex, int i)
 {
 	*vex=i-1;
+	return 0;
+}
+
+int visit(VertexType *vex)
+{
+	printf("%d ", *vex+1);
 	return 0;
 }

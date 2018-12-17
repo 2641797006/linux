@@ -13,7 +13,7 @@
 #define VertexType int
 #endif
 
-#define QElemType VertexType*
+#define QElemType int
 #ifndef _PQUEUE_H_
 #include </home/lxll/c/git/include/pQueue.h>
 #endif
@@ -119,12 +119,12 @@ int SetArc_N(ALGraph *G, int v1, int v2, int add_del, InfoType *info)
 {
 	if(v1==v2)
 		return 0;
-//0	v1--, v2--;
+	v1--, v2--;
 	ArcNode *arc, *arc_t=NULL, *arc_n;
 	AdjList *L=G->vertices+v1;
 	arc=L->firstarc;
 	while(arc){
-		if(arc->adjvex<=v2)
+		if(arc->adjvex>=v2)
 			break;
 		arc_t=arc;
 		arc=arc->nextarc;
@@ -137,6 +137,7 @@ int SetArc_N(ALGraph *G, int v1, int v2, int add_del, InfoType *info)
 				L->firstarc=arc->nextarc;
 			free(arc->info);
 			free(arc);
+			G->arcnum--;
 			return 0;
 		}
 		else
@@ -151,6 +152,7 @@ int SetArc_N(ALGraph *G, int v1, int v2, int add_del, InfoType *info)
 		arc_t->nextarc=arc_n;
 	else
 		L->firstarc=arc_n;
+	G->arcnum++;
 	return 0;
 }
 
@@ -200,27 +202,92 @@ int DeleteArc(ALGraph *G, char *str)
 	return SetArc(G, str, 0, NULL);
 }
 
-void PrintGraph_O(ALGraph *G, int (*PrintVertex)(VertexType*))
+int DFSTraverse(ALGraph *G, int (*visit)(VertexType*))
 {
-	int i, n=G->vexnum;
+	int i, tmp, n=G->vexnum, visited[n];
+	memset(visited, 0, n*sizeof(int));
+	int DFS(int i){
+		ArcNode *arc;
+		if(!*(visited+i)){
+			*(visited+i)=1, tmp=visit(GetVex0(G,i));
+			if(tmp)
+				return tmp;
+		}
+		arc=(G->vertices+i)->firstarc;
+		while(arc){
+			if(!*(visited+arc->adjvex))
+				if(tmp=DFS(arc->adjvex))
+					return tmp;
+			arc=arc->nextarc;
+		}
+		return 0;
+	}
+	for(i=0;i<n;i++)
+		if(tmp=DFS(i))
+			return tmp;
+	return 0;
+}
+
+int BFSTraverse(ALGraph *G, int (*visit)(VertexType*))
+{
+	int i, j, tmp, n=G->vexnum, visited[n];
+	Queue Queue_Q, *Q=&Queue_Q;
 	ArcNode *arc;
+	if(InitQueue(Q))
+		return -1;
+	memset(visited, 0, n*sizeof(int));
+	for(i=0;i<n;i++){
+		if(!*(visited+i))
+			*(visited+i)=1, EnQueue(Q, i);
+		else
+			continue;
+		while(!DeQueue(Q, &j)){
+			tmp=visit(GetVex0(G, j));
+			if(tmp)
+				break;
+			arc=(G->vertices+j)->firstarc;
+			while(arc){
+				j=arc->adjvex;
+				if(!*(visited+j))
+					*(visited+j)=1, EnQueue(Q, j);
+				arc=arc->nextarc;
+			}
+		}
+	}
+	DestroyQueue(Q);
+	return tmp;
+}
+
+void PrintGraph_O(ALGraph *G, int (*PrintVertex)(VertexType*), int f, int order)
+{
+	int i, j, n=G->vexnum, a[n];
+	ArcNode *arc, *arc_t;
 	for(i=0;i<n;i++){
 		if(PrintVertex)
 			PrintVertex(GetVex0(G, i));
 		else
-			printf("%2d: ", *GetVex0(G, i));
+			printf("%2d: ", *GetVex0(G, i)+order);
 		arc=(G->vertices+i)->firstarc;
+		j=0, arc_t=arc;
 		while(arc){
-			printf("%d ", arc->adjvex);
+			if(f)
+				a[j++]=arc->adjvex;
+			else
+				printf("%d ", arc->adjvex+order);
 			arc=arc->nextarc;
 		}
-		puts("NUL");
+		while(j)
+			printf("%d ", a[--j]);
+		if(!arc_t)
+			printf("NULL");
+		putchar('\n');
 	}
 }
 
-#define PrintGraph(G) PrintGraph_O(G, NULL)
-
-
+#define PrintGraph(G) PrintGraph_O(G, NULL, 0, 1)
+#define PrintGraph0(G) PrintGraph_O(G, NULL, 0, 0)
+#define PrintGraphI(G) PrintGraph_O(G, NULL, 1, 1)
+#define PrintGraphI0(G) PrintGraph_O(G, NULL, 1, 0)
 
 
 #endif
