@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #endif
 
+#ifndef _PSQLIST_H_
+#include </home/lxll/c/git/include/pSqList.h>
+#endif
+
 #ifndef _P_SCAN_H_
 #include </home/lxll/c/git/include/p_scan.h>
 #endif
@@ -40,74 +44,58 @@ int InitGraph(MGraph *G, int vexnum)
 	if(!G->vexs||!G->arcs)
 		return -1;
 	G->vexnum=vexnum;
-	G->arcnum=0;
 	memset(G->arcs, 0, sizeof(AdjMatrix)*vexnum*vexnum);
 	return 0;
 }
 
 void DestroyGraph(MGraph *G)
 {
-	int i, j, n=G->vexnum;
-	AdjMatrix *arc=G->arcs;
 	free(G->vexs);
-	for(i=0;i<n;i++)
-		for(j=0;j<n;j++)
-			free((arc+i*n+j)->info);
 	free(G->arcs);
 	G->vexs=NULL, G->arcs=NULL;
 	G->vexnum=0, G->arcnum=0;
 }
 
 #define GetVex(G, i) (G->vexs+i-1)
-#define GetVex0(G, i) (G->vexs+i)
 
 int PutVex(MGraph *G, int i, VertexType *vex)
 {
 	if(i<1||i>G->vexnum)
 		return -1;
-	memcpy(GetVex(G, i), vex, sizeof(VertexType));
+	memcpy(G->vexs+i-1, vex, sizeof(VertexType));
 	return 0;
 }
 
-int VertexTraverse(MGraph *G, int (*visit)(VertexType*,int))
+int VertexTraverse(MGraph *G, int (*visit)(VertexType*))
 {
-	int ret;
-	VertexType *vex=G->vexs, *endvex=vex+G->vexnum;
-	while(vex<endvex){
-		ret=visit(vex,vex-G->vexs+1);
-		if(ret)
-			return ret;
-		vex++;
-	}
-	return 0;
+	return SqListTraverse(G->vexs, G->vexnum, (VISIT)visit);
 }
 
-VertexType* FirstAdjVex(MGraph *G, VertexType *vex)
+VertexType* FirstAdjVex(MGraph *G, int i)
 {
-	int i, n=G->vexnum;
-	AdjMatrix *M=G->arcs+(vex-G->vexs)*n;
-	for(i=0;i<n;i++)
-		if((M+i)->adj)
-			return G->vexs+i;
+	int j, n=G->vexnum;
+	AdjMatrix *M=G->arcs+(i-1)*n;
+	for(j=0;j<n;j++)
+		if((M+j)->adj)
+			return G->vexs+j;
 	return NULL;
 }
 
-VertexType* NextAdjVex(MGraph *G, VertexType *vex, VertexType *adjvex)
+VertexType* NextAdjVex(MGraph *G, int i, VertexType *vex)
 {
-	int i, j, n=G->vexnum;
-	j=vex-G->vexs;
-	AdjMatrix *M=G->arcs+j*n;
-	for(i=j+1;i<n;i++)
-		if((M+i)->adj)
-			return G->vexs+i;
+	int j, n=G->vexnum;
+	AdjMatrix *M=G->arcs+(i-1)*n;
+	for(j=vex-G->vexs+1;j<n;j++)
+		if((M+j)->adj)
+			return G->vexs+j;
 	return NULL;
 }
 
-int SetAdjM_O(MGraph *G, char *dtstr, int weight, InfoType *info)
+int SetAdjM_O(MGraph *G, char *dtstr, int weight, AdjMatrix *arc)
 {
 	char *dts=dtstr;
 	DWORD c, dw, flag, i=0, dt[2], dg=0;
-	AdjMatrix *M=G->arcs, *M_t;
+	AdjMatrix *M=G->arcs;
 	for(;;){
 		c=*dts++;
 		if(!c)
@@ -127,21 +115,13 @@ int SetAdjM_O(MGraph *G, char *dtstr, int weight, InfoType *info)
 			dt[0]=dw-1;
 		else{
 			dt[1]=dw-1;
-			M_t=M+dt[0]*G->vexnum+dt[1];
-			if(!M_t->adj&&weight)
-				G->arcnum++;
-			else if(M_t->adj&&!weight)
-				G->arcnum--;
-			M_t->adj=weight;
-			M_t->info=info;
+			(M+dt[0]*G->vexnum+dt[1])->adj=weight;
+			if(arc)
+				memcpy(M+dt[0]*G->vexnum+dt[1], arc, sizeof(AdjMatrix));
 			if(dg){
-				M_t=M+dt[1]*G->vexnum+dt[0];
-				if(!M_t->adj&&weight)
-					G->arcnum++;
-				else if(M_t->adj&&!weight)
-					G->arcnum--;
-				M_t->adj=weight, dg=0;
-				M_t->info=info;
+				(M+dt[1]*G->vexnum+dt[0])->adj=weight, dg=0;
+				if(arc)
+					memcpy(M+dt[1]*G->vexnum+dt[0], arc, sizeof(AdjMatrix));
 			}
 		}
 	}
@@ -159,9 +139,9 @@ int DeleteArc(MGraph *G, char *str)
 	return SetAdjM_O(G, str, 0, NULL);
 }
 
-int SetArc(MGraph *G, char *str, int weight, InfoType *info)
+int SetArc(MGraph *G, char *str, AdjMatrix *arc)
 {
-	return SetAdjM_O(G, str, weight, info);
+	return SetAdjM_O(G, str, 0, arc);
 }
 
 int DFSTraverse(MGraph *G, int (*visit)(VertexType*))

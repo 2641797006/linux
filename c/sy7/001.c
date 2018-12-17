@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include </home/lxll/c/sy7/pGraph.h>
 
-int func(VertexType *vex);
+int func(VertexType *vex, int i);
 int visit(VertexType *vex);
 
 int main()
@@ -23,10 +23,9 @@ printf("arcnum=%d\n", G->arcnum);
 	DestroyGraph(G);
 }
 
-int func(VertexType *vex)
+int func(VertexType *vex, int i)
 {
-	if(*vex!=1)
-		*vex=(*(vex-1)+1);
+	*vex=i;
 	return 0;
 }
 
