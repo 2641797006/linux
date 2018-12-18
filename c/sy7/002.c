@@ -8,9 +8,9 @@ int main()
 {
 	int i=0, *pi;
 	ALGraph _G, *G=&_G;
-	InitGraph(G, 8);
+	InitGraph(G, 13);
 	VertexTraverse(G, &func);
-	InsertArc(G, "(1,3), (2,4), (2,5), (3,6), (3,7), (6,7), (4,8), (5,8)");
+	InsertArc(G, "(1,2), (1,3), (1,6), (1,12), (2,13), (4,5), (7,8), (7,9), (7,11), (8,11), (10,12), (10,13), (12,13)");
 	PrintGraph(G);
 	putchar('\n');
 	BFSTraverse(G, &visit);
@@ -26,6 +26,9 @@ int func(VertexType *vex, int i)
 
 int visit(VertexType *vex)
 {
-	printf("%d ", *vex+1);
+	if(vex)
+		printf("%c ", *vex+'A');
+	else
+		putchar(','), putchar(' ');
 	return 0;
 }

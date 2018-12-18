@@ -223,8 +223,14 @@ int DFSTraverse(ALGraph *G, int (*visit)(VertexType*))
 		return 0;
 	}
 	for(i=0;i<n;i++)
-		if(tmp=DFS(i))
-			return tmp;
+		if(!*(visited+i)){
+			tmp=DFS(i);
+			if(tmp)
+				return tmp;
+			tmp=visit(NULL);
+			if(tmp)
+				return tmp;
+		}
 	return 0;
 }
 
@@ -253,6 +259,8 @@ int BFSTraverse(ALGraph *G, int (*visit)(VertexType*))
 				arc=arc->nextarc;
 			}
 		}
+		if(tmp=visit(NULL))
+			return tmp;
 	}
 	DestroyQueue(Q);
 	return tmp;
