@@ -137,6 +137,45 @@ BiTNode* CreateBiTNode(TElemType* data, BiTNode* lchild, BiTNode* rchild)
 	T->rchild=rchild;
 	return T;
 }
+#define CreateBTN(data) CreateBiTNode(data, NULL, NULL)
+
+BiTNode* PreInBiTree(int *pre, int pre_n, int *in, int in_n)
+{
+	BiTNode *root;
+	int tmp, *endpre, *endin, *p;
+	endpre=pre+pre_n-1;
+	endin=in+in_n-1;
+	root=CreateBTN(pre);
+	for(p=in;p<endin;p++)
+		if(*p==*pre)
+			break;
+	int PIT(BiTNode *T, int *left, int *center, int *right)
+	{
+		if(++pre>endpre)
+			return 0;
+		if(left==right)
+			return 1;
+		for(p=left;p<center;p++)
+			if(*p==*pre){
+				T->lchild=CreateBTN(pre);
+				tmp=PIT(T->lchild, left, p, center-1);
+				if(!tmp)
+					return tmp;
+				break;
+			}
+		for(p=center+1;p<=right;p++)
+			if(*p==*pre){
+				T->rchild=CreateBTN(pre);
+				tmp=PIT(T->rchild, center+1, p, right);
+				if(!tmp)
+					return tmp;
+				break;
+			}
+		return 2;
+	}
+	PIT(root, in, p, endin);
+	return root;
+}
 
 
 /*
