@@ -106,8 +106,7 @@ int PostOrderTraverse(BiTNode* T, int (*visit)(BiTNode*))
 
 int LevelOrderTraverse(BiTNode* T, int (*visit)(BiTNode*))
 {
-	int i, j, tmp;
-	BiTNode *T1;
+	int tmp;
 	Queue Queue_Q, *Q=&Queue_Q;
 	if(InitQueue(Q))
 		return -1;
@@ -126,6 +125,40 @@ int LevelOrderTraverse(BiTNode* T, int (*visit)(BiTNode*))
 }
 #define LevelOrderTraverse_ln(T, visit) ( LevelOrderTraverse(T, visit), putchar('\n') )
 
+int PrintBiTree(BiTNode* T, int (*visit)(BiTNode*))
+{
+	int line, tmp, nul;
+	Queue Queue_Q, *Q=&Queue_Q;
+	if(InitQueue(Q))
+		return -1;
+	EnQueue(Q, T);
+	line=1, nul=1;
+	while(!DeQueue(Q, &T)){
+		if(line)
+			line--;
+		else{
+			if(!nul)
+				break;
+			putchar('\n');
+			line=QueueLength(Q);
+			nul=0;
+		}
+		tmp=visit(T);
+		if(tmp)
+			break;
+		if(!T){
+			EnQueue(Q, NULL);
+			EnQueue(Q, NULL);
+			continue;
+		}
+		EnQueue(Q, T->lchild);
+		EnQueue(Q, T->rchild);
+		if(T->lchild||T->rchild)
+			nul=1;
+	}
+	DestroyQueue(Q);
+	return tmp;
+}
 BiTNode* CreateBiTNode(TElemType* data, BiTNode* lchild, BiTNode* rchild)
 {
 	BiTNode* T=malloc(sizeof(BiTNode));
@@ -139,14 +172,14 @@ BiTNode* CreateBiTNode(TElemType* data, BiTNode* lchild, BiTNode* rchild)
 }
 #define CreateBTN(data) CreateBiTNode(data, NULL, NULL)
 
-BiTNode* PreInBiTree(int *pre, int pre_n, int *in, int in_n)
+BiTNode* PreInBiTree(int *pre, int *in, int num)
 {
 	BiTNode *root;
 	int tmp, *endpre, *endin, *p;
-	endpre=pre+pre_n-1;
-	endin=in+in_n-1;
+	endpre=pre+num-1;
+	endin=in+num-1;
 	root=CreateBTN(pre);
-	for(p=in;p<endin;p++)
+	for(p=in;p<=endin;p++)
 		if(*p==*pre)
 			break;
 	int PIT(BiTNode *T, int *left, int *center, int *right)
@@ -174,6 +207,53 @@ BiTNode* PreInBiTree(int *pre, int pre_n, int *in, int in_n)
 		return 2;
 	}
 	PIT(root, in, p, endin);
+	return root;
+}
+
+BiTNode* InPostBiTree(int *in, int *post, int num)
+{
+	BiTNode *root;
+	int tmp, *endin, *endpost, *p;
+	endin=in+num-1;
+	endpost=post+num-1;
+	root=CreateBTN(endpost);
+	for(p=in;p<=endin;p++)
+		if(*p==*endpost)
+			break;
+	int IPT(BiTNode *T, int *left, int *center, int *right)
+	{
+		if(--endpost<post)
+			return 0;
+		if(left==right)
+			return 1;
+		for(p=left;p<center;p++)
+			if(*p==*endpost){
+				T->lchild=CreateBTN(endpost);
+				tmp=IPT(T->lchild, left, p, center-1);
+				if(tmp&&tmp<3)
+					tmp=IPT(T->lchild, center+1, p, right);
+				if(tmp&&tmp<3)
+					return 1;
+				if(!tmp)
+					return tmp;
+				return 6;
+			}
+		for(p=center+1;p<=right;p++)
+			if(*p==*endpost){
+				T->rchild=CreateBTN(endpost);
+				tmp=IPT(T->rchild, center+1, p, right);
+				if(tmp&&tmp<3)
+					tmp=IPT(T->rchild, left, p, center-1);
+				if(tmp&&tmp<3)
+					return 1;
+				if(!tmp)
+					return tmp;
+				return 9;
+			}
+		endpost++;
+		return 2;
+	}
+	IPT(root, in, p, endin);
 	return root;
 }
 
