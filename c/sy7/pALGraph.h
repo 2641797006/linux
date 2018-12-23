@@ -13,10 +13,18 @@
 #define VertexType int
 #endif
 
-#define QElemType int
-#ifndef _PQUEUE_H_
-#include </home/lxll/c/git/include/pQueue.h>
+#ifndef _PTREE_H_
+#include </home/lxll/c/sy7/pTree.h>
 #endif
+
+#define QElemType int
+#include </home/lxll/c/git/include/pQueueX.h>
+#define lk_q(name)	lk_suffix(name, QElemType)
+#define Queue		lk_q(Queue)
+#define InitQueue	lk_q(InitQueue)
+#define DestroyQueue	lk_q(DestroyQueue)
+#define EnQueue		lk_q(EnQueue)
+#define DeQueue		lk_q(DeQueue)
 
 #ifndef InfoType
 #define InfoType int
@@ -297,5 +305,55 @@ void PrintGraph_O(ALGraph *G, int (*PrintVertex)(VertexType*), int f, int order)
 #define PrintGraphI(G) PrintGraph_O(G, NULL, 1, 1)
 #define PrintGraphI0(G) PrintGraph_O(G, NULL, 1, 0)
 
+TNode* DFSTree(ALGraph *G)
+{
+	int i, tmp, n=G->vexnum;
+	TNode *tree[n], TN_T, *T=&TN_T;
+	T->child=NULL, T->sibling=NULL;
+	memset(tree, 0, n*sizeof(TNode*));
+	int DFS(int i, TNode *T){
+		ArcNode *arc;
+		if(!*(tree+i)){
+			*(tree+i)=CreateTN(GetVex0(G, i));
+			if(!*(tree+i))
+				return -1;
+			if(T->child){
+				T=T->child;
+				while(T->sibling)
+					T=T->sibling;
+				T->sibling=*(tree+i);
+			}
+			else
+				T->child=*(tree+i);
+		}
+		arc=(G->vertices+i)->firstarc;
+		while(arc){
+			if(!*(tree+arc->adjvex))
+				if(tmp=DFS(arc->adjvex, *(tree+i)))
+					return tmp;
+			arc=arc->nextarc;
+		}
+		return 0;
+	}
+	for(i=0;i<n;i++)
+		if(!*(tree+i)){
+			tmp=DFS(i, T);
+			if(tmp)
+				return NULL;
+			tmp=visit(NULL);
+			if(tmp)
+				return NULL;
+		}
+	return *tree;
+}
+
+#undef InitQueue
+#undef DestroyQueue
+#undef EnQueue
+#undef DeQueue
+
+#undef Queue
+#undef lk_q
+#undef QElemType
 
 #endif
