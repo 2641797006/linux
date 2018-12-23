@@ -18,15 +18,13 @@
 #include <memory.h>
 #endif
 
-#ifndef _PMACRO_H_
-#include </home/lxll/c/git/include/pMacro.h>
+#ifndef QElemType
+#define QElemType int
 #endif
 
 #define QMAXSIZE 0x40
 #define QINCSIZE 0x100
-
-#define lk_q(name)	lk_suffix(name, QElemType)
-#define Queue 		lk_q(Queue)
+#define Queue lk_q(Queue)
 
 typedef struct{
 	QElemType *base;
@@ -130,6 +128,7 @@ int QueueTraverse(Queue *Q, int (*visit)(QElemType*))
 	return 0;
 }
 
+#undef QElemType
 #undef QMAXSIZE
 #undef QINCSIZE
 
@@ -143,6 +142,5 @@ int QueueTraverse(Queue *Q, int (*visit)(QElemType*))
 #undef QueueTraverse
 
 #undef Queue
-#undef lk_q
 
 //end_file
