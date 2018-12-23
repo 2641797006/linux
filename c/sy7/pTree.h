@@ -21,6 +21,7 @@ typedef struct TNode{
 #define QElemType TNode_P
 #include </home/lxll/c/git/include/pQueueX.h>
 #define lk_q(name)	lk_suffix(name, QElemType)
+#define Queue		lk_q(Queue)
 #define InitQueue	lk_q(InitQueue)
 #define DestroyQueue	lk_q(DestroyQueue)
 #define EnQueue		lk_q(EnQueue)
@@ -48,29 +49,23 @@ int LevelOrderTraverse(TNode *T, int (*visit)(TNode*))
 		tmp=visit(T);
 		if(tmp)
 			break;
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		if(T->child){
+			T=T->child;
+			EnQueue(Q, T);
+			while(T->sibling)
+				T=T->sibling, EnQueue(Q, T);
+		}
+	}
+	DestroyQueue(Q);
+	return tmp;
+}
 
 #undef InitQueue
 #undef DestroyQueue
 #undef EnQueue
 #undef DeQueue
 
+#undef Queue
 #undef lk_q
 #undef QElemType
 
