@@ -83,7 +83,7 @@ int DeQueue(Queue *Q, QElemType *e)
 
 int QueueLength(Queue *Q)
 {
-	if(Q->rear>Q->front)
+	if(Q->rear>=Q->front)
 		return Q->rear-Q->front;
 	else
 		return Q->end-Q->front+1+Q->rear-Q->base;
