@@ -232,7 +232,10 @@ void PrintAdjMatrix(AdjMatrix *M, int n)
 	int i, j;
 	for(i=0;i<n;i++){
 		for(j=0;j<n;j++)
-			printf("%-8d", (M+i*n+j)->adj);
+			if((M+i*n+j)->adj<0xffff)
+				printf("%-8d", (M+i*n+j)->adj);
+			else
+				printf("%-8s", "#INF");
 		putchar('\n');
 	}
 }
@@ -255,33 +258,56 @@ void PrintGraph_O(MGraph *G, int (*PrintVertex)(VertexType*))
 #define PrintGraph(G) PrintGraph_O(G, NULL)
 #define PrintGraph_ln(G) ( PrintGraph(G), putchar('\n') )
 
+void SetGW(MGraph *G, int weight)
+{
+	AdjMatrix *arc=G->arcs;
+	int i, j, n=G->vexnum;
+	for(i=0;i<n;i++)
+		for(j=0;j<n;j++)
+			(arc+i*n+j)->adj=weight;
+}
+
 TNode* MiniSpanTree(MGraph *G, VertexType *vex)
 {
 	const int n=G->vexnum;
 	int i, j, k;
 	AdjMatrix *arc;
+	TNode *T, *T1, *T2;
 	struct{
 		int vex;
 		int cost;
+		TNode *tnode;
 	}dge[n];
 	k=vex-G->vexs;
 	arc=G->arcs+k*n;
 	for(i=0;i<n;i++){
 		(dge+i)->vex=k;
 		(dge+i)->cost=(arc+i)->adj;
+		(dge+i)->tnode=CreateTN(GetVex0(G,i));
 	}
 	(dge+k)->cost=0;
-	for(i=0;i<n;i++){
+	T=(dge+k)->tnode;
+	for(i=0;i<n-1;i++){
 		for(j=0;j<n;j++)
 			if( (dge+j)->cost && (!(dge+k)->cost || (dge+k)->cost>(dge+j)->cost))
 					k=j;
-		printf("(%d,%d), ", (dge+k)->vex, k);
+		T1=(dge+(dge+k)->vex)->tnode;
+		T2=(dge+k)->tnode;
+		if(T1->child){
+			T1=T1->child;
+			while(T1->sibling)
+				T1=T1->sibling;
+			T1->sibling=T2;
+		}
+		else
+			T1->child=T2;
 		(dge+k)->cost=0;
 		arc=G->arcs+k*n;
 		for(j=0;j<n;j++)
 			if((arc+j)->adj < (dge+j)->cost)
-				(dge+j)->vex=j, (dge+j)->cost=(arc+j)->adj;
+				(dge+j)->vex=k, (dge+j)->cost=(arc+j)->adj;
 	}
+	return T;
 }
 
 #undef InitQueue
