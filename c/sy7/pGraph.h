@@ -9,14 +9,22 @@
 #include </home/lxll/c/git/include/p_scan.h>
 #endif
 
+#ifndef _PTREE_H_
+#include </home/lxll/c/sy7/pTree.h>
+#endif
+
 #ifndef VertexType
 #define VertexType int
 #endif
 
 #define QElemType int
-#ifndef _PQUEUE_H_
-#include </home/lxll/c/git/include/pQueue.h>
-#endif
+#include </home/lxll/c/git/include/pQueueX.h>
+#define lk_q(name)	lk_suffix(name, QElemType)
+#define Queue		lk_q(Queue)
+#define InitQueue	lk_q(InitQueue)
+#define DestroyQueue	lk_q(DestroyQueue)
+#define EnQueue		lk_q(EnQueue)
+#define DeQueue		lk_q(DeQueue)
 
 #ifndef InfoType
 #define InfoType int
@@ -103,11 +111,13 @@ VertexType* NextAdjVex(MGraph *G, VertexType *vex, VertexType *adjvex)
 	return NULL;
 }
 
-int SetArc(MGraph *G, char *dtstr, int weight, InfoType *info)
+int SetArc(MGraph *G, const char *dtstr, int weight, InfoType *info)
 {
-	char *dts=dtstr;
-	DWORD c, dw, flag, i=0, dt[2], dg=0;
+	const char *dts=dtstr;
+	DWORD c, dw, flag, i=0, dt[2], dg=0, setw=0;
 	AdjMatrix *M=G->arcs, *M_t;
+	if(*dts=='$')
+		setw=1, dts++;
 	for(;;){
 		c=*dts++;
 		if(!c)
@@ -126,7 +136,15 @@ int SetArc(MGraph *G, char *dtstr, int weight, InfoType *info)
 		if(i%2)
 			dt[0]=dw-1;
 		else{
-			dt[1]=dw-1;
+			if(setw)
+				if(setw==1){
+					dt[1]=dw-1, setw++, i--;
+					continue;
+				}
+				else
+					(weight=dw, setw=1);
+			else
+				dt[1]=dw-1;
 			M_t=M+dt[0]*G->vexnum+dt[1];
 			if(!M_t->adj&&weight)
 				G->arcnum++;
@@ -237,29 +255,42 @@ void PrintGraph_O(MGraph *G, int (*PrintVertex)(VertexType*))
 #define PrintGraph(G) PrintGraph_O(G, NULL)
 #define PrintGraph_ln(G) ( PrintGraph(G), putchar('\n') )
 
+TNode* MiniSpanTree(MGraph *G, VertexType *vex)
+{
+	const int n=G->vexnum;
+	int i, j, k;
+	AdjMatrix *arc;
+	struct{
+		int vex;
+		int cost;
+	}dge[n];
+	k=vex-G->vexs;
+	arc=G->arcs+k*n;
+	for(i=0;i<n;i++){
+		(dge+i)->vex=k;
+		(dge+i)->cost=(arc+i)->adj;
+	}
+	(dge+k)->cost=0;
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++)
+			if( (dge+j)->cost && (!(dge+k)->cost || (dge+k)->cost>(dge+j)->cost))
+					k=j;
+		printf("(%d,%d), ", (dge+k)->vex, k);
+		(dge+k)->cost=0;
+		arc=G->arcs+k*n;
+		for(j=0;j<n;j++)
+			if((arc+j)->adj < (dge+j)->cost)
+				(dge+j)->vex=j, (dge+j)->cost=(arc+j)->adj;
+	}
+}
 
+#undef InitQueue
+#undef DestroyQueue
+#undef EnQueue
+#undef DeQueue
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#undef Queue
+#undef lk_q
+#undef QElemType
 
 #endif
