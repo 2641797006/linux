@@ -1,10 +1,6 @@
 /* 
- * must define QElemType and lk_q before include this file
- * QElemType will be undefine at the end of this file
- * #undef QElemType
- * 
+ * must define QElemType before include this file
  * #define QElemType type
- * #define lk_q(name) name##_##type
  *
  * use basic type or pointers
  *
