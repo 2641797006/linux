@@ -336,14 +336,9 @@ TNode* DFSTree(ALGraph *G)
 		return 0;
 	}
 	for(i=0;i<n;i++)
-		if(!*(tree+i)){
-			tmp=DFS(i, T);
-			if(tmp)
+		if(!*(tree+i))
+			if(tmp=DFS(i, T))
 				return NULL;
-			tmp=visit(NULL);
-			if(tmp)
-				return NULL;
-		}
 	return *tree;
 }
 
