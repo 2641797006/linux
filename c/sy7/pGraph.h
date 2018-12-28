@@ -17,6 +17,10 @@
 #define VertexType int
 #endif
 
+#ifndef _PSTACK_H_
+#include </home/lxll/c/git/include/pstack.h>
+#endif
+
 #define QElemType int
 #include </home/lxll/c/git/include/pQueueX.h>
 #define lk_q(name)	lk_suffix(name, QElemType)
@@ -114,10 +118,12 @@ VertexType* NextAdjVex(MGraph *G, VertexType *vex, VertexType *adjvex)
 int SetArc(MGraph *G, const char *dtstr, int weight, InfoType *info)
 {
 	const char *dts=dtstr;
-	DWORD c, dw, flag, i=0, dt[2], dg=0, setw=0;
+	DWORD c, dw, flag, i=0, dt[2], dg=0, setw=0, seq=1;
 	AdjMatrix *M=G->arcs, *M_t;
 	if(*dts=='$')
 		setw=1, dts++;
+	if(*dts=='0')
+		seq=0, dts++;
 	for(;;){
 		c=*dts++;
 		if(!c)
@@ -134,17 +140,17 @@ int SetArc(MGraph *G, const char *dtstr, int weight, InfoType *info)
 		i++;
 		dts=dts+c-1;
 		if(i%2)
-			dt[0]=dw-1;
+			dt[0]=dw-seq;
 		else{
 			if(setw)
 				if(setw==1){
-					dt[1]=dw-1, setw++, i--;
+					dt[1]=dw-seq, setw++, i--;
 					continue;
 				}
 				else
-					(weight=dw, setw=1);
+					weight=dw, setw=1;
 			else
-				dt[1]=dw-1;
+				dt[1]=dw-seq;
 			M_t=M+dt[0]*G->vexnum+dt[1];
 			if(!M_t->adj&&weight)
 				G->arcnum++;
@@ -232,7 +238,7 @@ void PrintAdjMatrix(AdjMatrix *M, int n)
 	int i, j;
 	for(i=0;i<n;i++){
 		for(j=0;j<n;j++)
-			if((M+i*n+j)->adj<0xffff)
+			if((M+i*n+j)->adj<DWS_MAX)
 				printf("%-8d", (M+i*n+j)->adj);
 			else
 				printf("%-8s", "#INF");
@@ -289,7 +295,7 @@ TNode* MiniSpanTree(MGraph *G, VertexType *vex)
 	T=(dge+k)->tnode;
 	for(i=0;i<n-1;i++){
 		for(j=0;j<n;j++)
-			if( (dge+j)->cost && (!(dge+k)->cost || (dge+k)->cost>(dge+j)->cost))
+			if( (dge+j)->cost && (!(dge+k)->cost || (dge+k)->cost>(dge+j)->cost) )
 					k=j;
 		T1=(dge+(dge+k)->vex)->tnode;
 		T2=(dge+k)->tnode;
@@ -308,6 +314,64 @@ TNode* MiniSpanTree(MGraph *G, VertexType *vex)
 				(dge+j)->vex=k, (dge+j)->cost=(arc+j)->adj;
 	}
 	return T;
+}
+
+int ShortestPath(MGraph *G, VertexType *vex, int *path, int *cost)
+{
+	const int n=G->vexnum;
+	int i, j, v, min, fina[n];
+	AdjMatrix* const arc=G->arcs;
+	v=vex-G->vexs;
+	memset(fina, 0, n*sizeof(int));
+	for(i=0;i<n;i++)
+		if((arc+v*n+i)->adj<DWS_MAX)
+			path[i]=v, cost[i]=(arc+v*n+i)->adj;
+		else
+			path[i]=-1, cost[i]=DWS_MAX;
+	path[v]=v, cost[v]=0, fina[v]=1;
+	for(i=0;i<n;i++){
+		min=DWS_MAX;
+		for(j=0;j<n;j++)
+			if(!fina[j] && cost[j]<min)
+				v=j, min=cost[j];
+		if(min==DWS_MAX)
+			return -1;
+		fina[v]=1;
+		for(j=0;j<n;j++)
+			if((arc+v*n+j)->adj<DWS_MAX && min+(arc+v*n+j)->adj<cost[j])
+				path[j]=v, cost[j]=min+(arc+v*n+j)->adj;
+	}
+	return 0;
+}
+
+int TopoSort(MGraph *G, int *path)
+{
+	const int n=G->vexnum;
+	AdjMatrix* const arc=G->arcs;
+	int i, j, count, indegree[n];
+	Stack _S, *S=&_S;
+	if(InitStack(S))
+		return -1;
+	for(i=0;i<n;i++){
+		indegree[i]=0;
+		for(j=0;j<n;j++)
+			if((arc+j*n+i)->adj)
+				indegree[i]++;
+	}
+	for(i=0;i<n;i++)
+		if(!indegree[i])
+			Push(S, i);
+	count=0;
+	while(StackLength(S)){
+		Pop(S, &i);
+		*(path+count++)=i;
+		for(j=0;j<n;j++)
+			if((arc+i*n+j)->adj && !--indegree[j])
+				Push(S, j);
+	}
+	if(count<n)
+		return -2;
+	return 0;
 }
 
 #undef InitQueue
