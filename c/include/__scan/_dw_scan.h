@@ -11,9 +11,9 @@
 #define SCAN_OVER	0x0008
 #define DW_MAX		0xffffffff
 
-int _dw_numscan(char* buf0, DWORD* pdwr, DWORD* flagr)
+int _dw_numscan(const char* buf0, DWORD* pdwr, DWORD* flagr)
 {
-	char *buf=buf0;
+	const char *buf=buf0;
 	DWORD c;
 	QWORD qw=0;
 	for(;;){
@@ -29,9 +29,9 @@ int _dw_numscan(char* buf0, DWORD* pdwr, DWORD* flagr)
 	return buf-buf0-1;
 }
 
-int _dw_scan(char* buf0, DWORD* pdwr, DWORD* flagr)
+int _dw_scan(const char* buf0, DWORD* pdwr, DWORD* flagr)
 {
-	char* buf=buf0;
+	const char* buf=buf0;
 	DWORD c, dw=0, flag=0;
 	for(;;){
 		c=*buf++;

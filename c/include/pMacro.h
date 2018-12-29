@@ -1,6 +1,10 @@
 #ifndef _PMACRO_H_
 #define _PMACRO_H_
 
+#define DWS_MAX				0x7fffffff
+#define DWS_MIN				(-DWS_MAX-1)
+#define DW_MAX				0xffffffff
+
 #define __lk_suffix(name, suffix)	name##_##suffix
 #define lk_suffix(name, suffix)		__lk_suffix(name, suffix)
 

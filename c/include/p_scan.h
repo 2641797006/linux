@@ -71,7 +71,4 @@ int _p_lf_scan(const char* buffer0, void* address, int* flags)
 
 
 
-
-
-
 #endif
