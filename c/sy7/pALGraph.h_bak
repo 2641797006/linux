@@ -17,14 +17,10 @@
 #include </home/lxll/c/sy7/pTree.h>
 #endif
 
-#define QElemType int
-#include </home/lxll/c/git/include/pQueueX.h>
-#define lk_q(name)	lk_suffix(name, QElemType)
-#define Queue		lk_q(Queue)
-#define InitQueue	lk_q(InitQueue)
-#define DestroyQueue	lk_q(DestroyQueue)
-#define EnQueue		lk_q(EnQueue)
-#define DeQueue		lk_q(DeQueue)
+#ifndef _PQUEUE_H_
+#define QElemType void*
+#include </home/lxll/c/git/include/pQueue.h>
+#endif
 
 #ifndef InfoType
 #define InfoType int
@@ -247,23 +243,25 @@ int BFSTraverse(ALGraph *G, int (*visit)(VertexType*))
 	int i, j, tmp, n=G->vexnum, visited[n];
 	Queue Queue_Q, *Q=&Queue_Q;
 	ArcNode *arc;
+	VertexType *vex;
 	if(InitQueue(Q))
 		return -1;
 	memset(visited, 0, n*sizeof(int));
 	for(i=0;i<n;i++){
 		if(!*(visited+i))
-			*(visited+i)=1, EnQueue(Q, i);
+			*(visited+i)=1, EnQueue(Q, (void*)GetVex0(G, i));
 		else
 			continue;
-		while(!DeQueue(Q, &j)){
-			tmp=visit(GetVex0(G, j));
+		while(!DeQueue(Q, (void**)(&vex))){
+puts("DeQ");
+			tmp=visit((int*)vex);
 			if(tmp)
 				break;
 			arc=(G->vertices+j)->firstarc;
 			while(arc){
 				j=arc->adjvex;
 				if(!*(visited+j))
-					*(visited+j)=1, EnQueue(Q, j);
+					*(visited+j)=1, EnQueue(Q, GetVex0(G, j));
 				arc=arc->nextarc;
 			}
 		}
@@ -336,24 +334,15 @@ TNode* DFSTree(ALGraph *G)
 		return 0;
 	}
 	for(i=0;i<n;i++)
-		if(!*(tree+i))
-			if(tmp=DFS(i, T))
+		if(!*(tree+i)){
+			tmp=DFS(i, T);
+			if(tmp)
 				return NULL;
+			tmp=visit(NULL);
+			if(tmp)
+				return NULL;
+		}
 	return *tree;
 }
-
-TNode* MiniSpanTree(ALGraph *G, VertexType *vex)
-{
-	return NULL;
-}
-
-#undef InitQueue
-#undef DestroyQueue
-#undef EnQueue
-#undef DeQueue
-
-#undef Queue
-#undef lk_q
-#undef QElemType
 
 #endif

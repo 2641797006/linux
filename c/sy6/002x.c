@@ -35,10 +35,10 @@ int main()
 		ResetCin();
 		scanf("%4000[^\n]", buf);
 		T=InfixBiTree(buf);
-		//InOrderTraverse(T, &PrintBiTNode), putchar('\n');
-		//PostOrderTraverse(T, &PrintBiTNode);
+		InOrderTraverse(T, &PrintBiTNode), putchar('\n');
+		PostOrderTraverse(T, &PrintBiTNode);
 		d=DealInfixTree(T);
-		printf("%.20G\n", d);
+		printf("=%.20G\n", d);
 	}
 
 }

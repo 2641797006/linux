@@ -1,0 +1,9 @@
+#define QElemType TNode_P
+#include </home/lxll/c/git/include/pQueueX.h>
+#define lk_q(name)	lk_suffix(name, QElemType)
+#define Queue		lk_q(Queue)
+#define InitQueue	lk_q(InitQueue)
+#define DestroyQueue	lk_q(DestroyQueue)
+#define EnQueue		lk_q(EnQueue)
+#define DeQueue		lk_q(DeQueue)
+

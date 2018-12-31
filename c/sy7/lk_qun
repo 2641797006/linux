@@ -1,0 +1,8 @@
+#undef InitQueue
+#undef DestroyQueue
+#undef EnQueue
+#undef DeQueue
+
+#undef Queue
+#undef lk_q
+#undef QElemType

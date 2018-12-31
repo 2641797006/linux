@@ -14,17 +14,26 @@ int precede(char c)
 	int ret;
 	switch(c)
 	{
+		case '(':
+			ret=1;
+		break;
+		case ')':
+			ret=2;
+		break;
 		case '+': case '-':
 			ret=3;
 		break;
 		case '*': case '/':
 			ret=4;
 		break;
-		case '^':
+		case '\2': case '\7':
 			ret=5;
 		break;
-		case '!':
+		case '^':
 			ret=6;
+		break;
+		case '!':
+			ret=7;
 		break;
 		default:
 			ret=-1;
@@ -32,27 +41,26 @@ int precede(char c)
 	return ret;
 }		
 
-int offset=0;
-
 BiTNode* InfixBiTree(const char* infix0)
 {
-	const char *infix=infix0;
-	int c, n, flag=0, yx1=0xffff, yx2;
+	int c, n, flag=0, yx1=0xffff, yx2, brackets=0;
 	double d;
+	const char *infix=infix0;
 	TElemType TE_e, *e=&TE_e;
-	BiTNode BT_To, *T=NULL, *To=&BT_To, *Tn=NULL;
+	BiTNode BTN_To, *T=NULL, *To=&BTN_To, *Tn=NULL;
 	
 	for(;;){
 		c=*infix++;
-		if(c==')'||c==0)
+		if(c==0)
 			break;
 		if(isspace(c))
 			continue;
 		if(c=='('){
-			Tn=InfixBiTree(infix);
-			infix+=offset;
-			if(!T)
-				T=Tn;
+			brackets++;
+			continue;
+		}
+		if(c==')'){
+			brackets--;
 			continue;
 		}
 		if(isdigit(c)){
@@ -66,7 +74,7 @@ BiTNode* InfixBiTree(const char* infix0)
 		}
 		yx2=precede(c);
 		e->dt.c=c, e->tag=OPT;
-		if(yx2>yx1){
+		if(yx2>yx1||brackets){
 			To->rchild=CreateBiTNode(e, Tn, NULL);
 			To=To->rchild;
 			Tn=NULL;
@@ -81,7 +89,6 @@ BiTNode* InfixBiTree(const char* infix0)
 		yx1=yx2;
 	}
 	To->rchild=Tn;
-offset=(infix-infix0);
 	return T;
 }
 

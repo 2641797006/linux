@@ -9,12 +9,13 @@
 #include </home/lxll/c/git/include/p_scan.h>
 #endif
 
-#ifndef _PTREE_H_
-#include </home/lxll/c/sy7/pTree.h>
-#endif
-
 #ifndef VertexType
 #define VertexType int
+#endif
+
+#ifndef _PTREE_H_
+#define TElemType VertexType
+#include </home/lxll/c/sy7/pTree.h>
 #endif
 
 #ifndef _PSTACK_H_
@@ -239,9 +240,9 @@ void PrintAdjMatrix(AdjMatrix *M, int n)
 	for(i=0;i<n;i++){
 		for(j=0;j<n;j++)
 			if((M+i*n+j)->adj<DWS_MAX)
-				printf("%-8d", (M+i*n+j)->adj);
+				printf("%-6d", (M+i*n+j)->adj);
 			else
-				printf("%-8s", "#INF");
+				printf("%-6s", "*");
 		putchar('\n');
 	}
 }
@@ -341,6 +342,27 @@ int ShortestPath(MGraph *G, VertexType *vex, int *path, int *cost)
 			if((arc+v*n+j)->adj<DWS_MAX && min+(arc+v*n+j)->adj<cost[j])
 				path[j]=v, cost[j]=min+(arc+v*n+j)->adj;
 	}
+	return 0;
+}
+
+int PrintSEPath(MGraph *G, int *path, int seq)
+{
+	const int n=G->vexnum;
+	int i, j;
+	Stack _S, *S=&_S;
+	if(InitStack(S))
+		return -1;
+	for(i=0;i<n;i++){
+		printf("%2d: ", i+seq);
+		j=i;
+		while(path[j]!=j)
+			Push(S, path[j]), j=path[j];
+		while(StackLength(S))
+			Pop(S, &j), printf("%d -> ", j+seq);
+		printf("%d", i+seq);
+		ln();
+	}
+	DestroyStack(S);
 	return 0;
 }
 

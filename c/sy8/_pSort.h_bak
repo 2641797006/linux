@@ -130,7 +130,7 @@ void ShellSort_O(int *a, int n, int *cmp, int *mov)
 {
 	int _cmp=0, _mov=0;
 	int i, j, k, m, tmp, key[3]={5, 3, 1}, keys=sizeof(key)/sizeof(int);
-	for(m=0,_mov++;(_cmp++,m<keys);m++,_mov++){
+	for(m=0,_mov++;(_cmp++,m<keys);m++,_mov++)
 		for(i=key[m],_mov++;(_cmp++,i<n);i+=key[m],_mov++){
 			for(j=0,_mov++;(_cmp++,j<i);j+=key[m],_mov++)
 				if((_cmp++,a[i]<a[j]))
@@ -140,8 +140,6 @@ void ShellSort_O(int *a, int n, int *cmp, int *mov)
 				a[k]=a[k-key[m]], _mov++;
 			a[j]=tmp, _mov++;
 		}
-		PrintArray_ln(a,n);
-	}
 	if(cmp)
 		*cmp=_cmp;
 	if(mov)

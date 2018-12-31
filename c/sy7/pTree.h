@@ -5,10 +5,6 @@
 #include <stdlib.h>
 #endif
 
-#ifndef _PCTYPE_H_
-#include </home/lxll/c/git/include/pctype.h>
-#endif
-
 #ifndef TElemType
 #define TElemType int
 #endif
@@ -104,12 +100,23 @@ int PostOrderTraverse(TNode *T, int (*visit)(TNode*))
 
 int LevelOrderTraverse(TNode *T, int (*visit)(TNode*))
 {
-	int tmp;
+	int tmp, line;
 	Queue Queue_Q, *Q=&Queue_Q;
 	if(InitQueue(Q))
 		return -1;
 	EnQueue(Q, T);
+	while(T->sibling)
+		T=T->sibling, EnQueue(Q, T);
+	line=QueueLength(Q);
 	while(!DeQueue(Q, &T)){
+		if(line)
+			line--;
+		else{
+			line=QueueLength(Q);
+			tmp=visit(NULL);
+			if(tmp)
+				break;
+		}
 		tmp=visit(T);
 		if(tmp)
 			break;
@@ -127,14 +134,17 @@ int LevelOrderTraverse(TNode *T, int (*visit)(TNode*))
 int PrintTree(TNode *T, int (*PrintTNode)(TNode*))
 {
 	int tmp, line, flag=0;
-	const int fl=0x100, fc=0x10, fr=0x1;
+	const int fl=0x100, fc=0x10;
 	Queue Queue_Q, *Q=&Queue_Q;
 	if(InitQueue(Q))
 		return -1;
 	putchar('{');
 	EnQueue(Q, T);
+	while(T->sibling)
+		T=T->sibling, EnQueue(Q, T);
 	EnQueue(Q, NULL);
-	line=2, flag|=fl;
+	line=QueueLength(Q);
+	flag|=fl;
 	while(!DeQueue(Q, &T)){
 		if(line)
 			line--;

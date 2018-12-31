@@ -1,24 +1,28 @@
 #include <stdio.h>
 #include </home/lxll/c/sy7/pGraph.h>
-
 #define NUM 6
+
 int init(VertexType *vex, int i);
 int visit(VertexType *vex);
 int print(TNode *T);
 
 int main()
 {
-	int i, path[NUM];
+	int i, j, path[NUM], cost[NUM];
 	MGraph _G, *G=&_G;
 	InitGraph(G, NUM);
 	VertexTraverse(G, &init);
 
-	InsertArc(G, "<1,2>, <1,3>, <1,4>, <2,5>, <3,5>, <4,5>, <6,4>, <6,5>");
+	SetGW(G, DWS_MAX);
+
+	InsertArc(G, "$0 <0,2>#10, <0,4>#30, <0,5>#100, <1,2>#5, <2,3>#50, <3,5>#10, <4,3>#20, <4,5>#60");
 	PrintGraph_ln(G);
-	
-	TopoSort(G, path);
+	ShortestPath(G, GetVex(G,1), path, cost);
 	for(i=0;i<NUM;i++)
-		printf("%d ", path[i]+1);
+		printf("%d ", path[i]);
+	ln();
+	for(i=0;i<NUM;i++)
+		printf("%d ", cost[i]);
 	ln();
 
 	DestroyGraph(G);
