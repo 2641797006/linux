@@ -2,11 +2,11 @@
 #define _PSORT_H_
 
 #ifndef _PRAND_H_
-#include </home/lxll/c/git/include/prand.h>
+#include </home/cpplay/c/git/include/prand.h>
 #endif
 
 #ifndef _PMACRO_H_
-#include </home/lxll/c/git/include/pMacro.h>
+#include </home/cpplay/c/git/include/pMacro.h>
 #endif
 
 void pranda(int *arr, int n, int max)
@@ -55,16 +55,16 @@ void BubbleSort_O(int *a, int n, int *cmp, int *mov)
 void InsertSort_O(int *a, int n, int *cmp, int *mov)
 {
 	int _cmp=0, _mov=0;
-	int i, j, k, tmp;
-	for(i=1,_mov++;(_cmp++,i<n);i++,_mov++){
-		for(j=0,_mov++;(_cmp++,j<i);j++,_mov++)
-			if((_cmp++,a[i]<a[j]))
-				break;
-		tmp=a[i], _mov++;
-		for(k=i,_mov++;(_cmp++,k>j);k--,_mov++)
-			a[k]=a[k-1], _mov++;
-		a[j]=tmp, _mov++;
-	}
+	int i, j, k=1, tmp;
+		for(i=k,_mov++;(_cmp++,i<n);i++,_mov++)
+		{
+			tmp=a[i], _mov++;
+			for(j=i-k,_mov++;(_cmp++,j>=0&&a[j]>tmp);j-=k,_mov++)
+			{
+				a[j+k]=a[j],_mov++;
+			}
+			a[j+k]=tmp,_mov++;
+		}
 	if(cmp)
 		*cmp=_cmp;
 	if(mov)
@@ -129,35 +129,23 @@ void QuickSort_O(int *a, int n, int *cmp, int *mov)
 void ShellSort_O(int *a, int n, int *cmp, int *mov)
 {
 	int _cmp=0, _mov=0;
-	int i, j, k, m, tmp, key[3]={5, 3, 1}, keys=sizeof(key)/sizeof(int);
-	for(m=0,_mov++;(_cmp++,m<keys);m++,_mov++){
-		for(i=key[m],_mov++;(_cmp++,i<n);i+=key[m],_mov++){
-			for(j=0,_mov++;(_cmp++,j<i);j+=key[m],_mov++)
-				if((_cmp++,a[i]<a[j]))
-					break;
+	int i, j, k, tmp;
+	for(k=n/2,_mov++;(_cmp++,k>0);k/=2,_mov++)
+		for(i=k,_mov++;(_cmp++,i<n);i++,_mov++)
+		{
 			tmp=a[i], _mov++;
-			for(k=i,_mov++;(_cmp++,k>j);k-=key[m],_mov++)
-				a[k]=a[k-key[m]], _mov++;
-			a[j]=tmp, _mov++;
+			for(j=i-k,_mov++;(_cmp++,j>=0&&a[j]>tmp);j-=k,_mov++)
+			{
+				a[j+k]=a[j],_mov++;
+			}
+			a[j+k]=tmp,_mov++;
 		}
-		PrintArray_ln(a,n);
-	}
 	if(cmp)
 		*cmp=_cmp;
 	if(mov)
 		*mov=_mov;
 }
 #define ShellSort(a,n) ShellSort_O(a,n,NULL,NULL)
-
-
-
-
-
-
-
-
-
-
 
 
 #endif

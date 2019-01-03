@@ -6,11 +6,11 @@
 #endif
 
 #ifndef _PMACRO_H_
-#include </home/lxll/c/git/include/pMacro.h>
+#include </home/cpplay/c/git/include/pMacro.h>
 #endif
 
 #ifndef _PCTYPE_H_
-#include </home/lxll/c/git/include/pctype.h>
+#include </home/cpplay/c/git/include/pctype.h>
 #endif
 
 #ifndef __PINK__
