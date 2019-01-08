@@ -20,11 +20,14 @@ class pfile : public fstream
 {
   public:
 	void print();
-
+	void print(ofstream &out);
+	inline void print(int line);
+	void save();
 	pfile(const char* fname, ios::openmode mode);
 
   private:
 	vector<string> lines;
+	string fname;
 };
 
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
@@ -32,6 +35,8 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 	string s;
 	char *buf=new char[0x1000];
 
+	this->fname.assign(fname);
+	this->fname.append(".pfile");
 	while(!this->eof()){
 		this->getline(buf, 0x1000);
 		s.assign(buf);
@@ -51,7 +56,26 @@ void pfile::print()
 		cout<<lines[i];
 }
 
+void pfile::print(ofstream &out)
+{
+	int i, n=lines.size();
+	for(i=0;i<n;i++)
+		out<<lines[i];
+}
 
+inline void pfile::print(int line)
+{
+	cout<<lines[line];
+}
+
+void pfile::save()
+{
+	int i, n=lines.size();
+	ofstream out;
+	out.open(fname.c_str(), ios::out|ios::trunc);
+	print(out);
+	out.close();
+}
 
 }//namespace __pfile
 
