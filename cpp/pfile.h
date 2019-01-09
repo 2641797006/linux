@@ -20,9 +20,9 @@ class pfile : public fstream
 {
   public:
 	void print();
-	void print(ofstream &out);
 	inline void print(int line);
-	void save();
+	void save(const char* fname);
+	inline void save();
 	pfile(const char* fname, ios::openmode mode);
 
   private:
@@ -33,20 +33,15 @@ class pfile : public fstream
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
 {
 	string s;
-	char *buf=new char[0x1000];
-
 	this->fname.assign(fname);
 	this->fname.append(".pfile");
-	while(!this->eof()){
-		this->getline(buf, 0x1000);
-		s.assign(buf);
+	while(!eof()){
+		std::getline(*this, s);
 		s.append(1, '\n');
 		lines.push_back(s);
 	}
-	this->clear();
-
+	clear();
 	lines.pop_back();
-	delete[] buf;
 }
 
 void pfile::print()
@@ -56,25 +51,24 @@ void pfile::print()
 		cout<<lines[i];
 }
 
-void pfile::print(ofstream &out)
-{
-	int i, n=lines.size();
-	for(i=0;i<n;i++)
-		out<<lines[i];
-}
-
 inline void pfile::print(int line)
 {
 	cout<<lines[line];
 }
 
-void pfile::save()
+void pfile::save(const char* fname)
 {
 	int i, n=lines.size();
 	ofstream out;
-	out.open(fname.c_str(), ios::out|ios::trunc);
-	print(out);
+	out.open(fname, ios::out|ios::trunc);
+	for(i=0;i<n;i++)
+		out<<lines[i];
 	out.close();
+}
+
+inline void pfile::save()
+{
+	save(fname.c_str());
 }
 
 }//namespace __pfile
