@@ -20,9 +20,14 @@ class pfile : public fstream
 {
   public:
 	void print();
-	inline void print(int line);
+	void print(int line);
+	void insert(int line, string& s);
+	void insert(int line, int n, string& s);
+	void erase(int line);
+	void erase(int line1, int line2);
+	void traverse(void (*visit)(string&));
+	void save();
 	void save(const char* fname);
-	inline void save();
 	pfile(const char* fname, ios::openmode mode);
 
   private:
@@ -37,32 +42,56 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 	this->fname.append(".pfile");
 	while(!eof()){
 		std::getline(*this, s);
-		s.append(1, '\n');
 		lines.push_back(s);
 	}
-	clear();
+	seekg(0, ios::beg);
 	lines.pop_back();
 }
 
 void pfile::print()
 {
-	int i, n=lines.size();
-	for(i=0;i<n;i++)
-		cout<<lines[i];
+	vector<string>::iterator iter=lines.begin();
+	while(iter!=lines.end())
+		cout<<*iter++<<endl;
 }
 
 inline void pfile::print(int line)
 {
-	cout<<lines[line];
+	cout<<lines[line]<<endl;
+}
+
+inline void pfile::insert(int line, string& s)
+{
+	lines.insert(lines.begin()+line, s);
+}
+inline void pfile::insert(int line, int n, string& s)
+{
+	lines.insert(lines.begin()+line, n, s);
+}
+	
+inline void pfile::erase(int line)
+{
+	lines.erase(lines.begin()+line, lines.begin()+line+1);
+}
+
+inline void pfile::erase(int line1, int line2)
+{
+	lines.erase(lines.begin()+line1, lines.begin()+line2);
+}
+
+void pfile::traverse(void (*visit)(string&))
+{
+	vector<string>::iterator iter=lines.begin();
+	while(iter!=lines.end())
+		visit(*iter++);
 }
 
 void pfile::save(const char* fname)
 {
-	int i, n=lines.size();
-	ofstream out;
-	out.open(fname, ios::out|ios::trunc);
-	for(i=0;i<n;i++)
-		out<<lines[i];
+	ofstream out(fname, ios::out|ios::trunc);
+	vector<string>::iterator iter=lines.begin();
+	while(iter!=lines.end())
+		out<<*iter++<<endl;
 	out.close();
 }
 
