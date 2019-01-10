@@ -40,7 +40,6 @@ BTNode* CreateBTN(BTNode *parent)
 		return NULL;
 	btnode->keynum=0;
 	btnode->parent=parent;
-	memset(btnode->child, 0, sizeof(BTNode*)*MAX_T);
 	return btnode;
 }
 
@@ -51,7 +50,7 @@ int BTNodeSplit(BTNode *btnode, int i)
 
 int BtreeInsert(BTNode *T, KeyType *key)
 {
-	int i, j;
+	int i, j, leaf;
 	BTNode *T1, *Tp;
 	for(;;){
 		for(i=0;i<T->keynum;i++)
@@ -66,13 +65,20 @@ int BtreeInsert(BTNode *T, KeyType *key)
 		T->key[j]=T->key[j-1];
 	T->key[i]=*key;
 	T->keynum++;
+	leaf=1;
 	while(T->keynum==MAX_T){
 		T1=CreateBTN(T->parent);
 		for(i=MIN_T;i<MAX_T;i++){
 			T1->key[i-MIN_T]=T->key[i];
+			if(!leaf){
+				T->child[i]->parent=T1;
+				T1->child[i-MIN_T]=T->child[i];
+			}
+		}
+		if(!leaf){
+			T->child[i]->parent=T1;
 			T1->child[i-MIN_T]=T->child[i];
 		}
-		T1->child[i-MIN_T]=T->child[i];
 		T1->keynum=MIN_T;
 		T->keynum=MIN_T-1;
 		Tp=T->parent;
@@ -82,9 +88,15 @@ int BtreeInsert(BTNode *T, KeyType *key)
 			T=CreateBTN(Tp);
 			for(i=0;i<MIN_T-1;i++){
 				T->key[i]=Tp->key[i];
+				if(!leaf){
+					Tp->child[i]->parent=T;
+					T->child[i]=Tp->child[i];
+				}
+			}
+			if(!leaf){
+				Tp->child[i]->parent=T;
 				T->child[i]=Tp->child[i];
 			}
-			T->child[i]=Tp->child[i];
 			T->keynum=MIN_T-1;
 			Tp->key[0]=Tp->key[MIN_T-1];
 			Tp->child[0]=T;
@@ -103,6 +115,7 @@ int BtreeInsert(BTNode *T, KeyType *key)
 		Tp->child[i+1]=T1;
 		Tp->keynum++;
 		T=Tp;
+		leaf=0;
 	}
 	return 0;
 }

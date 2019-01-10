@@ -17,7 +17,9 @@ int main()
 	for(;;){
 		scanf("%d", &tmp);
 		BtreeInsert(T, &tmp);
+		ln();
 		PrintBtree(T, &print);
+		ln();
 		ln();
 	}
 	putchar('\n');
@@ -29,6 +31,7 @@ int print(BTNode *btnode)
 	putchar('<');
 	for(i=0;i<btnode->keynum;i++)
 		printf("%d ", btnode->key[i]);
+//	printf("%08X ", btnode->parent);
 	printf("\b> ");
 	return 0;
 }
