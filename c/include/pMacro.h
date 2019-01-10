@@ -14,5 +14,8 @@
 
 #define ln()				putchar('\n')
 #define PRINT_STR(str)			printf("%s", str)
+#define ResetCin() while(fgetc(stdin)!='\n'){}
+
+#define FOPEN(fname) ( access(fname, F_OK) ? fopen(fname, "w+") : fopen(fname, "r+") )
 
 #endif

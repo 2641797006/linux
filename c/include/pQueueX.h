@@ -15,7 +15,7 @@
 #endif
 
 #ifndef _PMACRO_H_
-#include </home/lxll/c/git/include/pMacro.h>
+#include </home/cpplay/c/git/include/pMacro.h>
 #endif
 
 #define QMAXSIZE 0x40
