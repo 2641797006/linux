@@ -52,6 +52,7 @@ int BTNodeSplit(BTNode *btnode, int i)
 int BtreeInsert(BTNode *T, KeyType *key)
 {
 	int i, j;
+	BTNode *T1, *Tp;
 	for(;;){
 		for(i=0;i<T->keynum;i++)
 			if(*key<=T->key[i])
@@ -65,7 +66,28 @@ int BtreeInsert(BTNode *T, KeyType *key)
 		T->key[j]=T->key[j-1];
 	T->key[i]=*key;
 	T->keynum++;
-
+	while(T->keynum==MAX_T){
+		T1=CreateBTN(T->parent);
+		for(i=MIN_T;i<MAX_T;i++){
+			T1->key[i-MIN_T]=T->key[i];
+			T1->child[i-MIN_T]=T->child[i];
+		}
+		T1->child[i-MIN_T]=T->child[i];
+		T1->keynum=MIN_T;
+		T->keynum=MIN_T-1;
+		Tp=T->paernt;
+		for(i=0;i<Tp->keynum;i++)
+			if(Tp->child[i]==T)
+				break;
+		for(j=Tp->keynum;j>i;j--){
+			Tp->key[j]=Tp->key[j-1];
+			Tp->child[j+1]=Tp->child[j];
+		}
+		Tp->key[i]=T->key[MIN_T-1];
+		Tp->child[i+1]=T1;
+		Tp->keynum++;
+		T=Tp;
+	}
 	return 0;
 }
 
