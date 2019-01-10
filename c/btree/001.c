@@ -8,19 +8,18 @@ int print(BTNode *btnode);
 
 int main()
 {
-	int i=0;
+	int i=0, tmp;
 	BTNode *T;
 	T=CreateBTN(NULL);
-	setkey(T, 3, 233, 466, 701);
-	addchild(T, 2, 111, 222);
-	addchild(T, 3, 333, 366, 399);
+	setkey(T, 0);
 	PrintBtree(T,&print);
 	ln();
-	i=666;
-	BtreeInsert(T, &i);
-	i=365;
-	BtreeInsert(T, &i);
-	PrintBtree(T,&print);
+	for(;;){
+		scanf("%d", &tmp);
+		BtreeInsert(T, &tmp);
+		PrintBtree(T, &print);
+		ln();
+	}
 	putchar('\n');
 }
 

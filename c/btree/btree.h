@@ -75,7 +75,23 @@ int BtreeInsert(BTNode *T, KeyType *key)
 		T1->child[i-MIN_T]=T->child[i];
 		T1->keynum=MIN_T;
 		T->keynum=MIN_T-1;
-		Tp=T->paernt;
+		Tp=T->parent;
+		if(!Tp){
+			Tp=T;
+			T1->parent=Tp;
+			T=CreateBTN(Tp);
+			for(i=0;i<MIN_T-1;i++){
+				T->key[i]=Tp->key[i];
+				T->child[i]=Tp->child[i];
+			}
+			T->child[i]=Tp->child[i];
+			T->keynum=MIN_T-1;
+			Tp->key[0]=Tp->key[MIN_T-1];
+			Tp->child[0]=T;
+			Tp->child[1]=T1;
+			Tp->keynum=1;
+			break;
+		}
 		for(i=0;i<Tp->keynum;i++)
 			if(Tp->child[i]==T)
 				break;
