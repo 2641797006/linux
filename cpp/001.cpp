@@ -9,11 +9,7 @@ int main()
 {
 	string s(__TIME__);
 	pfile pf("cpplay.tmp", ios::in);
-	pf.insert(2, s);
-	pf.erase(3, 6);
-	s.assign("heheda");
-	pf.insert(6, 6, s);
-	pf.traverse(&visit);
+	pf.escape("m\"!;<>");
 	pf.print();
 	pf.save();
 	pf.close();

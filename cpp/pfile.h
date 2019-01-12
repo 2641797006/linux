@@ -27,7 +27,10 @@ class pfile : public fstream
 	void erase(int line1, int line2);
 	void traverse(void (*visit)(string&));
 	void save();
-	void save(const char* fname);
+	void save(const char *fname);
+
+	void escape(const char *str);
+
 	pfile(const char* fname, ios::openmode mode);
 
   private:
@@ -46,6 +49,22 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 	}
 	seekg(0, ios::beg);
 	lines.pop_back();
+}
+
+void pfile::escape(const char *str)
+{
+	int i;
+	vector<string>::iterator iter;
+	for(iter=lines.begin(); iter!=lines.end(); iter++)
+		for(i=0;;){
+			i=iter->find_first_of(str, i);
+			if(i!=string::npos){
+				iter->insert(i, "\\");
+				i+=2;
+			}
+			else
+				break;
+		}
 }
 
 void pfile::print()
@@ -86,7 +105,7 @@ void pfile::traverse(void (*visit)(string&))
 		visit(*iter++);
 }
 
-void pfile::save(const char* fname)
+void pfile::save(const char *fname)
 {
 	ofstream out(fname, ios::out|ios::trunc);
 	vector<string>::iterator iter=lines.begin();
