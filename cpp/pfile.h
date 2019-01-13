@@ -22,14 +22,17 @@ class pfile : public fstream
 	void print();
 	void print(int line);
 	void insert(int line, string& s);
-	void insert(int line, int n, string& s);
+	void insert(int line, int pos, string& s);
 	void erase(int line);
 	void erase(int line1, int line2);
 	void traverse(void (*visit)(string&));
 	void save();
 	void save(const char *fname);
 
+	void swap(int line1, int line2);
+	void wrap(int line, int pos);
 	void escape(const char *str);
+	void erase_blankline();
 
 	pfile(const char* fname, ios::openmode mode);
 
@@ -51,6 +54,19 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 	lines.pop_back();
 }
 
+inline void pfile::swap(int line1, int line2)
+{
+	lines[line1].swap(lines[line2]);
+}
+
+void pfile::wrap(int line, int pos)
+{
+	string s;
+	lines.insert(lines.begin()+line+1, s);
+	lines[line+1]=lines[line].substr(pos);
+	lines[line].erase(pos);
+}
+
 void pfile::escape(const char *str)
 {
 	int i;
@@ -65,6 +81,19 @@ void pfile::escape(const char *str)
 			else
 				break;
 		}
+}
+
+void pfile::erase_blankline()
+{
+	int i;
+	vector<string>::iterator iter;
+	for(iter=lines.begin(); iter!=lines.end(); iter++){
+		for(i=0; i<iter->size(); i++)
+			if(!isspace(*(iter->begin()+i)))
+				break;
+		if(i==iter->size())
+			lines.erase(iter, iter+1);
+	}
 }
 
 void pfile::print()
@@ -83,9 +112,9 @@ inline void pfile::insert(int line, string& s)
 {
 	lines.insert(lines.begin()+line, s);
 }
-inline void pfile::insert(int line, int n, string& s)
+inline void pfile::insert(int line, int pos, string& s)
 {
-	lines.insert(lines.begin()+line, n, s);
+	lines.insert(lines.begin()+line, pos, s);
 }
 	
 inline void pfile::erase(int line)

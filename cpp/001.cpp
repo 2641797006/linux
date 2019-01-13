@@ -9,7 +9,8 @@ int main()
 {
 	string s(__TIME__);
 	pfile pf("cpplay.tmp", ios::in);
-	pf.escape("m\"!;<>");
+	pf.wrap(3,3);
+	pf.wrap(8,6);
 	pf.print();
 	pf.save();
 	pf.close();
