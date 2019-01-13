@@ -44,14 +44,22 @@ class pfile : public fstream
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
 {
 	string s;
+	if(!is_open()){
+		cerr<<"Cannot open file: \""<<fname<<"\""<<endl;
+		return;
+	}
 	this->fname.assign(fname);
 	this->fname.append(".pfile");
 	while(!eof()){
-		std::getline(*this, s);
 		lines.push_back(s);
+		std::getline(*this, *(lines.end()-1));
 	}
+	clear();
+	seekg(-1, ios::end);
+	if(get()=='\n')
+		lines.pop_back();
 	seekg(0, ios::beg);
-	lines.pop_back();
+	clear();
 }
 
 inline void pfile::swap(int line1, int line2)
