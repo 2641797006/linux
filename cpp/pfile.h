@@ -16,15 +16,17 @@
 namespace __pfile{
 using namespace std;
 
-class pfile : public fstream
+class pfile : virtual public fstream
 {
   public:
 	void print();
 	void print(int line);
 	void insert(int line, string& s);
-	void insert(int line, int pos, string& s);
+	void insert(int line, int num, string& s);
 	void erase(int line);
 	void erase(int line1, int line2);
+	void push(string& s);
+	void pop(string& s);
 	void traverse(void (*visit)(string&));
 	void save();
 	void save(const char *fname);
@@ -34,11 +36,13 @@ class pfile : public fstream
 	void escape(const char *str);
 	void erase_blankline();
 
+	void init(const char* fname, ios::openmode mode);
 	pfile(const char* fname, ios::openmode mode);
 
-  private:
-	vector<string> lines;
+  protected:
 	string fname;
+	vector<string> lines;
+	void getlines();
 };
 
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
@@ -48,8 +52,21 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 		cerr<<"Cannot open file: \""<<fname<<"\""<<endl;
 		return;
 	}
+	
+}
+
+void init(const char* fname, ios::openmode mode=ios::in|ios::out)
+{
+	string s;
+	if(is_open())
+		return;
+	open(fname, mode);
+	if(!is_open()){
+		cerr<<"Cannot open file: \""<<fname<<"\""<<endl;
+		return;
+	}
 	this->fname.assign(fname);
-	this->fname.append(".pfile");
+	lines.clear();
 	while(!eof()){
 		lines.push_back(s);
 		std::getline(*this, *(lines.end()-1));
@@ -71,7 +88,7 @@ void pfile::wrap(int line, int pos)
 {
 	string s;
 	lines.insert(lines.begin()+line+1, s);
-	lines[line+1]=lines[line].substr(pos);
+	lines[line+1].assign(lines[line], pos);
 	lines[line].erase(pos);
 }
 
@@ -95,7 +112,8 @@ void pfile::erase_blankline()
 {
 	int i;
 	vector<string>::iterator iter;
-	for(iter=lines.begin(); iter!=lines.end(); iter++){
+	iter=lines.end();
+	while(iter--!=lines.begin()){
 		for(i=0; i<iter->size(); i++)
 			if(!isspace(*(iter->begin()+i)))
 				break;
@@ -108,7 +126,8 @@ void pfile::print()
 {
 	vector<string>::iterator iter=lines.begin();
 	while(iter!=lines.end())
-		cout<<*iter++<<endl;
+		cout<<*iter++<<'\n';
+	cout.flush();
 }
 
 inline void pfile::print(int line)
@@ -120,9 +139,9 @@ inline void pfile::insert(int line, string& s)
 {
 	lines.insert(lines.begin()+line, s);
 }
-inline void pfile::insert(int line, int pos, string& s)
+inline void pfile::insert(int line, int num, string& s)
 {
-	lines.insert(lines.begin()+line, pos, s);
+	lines.insert(lines.begin()+line, num, s);
 }
 	
 inline void pfile::erase(int line)
@@ -133,6 +152,20 @@ inline void pfile::erase(int line)
 inline void pfile::erase(int line1, int line2)
 {
 	lines.erase(lines.begin()+line1, lines.begin()+line2);
+}
+
+inline void pfile::push(string& s)
+{
+	lines.push_back(s);
+}
+
+void pfile::pop(string& s)
+{
+	if(lines.empty())
+		return;
+	s.erase();
+	s.swap(*(lines.end()-1));
+	lines.pop_back();
 }
 
 void pfile::traverse(void (*visit)(string&))
@@ -147,13 +180,15 @@ void pfile::save(const char *fname)
 	ofstream out(fname, ios::out|ios::trunc);
 	vector<string>::iterator iter=lines.begin();
 	while(iter!=lines.end())
-		out<<*iter++<<endl;
+		out<<*iter++<<'\n';
 	out.close();
 }
 
-inline void pfile::save()
+void pfile::save()
 {
-	save(fname.c_str());
+	string s(fname);
+	s.append(".pfile");
+	save(s.c_str());
 }
 
 }//namespace __pfile
