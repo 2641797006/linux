@@ -42,7 +42,7 @@ class pfile : virtual public fstream
   protected:
 	string fname;
 	vector<string> lines;
-	void getlines();
+	void initlines();
 };
 
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
@@ -52,12 +52,12 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 		cerr<<"Cannot open file: \""<<fname<<"\""<<endl;
 		return;
 	}
-	
+	this->fname.assign(fname);
+	initlines();
 }
 
-void init(const char* fname, ios::openmode mode=ios::in|ios::out)
+void pfile::init(const char* fname, ios::openmode mode=ios::in|ios::out)
 {
-	string s;
 	if(is_open())
 		return;
 	open(fname, mode);
@@ -66,6 +66,12 @@ void init(const char* fname, ios::openmode mode=ios::in|ios::out)
 		return;
 	}
 	this->fname.assign(fname);
+	initlines();
+}
+
+void pfile::initlines()
+{
+	string s;
 	lines.clear();
 	while(!eof()){
 		lines.push_back(s);
