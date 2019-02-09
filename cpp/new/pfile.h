@@ -13,6 +13,10 @@
 #include <string>
 #endif
 
+#ifndef _CTYPE_H
+#include <ctype.h>
+#endif
+
 #define PF_LINES_INIT	0x0001
 
 namespace __pfile{
@@ -30,17 +34,21 @@ class pfile : virtual public fstream
 	void push(string& s);				//在最后一行后面增加一行s
 	void pop(string& s);				//用s返回最后一行, 并删除最后一行
 	void traverse(void (*visit)(string&));		//用visit函数遍历所有行
+	void traverse(int  (*visit)(string&, int));
 	void save();					//保存文件
 	void save(const char *fname);			//以文件名fname保存文件
 
 	void swap(int line1, int line2);		//交换第line1行与第line2行
-	void wrap(int line, int pos);			//把第line行从pos位置截断为2行
+	void wrap(int line, int num);			//在第line行插入num个空行
+	void split(int line, int pos);			//把第line行从pos位置截断为2行
 	void escape(const char *str);			//转义字符集str( " -> \" )
 	void erase_blankline();				//删除空行
 
 	string file_name();				//返回文件名
+	int rows();					//返回行数
 	void init(const char* fname, ios::openmode mode);	//打开文件fname进行初始化
 	pfile(const char* fname, ios::openmode mode);	//打开文件fname
+	pfile();
 
   protected:
 	string fname;					//文件名
@@ -50,6 +58,8 @@ class pfile : virtual public fstream
 	int status=0;					//状态
 	void initlines();				//初始化lines
 };
+
+pfile::pfile(){}
 
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
 {
@@ -80,6 +90,11 @@ inline string pfile::file_name()
 	return fname;
 }
 
+inline int pfile::rows()
+{
+	return lines.size();
+}
+
 void pfile::initlines()
 {
 	string s;
@@ -102,7 +117,13 @@ inline void pfile::swap(int line1, int line2)
 	lines[line1].swap(lines[line2]);
 }
 
-void pfile::wrap(int line, int pos)
+inline void pfile::wrap(int line, int num=1)
+{
+	string s;
+	lines.insert(lines.begin()+line, num, s);
+}
+
+void pfile::split(int line, int pos)
 {
 	string s;
 	lines.insert(lines.begin()+line+1, s);
@@ -161,7 +182,7 @@ inline void pfile::insert(int line, int num, string& s)
 {
 	lines.insert(lines.begin()+line, num, s);
 }
-	
+
 inline void pfile::erase(int line)
 {
 	lines.erase(lines.begin()+line, lines.begin()+line+1);
@@ -186,10 +207,21 @@ void pfile::pop(string& s)
 	lines.pop_back();
 }
 
+void
+pfile::traverse(int (*visit)(string&, int))
+{
+	int i;
+	vector<string>::iterator iter = lines.begin();
+	while (iter<lines.end()) {
+		i = visit(*iter, iter-lines.begin());
+		iter+=i+1;
+	}
+}
+
 void pfile::traverse(void (*visit)(string&))
 {
 	vector<string>::iterator iter=lines.begin();
-	while(iter!=lines.end())
+	while(iter<lines.end())
 		visit(*iter++);
 }
 

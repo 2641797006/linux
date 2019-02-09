@@ -13,36 +13,42 @@
 #include <string>
 #endif
 
+#define PF_LINES_INIT	0x0001
+
 namespace __pfile{
 using namespace std;
 
 class pfile : virtual public fstream
 {
   public:
-	void print();
-	void print(int line);
-	void insert(int line, string& s);
-	void insert(int line, int num, string& s);
-	void erase(int line);
-	void erase(int line1, int line2);
-	void push(string& s);
-	void pop(string& s);
-	void traverse(void (*visit)(string&));
-	void save();
-	void save(const char *fname);
+	void print();					//输出所有行
+	void print(int line);				//输出第line行
+	void insert(int line, string& s);		//把s插入到第line行
+	void insert(int line, int num, string& s);	//把num个s插入到第line行
+	void erase(int line);				//删除第line行
+	void erase(int line1, int line2);		//删除第line1行到第line2行(含line1行)
+	void push(string& s);				//在最后一行后面增加一行s
+	void pop(string& s);				//用s返回最后一行, 并删除最后一行
+	void traverse(void (*visit)(string&));		//用visit函数遍历所有行
+	void save();					//保存文件
+	void save(const char *fname);			//以文件名fname保存文件
 
-	void swap(int line1, int line2);
-	void wrap(int line, int pos);
-	void escape(const char *str);
-	void erase_blankline();
+	void swap(int line1, int line2);		//交换第line1行与第line2行
+	void wrap(int line, int pos);			//把第line行从pos位置截断为2行
+	void escape(const char *str);			//转义字符集str( " -> \" )
+	void erase_blankline();				//删除空行
 
-	void init(const char* fname, ios::openmode mode);
-	pfile(const char* fname, ios::openmode mode);
+	string file_name();				//返回文件名
+	void init(const char* fname, ios::openmode mode);	//打开文件fname进行初始化
+	pfile(const char* fname, ios::openmode mode);	//打开文件fname
 
   protected:
-	string fname;
-	vector<string> lines;
-	void initlines();
+	string fname;					//文件名
+	vector<string> lines;				//存储每一行
+
+  private:
+	int status=0;					//状态
+	void initlines();				//初始化lines
 };
 
 pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(fname,mode)
@@ -58,7 +64,7 @@ pfile::pfile(const char* fname, ios::openmode mode=ios::in|ios::out) : fstream(f
 
 void pfile::init(const char* fname, ios::openmode mode=ios::in|ios::out)
 {
-	if(is_open())
+	if(status&PF_LINES_INIT)
 		return;
 	open(fname, mode);
 	if(!is_open()){
@@ -67,6 +73,11 @@ void pfile::init(const char* fname, ios::openmode mode=ios::in|ios::out)
 	}
 	this->fname.assign(fname);
 	initlines();
+}
+
+inline string pfile::file_name()
+{
+	return fname;
 }
 
 void pfile::initlines()
@@ -83,6 +94,7 @@ void pfile::initlines()
 		lines.pop_back();
 	seekg(0, ios::beg);
 	clear();
+	status|=PF_LINES_INIT;
 }
 
 inline void pfile::swap(int line1, int line2)
