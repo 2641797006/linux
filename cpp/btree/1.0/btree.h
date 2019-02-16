@@ -9,7 +9,9 @@
 #include <iomanip>
 #endif
 
-#define __tt(T)	template <typename T>
+#ifndef _MACRO_H_
+#include "../macro.h"
+#endif
 
 #define MAX_T	4
 #define MIN_T	((MAX_T+1)/2)
@@ -115,6 +117,8 @@ btree<T>::~btree()
 		if (node->child[0])
 			for (i=0; i<=node->keynum; i++)
 				q.push(node->child[i]);
+		for (i=0; i<node->keynum; i++)
+			delete node->key[i];
 		delete node;
 	}
 }
