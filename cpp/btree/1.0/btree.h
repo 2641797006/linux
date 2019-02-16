@@ -9,9 +9,7 @@
 #include <iomanip>
 #endif
 
-#ifndef _MACRO_H_
-#include "../macro.h"
-#endif
+#define __tt(T)	template <typename T>
 
 #define MAX_T	4
 #define MIN_T	((MAX_T+1)/2)
