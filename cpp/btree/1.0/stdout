@@ -1,0 +1,386 @@
+{{auto} } 
+
+
+
+{{auto break} } 
+
+
+
+{{auto break case} } 
+
+
+
+{{break} } 
+{{auto} {case char} } 
+
+
+
+{{break} } 
+{{auto} {case char const} } 
+
+
+
+{{break char} } 
+{{auto} {case} {const continue} } 
+
+
+
+{{break char} } 
+{{auto} {case} {const continue default} } 
+
+
+
+{{break char continue} } 
+{{auto} {case} {const} {default do} } 
+
+
+
+{{break char continue} } 
+{{auto} {case} {const} {default do double} } 
+
+
+
+{{char} } 
+{{break} {continue do} } 
+{{auto} {case} } {{const} {default} {double else} } 
+
+
+
+{{char} } 
+{{break} {continue do} } 
+{{auto} {case} } {{const} {default} {double else enum} } 
+
+
+
+{{char} } 
+{{break} {continue do else} } 
+{{auto} {case} } {{const} {default} {double} {enum extern} } 
+
+
+
+{{char} } 
+{{break} {continue do else} } 
+{{auto} {case} } {{const} {default} {double} {enum extern float} } 
+
+
+
+{{char do} } 
+{{break} {continue} {else extern} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} {float for} } 
+
+
+
+{{char do} } 
+{{break} {continue} {else extern} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} {float for goto} } 
+
+
+
+{{char do} } 
+{{break} {continue} {else extern for} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} {float} {goto if} } 
+
+
+
+{{char do} } 
+{{break} {continue} {else extern for} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} {float} {goto if int} } 
+
+
+
+{{char do extern} } 
+{{break} {continue} {else} {for if} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} {int long} } 
+
+
+
+{{char do extern} } 
+{{break} {continue} {else} {for if} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} {int long register} } 
+
+
+
+{{char do extern} } 
+{{break} {continue} {else} {for if long} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} {int} {register return} } 
+
+
+
+{{char do extern} } 
+{{break} {continue} {else} {for if long} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} {int} {register return short} } 
+
+
+
+{{do} } 
+{{char} {extern if} } 
+{{break} {continue} } {{else} {for} {long return} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} {short signed} } 
+
+
+
+{{do} } 
+{{char} {extern if} } 
+{{break} {continue} } {{else} {for} {long return} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} {short signed sizeof} } 
+
+
+
+{{do} } 
+{{char} {extern if} } 
+{{break} {continue} } {{else} {for} {long return signed} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} {short} {sizeof static} } 
+
+
+
+{{do} } 
+{{char} {extern if} } 
+{{break} {continue} } {{else} {for} {long return signed} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} {short} {sizeof static struct} } 
+
+
+
+{{do} } 
+{{char} {extern if return} } 
+{{break} {continue} } {{else} {for} {long} {signed static} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} {struct switch} } 
+
+
+
+{{do} } 
+{{char} {extern if return} } 
+{{break} {continue} } {{else} {for} {long} {signed static} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} {struct switch typedef} } 
+
+
+
+{{do} } 
+{{char} {extern if return} } 
+{{break} {continue} } {{else} {for} {long} {signed static switch} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} {struct} {typedef union} } 
+
+
+
+{{do} } 
+{{char} {extern if return} } 
+{{break} {continue} } {{else} {for} {long} {signed static switch} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} {struct} {typedef union unsigned} } 
+
+
+
+{{do if} } 
+{{char} {extern} {return static} } 
+{{break} {continue} } {{else} {for} } {{long} {signed} {switch union} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned void} } 
+
+
+
+{{do if} } 
+{{char} {extern} {return static} } 
+{{break} {continue} } {{else} {for} } {{long} {signed} {switch union} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned void volatile} } 
+
+
+
+{{do if} } 
+{{char} {extern} {return static} } 
+{{break} {continue} } {{else} {for} } {{long} {signed} {switch union void} } 
+{{auto} {case} } {{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{do extern} {return static} } 
+{{char continue} {else} {for} } {{long} {signed} {switch union void} } 
+{{break case} {const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{do extern} {return static} } 
+{{char continue} {else} {for} } {{long} {signed} {switch union void} } 
+{{case} {const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{do extern} {return static} } 
+{{continue} {else} {for} } {{long} {signed} {switch union void} } 
+{{char const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{do extern} {return static} } 
+{{continue} {else} {for} } {{long} {signed} {switch union void} } 
+{{const} {default} } {{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{extern} {return static} } 
+{{do else} {for} } {{long} {signed} {switch union void} } 
+{{continue default} {double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{extern} {return static} } 
+{{do else} {for} } {{long} {signed} {switch union void} } 
+{{default} {double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{extern} {return static} } 
+{{else} {for} } {{long} {signed} {switch union void} } 
+{{do double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{if} } 
+{{extern} {return static} } 
+{{else} {for} } {{long} {signed} {switch union void} } 
+{{double} {enum} } {{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return} } 
+{{if} {static} } 
+{{extern for} {long} } {{signed} {switch union void} } 
+{{else enum} {float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return} } 
+{{if} {static} } 
+{{extern for} {long} } {{signed} {switch union void} } 
+{{enum} {float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return} } 
+{{if} {static} } 
+{{for} {long} } {{signed} {switch union void} } 
+{{extern float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return} } 
+{{if} {static} } 
+{{for} {long} } {{signed} {switch union void} } 
+{{float} {goto} } {{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return static} } 
+{{if long} {signed} {switch union void} } 
+{{for goto} {int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return static} } 
+{{if long} {signed} {switch union void} } 
+{{goto} {int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return static} } 
+{{long} {signed} {switch union void} } 
+{{if int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{return static} } 
+{{long} {signed} {switch union void} } 
+{{int} {register} } {{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{static} } 
+{{return signed} {switch union void} } 
+{{long register} {short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{static} } 
+{{return signed} {switch union void} } 
+{{register} {short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{static} } 
+{{signed} {switch union void} } 
+{{return short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{static} } 
+{{signed} {switch union void} } 
+{{short} {sizeof} } {{struct} {typedef} {unsigned} {volatile while} } 
+
+
+
+{{switch} } 
+{{static} {union void} } 
+{{signed sizeof} {struct} } {{typedef} {unsigned} {volatile while} } 
+
+
+
+{{switch} } 
+{{static} {union void} } 
+{{sizeof} {struct} } {{typedef} {unsigned} {volatile while} } 
+
+
+
+{{union} } 
+{{switch} {void} } 
+{{static struct} {typedef} } {{unsigned} {volatile while} } 
+
+
+
+{{union} } 
+{{switch} {void} } 
+{{struct} {typedef} } {{unsigned} {volatile while} } 
+
+
+
+{{union void} } 
+{{switch typedef} {unsigned} {volatile while} } 
+
+
+
+{{union void} } 
+{{typedef} {unsigned} {volatile while} } 
+
+
+
+{{void} } 
+{{union unsigned} {volatile while} } 
+
+
+
+{{void} } 
+{{unsigned} {volatile while} } 
+
+
+
+{{volatile} } 
+{{void} {while} } 
+
+
+
+{{volatile while} } 
+
+
+
+{{while} } 
+
+
+
+{{} } 
+
+
+
+
+
