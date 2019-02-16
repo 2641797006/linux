@@ -22,7 +22,7 @@ class bt_node{
   public:
 	int		keynum;
 	bt_node<T>	*parent;
-	T*		key[MAX_T];
+	T		*key[MAX_T];
 	bt_node<T>	*child[MAX_T+1];
 
 	void print();
