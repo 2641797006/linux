@@ -125,7 +125,9 @@ __tt(T)
 inline T*
 btree<T>::find(T const& t)
 {
-	return find_t(NULL, t, 0);
+	int i;
+	bt_node<T> *node=_root;
+	return find_t(node, t, i);
 }
 
 __tt(T)
