@@ -25,7 +25,7 @@ class bt_node{
 	bt_node<T>	*child[MAX_T+1];
 
 	void clrc();
-	bt_node(bt_node<T>* const& p=NULL): keynum(0), parent(p) {clrc();}
+	bt_node(bt_node<T>* p=NULL): keynum(0), parent(p) {clrc();}
 };
 
 __tt(T)
