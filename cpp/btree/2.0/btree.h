@@ -295,4 +295,6 @@ btree<T>::insert(T const& t)
 
 }//namespace __btree
 
+#undef __tt
+
 #endif

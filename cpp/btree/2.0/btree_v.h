@@ -390,4 +390,6 @@ btree<T>::print()
 
 }//namespace __btree
 
+#undef __tt
+
 #endif
