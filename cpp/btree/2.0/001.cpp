@@ -1,5 +1,6 @@
 #include <iostream>
-#include "btree.h"
+#define MAX_T 5
+#include "btree_v.h"
 using namespace std;
 using namespace __btree;
 
@@ -18,6 +19,7 @@ main()
 	int i;
 	string s;
 	btree<string> T;
+cout<<"MAX_T="<<MAX_T<<" MIN_T="<<MIN_T<<endl;
 
 	for (i=0;i<32;i++) {
 		s.assign(reserve_word[i]);

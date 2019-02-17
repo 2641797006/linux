@@ -5,6 +5,10 @@
 #include <queue>
 #endif
 
+#ifndef _GLIBCXX_IOMANIP
+#include <iomanip>
+#endif
+
 #define __tt(T)	template <typename T>
 
 #ifndef MAX_T
@@ -24,6 +28,8 @@ class bt_node{
 	T		*key[MAX_T];
 	bt_node<T>	*child[MAX_T+1];
 
+	void print();
+	void printx();
 	void clrc();
 	bt_node(bt_node<T>* const& p=NULL): keynum(0), parent(p) {clrc();}
 };
@@ -36,11 +42,44 @@ bt_node<T>::clrc()
 	for (i=0; i<MAX_T+1; i++)
 		child[i] = NULL;
 }
+#define lw(x)	hex<<((long long)(x)&0xffff)<<dec
+__tt(T)
+void
+bt_node<T>::printx()
+{
+	int i;
+	cout<<'{';
+	for (i=0; i<keynum-1; i++) {
+		cout<<'#'<<lw(child[i])<<' ';
+		cout<<*key[i]<<' ';
+	}
+	if (keynum) {
+		cout<<'#'<<lw(child[i])<<' ';
+		cout<<*key[i];
+		cout<<' '<<'#'<<lw(child[i+1])<<'['<<lw(parent)<<','<<lw(this)<<']';
+	}
+	cout<<'}';
+}
+#undef lw
+
+__tt(T)
+void
+bt_node<T>::print()
+{
+	int i;
+	cout<<'{';
+	for (i=0; i<keynum-1; i++)
+		cout<<*key[i]<<' ';
+	if (keynum)
+		cout<<*key[i];
+	cout<<'}';
+}
 
 /* class btree */
 __tt(T)
 class btree{
   public:
+	void print();
 	bt_node<T>* root(){return _root;}
 	T* find(T const& t);
 	void insert(T const& t);
@@ -289,6 +328,62 @@ btree<T>::insert(T const& t)
 		node = node_p;
 		leaf ? (leaf=0) : 0;
 	}
+}
+
+__tt(T)
+void
+btree<T>::print()
+{
+	const int fl=0x1, fc=0x2, f_lcr=0xf, f_child=0x10;
+	int i, line, flag=0;
+	bt_node<T> *node=_root;
+	queue<bt_node<T>*> q;
+
+	cout<<'{';
+	q.push(node);
+	q.push(NULL);
+	line = q.size();
+	flag|=fl;
+	while (!q.empty()) {
+		node = q.front();
+		q.pop();
+		if (line)
+			line--;
+		else {
+			cout<<'\n';
+			line = q.size();
+			if (!(flag&f_child))
+				break;
+			else
+				flag&=~f_child;
+		}
+		if (node) {
+			flag|=fc;
+			node->print();
+			cout<<' ';
+		}
+		else {
+			if (flag&fl) {
+				if (flag&fc)
+					cout<<'\b';
+				cout<<"} ";
+				flag&=~f_lcr;
+			}
+			else {
+				cout<<'{';
+				flag|=fl;
+			}
+			continue;
+		}
+		q.push(NULL);
+		if (node->child[0])
+			for (i=0; i<=node->keynum; i++) {
+				q.push(node->child[i]);
+				flag|=f_child;
+			}
+		q.push(NULL);
+	}
+	cout<<endl;
 }
 
 }//namespace __btree
