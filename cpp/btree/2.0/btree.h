@@ -41,7 +41,6 @@ bt_node<T>::clrc()
 __tt(T)
 class btree{
   public:
-	bt_node<T>* root(){return _root;}
 	T* find(T const& t);
 	void insert(T const& t);
 	int erase(T const& t);
