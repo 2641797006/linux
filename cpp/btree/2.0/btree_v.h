@@ -17,7 +17,7 @@
 
 #define MIN_T	((MAX_T+1)/2)
 
-namespace __btree{
+namespace __tree{
 using namespace std;
 
 __tt(T)

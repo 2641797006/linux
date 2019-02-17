@@ -1,8 +1,8 @@
 #include <iostream>
-#define MAX_T 5
+#define MAX_T 6
 #include "btree_v.h"
 using namespace std;
-using namespace __btree;
+using namespace __tree;
 
 static const char *reserve_word[32] = {
     "auto", "break", "case", "char", "const", "continue",
@@ -17,7 +17,7 @@ int
 main()
 {
 	int i;
-	string s;
+	string s, *ps;
 	btree<string> T;
 cout<<"MAX_T="<<MAX_T<<" MIN_T="<<MIN_T<<endl;
 
@@ -27,11 +27,16 @@ cout<<"MAX_T="<<MAX_T<<" MIN_T="<<MIN_T<<endl;
 		T.print();
 		cout<<endl<<endl;
 	}
-	for (i=0;i<32;i++) {
+/*	for (i=0;i<32;i++) {
 		s.assign(reserve_word[i]);
 		T.erase(s);
 		T.print();
 		cout<<endl<<endl;
 	}
-	cout<<"\n\n";
+*/	s.assign("union");
+	ps = T.find(s);
+	if (ps)
+		cout<<*T.find(s)<<endl;
+	else
+		cout<<"NULL"<<endl;
 }
