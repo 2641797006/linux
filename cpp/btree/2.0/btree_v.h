@@ -15,10 +15,12 @@
 #define MAX_T	4
 #endif
 
+#ifndef MIN_T
 #define MIN_T	((MAX_T+1)/2)
+#endif
 
 namespace __tree{
-using namespace std;
+using namespace std;	//std::queue
 
 __tt(T)
 class bt_node{
@@ -388,7 +390,7 @@ btree<T>::print()
 	cout<<endl;
 }
 
-}//namespace __btree
+}//namespace __tree
 
 #undef __tt
 
