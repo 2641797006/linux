@@ -98,7 +98,7 @@ class btree{
 	bt_node<T> *_root;
 
 	T* find_t(bt_node<T>*& node, T const& t, int& i);
-	void split(bt_node<T>* const node, bt_node<T>*& node_1, int leaf);
+	void split(bt_node<T>* node, bt_node<T>*& node_1, int leaf);
 };
 
 __tt(T)
@@ -268,7 +268,7 @@ btree<T>::erase(T const& t)
 
 __tt(T)
 void
-btree<T>::split(bt_node<T>* const node, bt_node<T>*& node_1, int leaf)
+btree<T>::split(bt_node<T>* node, bt_node<T>*& node_1, int leaf)
 {
 	int i;
 	node_1 = new bt_node<T>(node->parent);
