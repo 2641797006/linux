@@ -96,8 +96,6 @@ __tt(T)
 T*
 btree<T>::find_t(bt_node<T>*& node, T const& t, int& i)
 {
-	if (!_root)
-		return NULL;
 	if (!node)
 		node = _root;
 	for (;;) {
