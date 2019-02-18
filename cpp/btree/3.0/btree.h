@@ -47,13 +47,14 @@ class btree{
 	T* insert(T const& t);
 	int erase(T const& t);
 
+	int isunique(){return unique;}
 	void set_unique(){unique=1;}
 	void set_nounique(){unique=0;}
 	btree();
 	~btree();
 
   private:
-	int unique=0;
+	int unique;
 	bt_node<T> *_root;
 
 	T* find_t(bt_node<T>*& node, T const& t, int& i);
@@ -61,7 +62,7 @@ class btree{
 };
 
 __tt(T)
-btree<T>::btree()
+btree<T>::btree(): unique(0)
 {
 	_root = new bt_node<T>;
 }
