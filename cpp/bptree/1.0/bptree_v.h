@@ -55,7 +55,7 @@ bp_node::print()
 	cout<<'}';
 }
 
-#define lw(x)	hex<<((long long)(x)&0xffff)<<dec
+#define lw(x)	hex<<((long)(x)&0xffff)<<dec
 void
 bp_node::printx()
 {
@@ -97,6 +97,9 @@ class bptree{
 	int erase(T const& t);
 
 	void print();
+	T* min();
+	T* max();
+	int traverse(int visit(T*));
 	bptree();
 	~bptree();
 
@@ -426,6 +429,50 @@ bptree<index_t, T>::print()
 		q.push(NULL);
 	}
 	cout<<endl;
+}
+
+__tt(index_t, T)
+T*
+bptree<index_t, T>::min()
+{
+	bp_node *node=_root;
+
+	while(node->child[0])
+		node = node->child[0];
+	return (T*)node->key[0];
+}
+
+__tt(index_t, T)
+T*
+bptree<index_t, T>::max()
+{
+	bp_node *node=_root;
+
+	while(node->child[0])
+		node = node->child[node->keynum];
+	return (T*)node->key[node->keynum-1];
+}
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::traverse(int visit(T*))
+{
+	int i, ret;
+	bp_node *node=_root;
+
+	while (node->child[0])
+		node = node->child[0];
+	for (;;) {
+		for (i=0; i<node->keynum; i++) {
+			ret = visit((T*)node->key[i]);
+			if (ret)
+				return ret;
+		}
+		node = node->next;
+		if (!node)
+			break;
+	}
+	return 0;
 }
 
 }//namespace __tree

@@ -46,6 +46,10 @@ class bptree{
 	T* insert(T const& t);
 	int erase(T const& t);
 
+	T* min();
+	T* max();
+	int traverse(int visit(T*));
+
 	bptree();
 	~bptree();
 
@@ -103,7 +107,7 @@ bptree<index_t, T>::find_t(bp_node*& node, T const& t, int& i)
 	if (!node)
 		node = _root;
 	for (;;) {
-		if (node->child[i]) {
+		if (node->child[0]) {
 			for (i=0; i<node->keynum; i++)
 				if (t<=*(index_t*)node->key[i])			// <=
 					break;
@@ -290,9 +294,8 @@ bptree<index_t, T>::insert(T const& t)
 		node->key[j] = node->key[j-1];
 	node->key[i] = new T;
 	*(T*)node->key[i] = t;
-	node->keynum++;
 	leaf = 1;
-	while (node->keynum==MAX_T) {
+	while (++node->keynum==MAX_T) {
 		split(node, node_1, leaf);
 		node_p = node->parent;
 		if (!node_p) {
@@ -316,11 +319,54 @@ bptree<index_t, T>::insert(T const& t)
 		else
 			node_p->key[i] = node->key[MIN_T-1];
 		node_p->child[i+1] = node_1;
-		node_p->keynum++;
 		node = node_p;
 		leaf ? (leaf=0) : 0;
 	}
 	return NULL;
+}
+
+__tt(index_t, T)
+T*
+bptree<index_t, T>::min()
+{
+	bp_node *node=_root;
+
+	while(node->child[0])
+		node = node->child[0];
+	return (T*)node->key[0];
+}
+
+__tt(index_t, T)
+T*
+bptree<index_t, T>::max()
+{
+	bp_node *node=_root;
+
+	while(node->child[0])
+		node = node->child[node->keynum];
+	return (T*)node->key[node->keynum-1];
+}
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::traverse(int visit(T*))
+{
+	int i, ret;
+	bp_node *node=_root;
+
+	while (node->child[0])
+		node = node->child[0];
+	for (;;) {
+		for (i=0; i<node->keynum; i++) {
+			ret = visit((T*)node->key[i]);
+			if (ret)
+				return ret;
+		}
+		node = node->next;
+		if (!node)
+			break;
+	}
+	return 0;
 }
 
 }//namespace __tree
