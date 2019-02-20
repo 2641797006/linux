@@ -18,11 +18,11 @@
 namespace __tree{
 using namespace std;
 
-class bp_node{
+class bp_node{	//B+树结点类
   public:
 	int		keynum;
 	bp_node		*parent;
-	void		*key[MAX_T];
+	void		*key[MAX_T];	//2种类型, 索引(index_t)和真实数据项(T)
 	bp_node		*child[MAX_T+1];
 	bp_node		*next;
 
@@ -38,18 +38,21 @@ bp_node::clrc()
 		child[i] = NULL;
 }
 
-/* class bptree */
-__tt(index_t, T)
+/* class bptree */	//具体B+树特性 请参照 baidu.com/s?wd=B%2B%E6%A0%91
+__tt(index_t, T)	//索引(index_t)与数据项(T)可以相同: bptree<int,int>, bptree<string(文件名),fstream(文件)>
 class bptree{
   public:
-	T* find(T const& t);
-	T* insert(T const& t);
-	int erase(T const& t);
+	T* find(T const& t);	//返回找到的数据项地址, 没有则返回NULL
+	T* insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据地址. 其他返回NULL
+	int erase(T const& t);	//删除成功返回1, 不存在则返回0
 
-	T* min();
-	T* max();
-	int traverse(int visit(T*));
+	T* min();		//返回最小数据项的地址
+	T* max();		//返回最大数据项的地址
+	int traverse(int visit(T*));	//自定义visit函数, 从小到大遍历所有数据, 一旦visit返回非0值, 终止并返回该值
 
+	int isunique(){return unique;}	//若设置了惟一性,返回1, 否则返回0
+	void set_unique(){unique=1;}	//设置数据项的惟一性, 不允许"相等"的数据项存在
+	void set_nounique(){unique=0;}	//取消数据项的惟一性, 允许"相等"的数据项存在
 	bptree();
 	~bptree();
 
