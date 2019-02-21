@@ -19,16 +19,24 @@ class mempool{
 	void* alloc(size_t size);
 	void free(void*);
 
-	size_t remain(){return blocks-block_used;}
-	mempool(size_t count):blocks(count), block_used(0){memory.reserve(count);}
+	size_t remain(){return mpvec_capacity-mpvec_size+index.size();}
+	mempool(size_t count);
 
   private:
-	size_t blocks;
-	size_t block_used;
-	mp_size_t<T> t_null;
+	size_t mpvec_size;
+	size_t mpvec_capacity;
+	mp_size_t<T> *base;
 	std::vector<mp_size_t<T>> memory;
 	std::vector<int> index;
 };
+
+__tt(T)
+mempool<T>::mempool(size_t count):mpvec_size(0),mpvec_capacity(count)
+{
+	memory.reserve(count);
+	memory.resize(count);
+	base = &memory.front();
+}
 
 __tt(T)
 void*
@@ -36,24 +44,22 @@ mempool<T>::alloc(size_t size)
 {
 	int i;
 
-	if (size>sizeof(mp_size_t<T>) || block_used==blocks)
+	if ((mpvec_size==mpvec_capacity && index.empty()) || size>sizeof(mp_size_t<T>))
 		return NULL;
-	block_used++;
 	if (!index.empty()) {
 		i = index.back();
 		index.pop_back();
-		return (void*)(&memory.front()+i);
+		return (void*)(base+i);
 	}
-	memory.push_back(t_null);
-	return (void*)&memory.back();
+	mpvec_size++;
+	return (void*)(base+mpvec_size);
 }
 
 __tt(T)
 inline void
 mempool<T>::free(void *p)
 {
-	block_used--;
-	index.push_back((mp_size_t<T>*)p-&memory.front());
+	index.push_back((mp_size_t<T>*)p-base);
 }
 
 #undef __tt
