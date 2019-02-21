@@ -18,10 +18,11 @@ class mpvec{
 	void* alloc(size_t);
 	void free(void*);
 
-	size_t remain(){return memory.capacity()-block_used;}
-	mpvec(size_t count):block_used(0){memory.reserve(count);}
+	size_t remain(){return blocks-block_used;}
+	mpvec(size_t count):blocks(count), block_used(0){memory.reserve(count);}
 
   private:
+	size_t blocks;
 	size_t block_used;
 	mp_size_t<T> t_null;
 	std::vector<mp_size_t<T>> memory;
@@ -34,7 +35,7 @@ mpvec<T>::alloc(size_t size)
 {
 	int i;
 
-	if (size>sizeof(mp_size_t<T>) || block_used==memory.capacity())
+	if (size>sizeof(mp_size_t<T>) || block_used==blocks)
 		return NULL;
 	block_used++;
 	if (!index.empty()) {
