@@ -8,25 +8,35 @@
 #define __tt(T)	template <typename T>
 
 __tt(T)
+class mp_size_t{
+	T t;
+};
+
+__tt(T)
 class mpvec{
   public:
-	void* Alloc(size_t);
-	void Free(void*);
+	void* alloc(size_t);
+	void free(void*);
+
+	size_t remain(){return memory.capacity()-block_used;}
+	mpvec(size_t count):block_used(0){memory.reserve(count);}
 
   private:
-	T t_null;
-	std::vector<T> memory;
+	size_t block_used;
+	mp_size_t<T> t_null;
+	std::vector<mp_size_t<T>> memory;
 	std::vector<int> index;
 };
 
 __tt(T)
 void*
-mpvec<T>::Alloc(size_t size)
+mpvec<T>::alloc(size_t size)
 {
 	int i;
 
-	if (size>sizeof(T))
+	if (size>sizeof(mp_size_t<T>) || block_used==memory.capacity())
 		return NULL;
+	block_used++;
 	if (!index.empty()) {
 		i = index.back();
 		index.pop_back();
@@ -37,10 +47,11 @@ mpvec<T>::Alloc(size_t size)
 }
 
 __tt(T)
-void
-mpvec<T>::Free(void *p)
+inline void
+mpvec<T>::free(void *p)
 {
-	index.push_back((T*)p-&memory.front());
+	block_used--;
+	index.push_back((mp_size_t<T>*)p-&memory.front());
 }
 
 #undef __tt
