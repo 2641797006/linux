@@ -15,7 +15,8 @@ class mp_size_t{
 __tt(T)
 class mempool{
   public:
-	void* alloc(size_t);
+	void* alloc(){return alloc(1);}
+	void* alloc(size_t size);
 	void free(void*);
 
 	size_t remain(){return blocks-block_used;}
