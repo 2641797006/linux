@@ -13,13 +13,13 @@ class mp_size_t{
 };
 
 __tt(T)
-class mpvec{
+class mempool{
   public:
 	void* alloc(size_t);
 	void free(void*);
 
 	size_t remain(){return blocks-block_used;}
-	mpvec(size_t count):blocks(count), block_used(0){memory.reserve(count);}
+	mempool(size_t count):blocks(count), block_used(0){memory.reserve(count);}
 
   private:
 	size_t blocks;
@@ -31,7 +31,7 @@ class mpvec{
 
 __tt(T)
 void*
-mpvec<T>::alloc(size_t size)
+mempool<T>::alloc(size_t size)
 {
 	int i;
 
@@ -49,7 +49,7 @@ mpvec<T>::alloc(size_t size)
 
 __tt(T)
 inline void
-mpvec<T>::free(void *p)
+mempool<T>::free(void *p)
 {
 	block_used--;
 	index.push_back((mp_size_t<T>*)p-&memory.front());
