@@ -67,10 +67,10 @@ mempool<T>::print()
 {
 	std::cout<<'\n'
 		 <<"***************************\n"
-		 <<"内存总块数: "<<mpvec_capacity<<'\n'
-		 <<"已使用块数: "<<mpvec_size-mpind_size<<'\n'
-		 <<"可使用块数: "<<mpvec_capacity-mpvec_size+mpind_size<<'\n'
-		 <<"单块大小  : "<<sizeof(mp_size_t<T>)<<'\n'
+		 <<" all: "<<mpvec_capacity<<'\n'
+		 <<"used: "<<mpvec_size-mpind_size<<'\n'
+		 <<"free: "<<mpvec_capacity-mpvec_size+mpind_size<<'\n'
+		 <<"sizeof()="<<sizeof(mp_size_t<T>)<<'\n'
 		 <<"mpvec_size: "<<mpvec_size<<'\n'
 		 <<"mpind_size: "<<mpind_size<<'\n'
 		 <<"***************************\n";
