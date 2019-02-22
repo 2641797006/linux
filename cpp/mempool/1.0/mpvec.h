@@ -42,14 +42,10 @@ __tt(T)
 void*
 mempool<T>::alloc(size_t size)
 {
-	size_t i;
-
 	if ((mpvec_size==mpvec_capacity && !mpind_size) || size>sizeof(mp_size_t<T>))
 		return NULL;
-	if (mpind_size) {
-		i = mpind[--mpind_size];
-		return (void*)(mpvec+i);
-	}
+	if (mpind_size)
+		return (void*)(mpvec+mpind[--mpind_size]);
 	return (void*)(mpvec+mpvec_size++);
 }
 
