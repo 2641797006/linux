@@ -1,10 +1,6 @@
 #ifndef _MPVEC_H_
 #define _MPVEC_H_
 
-#ifndef _GLIBCXX_VECTOR
-#include <vector>
-#endif
-
 #define __tt(T)	template <typename T>
 
 __tt(T)
