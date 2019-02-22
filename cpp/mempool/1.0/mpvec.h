@@ -19,47 +19,61 @@ class mempool{
 	void* alloc(size_t size);
 	void free(void*);
 
-	size_t remain(){return mpvec_capacity-mpvec_size+index.size();}
+	void print();
+	size_t remain(){return mpvec_capacity-mpvec_size+mpind_size;}
 	mempool(size_t count);
+	~mempool(){ delete[] mpvec; delete[] mpind;}
 
   private:
+	mp_size_t<T> *mpvec;
 	size_t mpvec_size;
 	size_t mpvec_capacity;
-	mp_size_t<T> *base;
-	std::vector<mp_size_t<T>> memory;
-	std::vector<int> index;
+	size_t *mpind;
+	size_t mpind_size;
 };
 
 __tt(T)
-mempool<T>::mempool(size_t count):mpvec_size(0),mpvec_capacity(count)
+mempool<T>::mempool(size_t count)
 {
-	memory.reserve(count);
-	memory.resize(count);
-	base = &memory.front();
+	mpvec_size = 0;
+	mpvec_capacity = count;
+	mpvec = new mp_size_t<T>[count];
+	mpind_size = 0;
+	mpind = new size_t[count];
 }
 
 __tt(T)
 void*
 mempool<T>::alloc(size_t size)
 {
-	int i;
+	size_t i;
 
-	if ((mpvec_size==mpvec_capacity && index.empty()) || size>sizeof(mp_size_t<T>))
+	if ((mpvec_size==mpvec_capacity && !mpind_size) || size>sizeof(mp_size_t<T>))
 		return NULL;
-	if (!index.empty()) {
-		i = index.back();
-		index.pop_back();
-		return (void*)(base+i);
+	if (mpind_size) {
+		i = mpind[--mpind_size];
+		return (void*)(mpvec+i);
 	}
 	mpvec_size++;
-	return (void*)(base+mpvec_size);
+	return (void*)(mpvec+mpvec_size);
 }
 
 __tt(T)
 inline void
 mempool<T>::free(void *p)
 {
-	index.push_back((mp_size_t<T>*)p-base);
+	mpind[mpind_size++]=(mp_size_t<T>*)p-mpvec;
+}
+
+__tt(T)
+void
+mempool<T>::print()
+{
+	std::cout<<"内存块数: "<<mpvec_capacity<<'\n'
+		 <<"单块字节: "<<sizeof(mp_size_t<T>)<<'\n'
+		 <<"已用块数: "<<mpvec_size-mpind_size<<'\n'
+		 <<"mpvec_size:"<<mpvec_size<<'\n'
+		 <<"mpind_size:"<<mpind_size<<'\n';
 }
 
 #undef __tt
