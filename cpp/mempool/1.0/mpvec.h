@@ -50,8 +50,7 @@ mempool<T>::alloc(size_t size)
 		i = mpind[--mpind_size];
 		return (void*)(mpvec+i);
 	}
-	mpvec_size++;
-	return (void*)(mpvec+mpvec_size);
+	return (void*)(mpvec+mpvec_size++);
 }
 
 __tt(T)
