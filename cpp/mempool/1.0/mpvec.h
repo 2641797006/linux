@@ -53,7 +53,7 @@ __tt(T)
 inline void
 mempool<T>::free(void *p)
 {
-	mpptr[mpptr_size++]=p;
+	mpptr[mpptr_size++] = p;
 }
 
 __tt(T)
