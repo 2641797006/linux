@@ -1,31 +1,32 @@
 #ifndef _BPTREE_H_
 #define _BPTREE_H_
 
+#ifndef _ASSERT_H
+#include <assert.h>
+#endif
+
 #ifndef _GLIBCXX_QUEUE
 #include <queue>
 #endif
 
 #define __tt(T1, T2)	template <typename T1, typename T2>
 
-#ifndef MAX_T
 #define MAX_T	4
-#endif
-
-#ifndef MIN_T
 #define MIN_T	((MAX_T+1)/2)
-#endif
 
 namespace __tree{
 using namespace std;
 
-class bp_node{	//B+树结点类
+class bp_node{
   public:
 	int		keynum;
 	bp_node		*parent;
-	void		*key[MAX_T];	//2种类型, 索引(index_t)和真实数据项(T)
+	void		*key[MAX_T];
 	bp_node		*child[MAX_T+1];
 	bp_node		*next;
 
+	void print();
+	void printx();
 	void clrc();
 	bp_node(bp_node* p=NULL): keynum(0), parent(p), next(NULL) {clrc();}
 };
@@ -38,21 +39,71 @@ bp_node::clrc()
 		child[i] = NULL;
 }
 
-/* class bptree */	//具体B+树特性 请参照 baidu.com/s?wd=B%2B%E6%A0%91
-__tt(index_t, T)	//索引(index_t)与数据项(T)可以相同: bptree<int,int>, bptree<string(文件名),fstream(文件)>
+void
+bp_node::print()
+{
+	int i;
+	cout<<'{';
+	if (child[0]) {
+		for (i=0; i<keynum-1; i++)
+			cout<<*(Mindex_t*)key[i]<<' ';
+		if (keynum)
+			cout<<*(Mindex_t*)key[i];
+	}
+	else {
+		for (i=0; i<keynum-1; i++)
+			cout<<*(MT*)key[i]<<' ';
+		if (keynum)
+			cout<<*(MT*)key[i];
+	}
+	cout<<'}';
+}
+
+#define lw(x)	hex<<((long)(x)&0xffff)<<dec
+void
+bp_node::printx()
+{
+	int i;
+	cout<<'{';
+	if (child[0]) {
+		for (i=0; i<keynum-1; i++) {
+			cout<<'#'<<lw(child[i])<<' ';
+			cout<<*(int*)key[i]<<' ';
+		}
+		if (keynum) {
+			cout<<'#'<<lw(child[i])<<' ';
+			cout<<*(int*)key[i];
+			cout<<' '<<'#'<<lw(child[i+1])<<'['<<lw(parent)<<','<<lw(this)<<']';
+		}
+	}
+	else {
+		for (i=0; i<keynum-1; i++) {
+			cout<<'#'<<lw(child[i])<<' ';
+			cout<<*(int*)key[i]<<' ';
+		}
+		if (keynum) {
+			cout<<'#'<<lw(child[i])<<' ';
+			cout<<*(int*)key[i];
+			cout<<' '<<'#'<<lw(child[i+1])<<'['<<lw(parent)<<','<<lw(this)<<']';
+		}
+	
+	}
+	cout<<'}';
+}
+#undef lw
+
+/* class bptree */
+__tt(index_t, T)
 class bptree{
   public:
-	T* find(T const& t);	//返回找到的数据项地址, 没有则返回NULL
-	T* insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据地址. 其他返回NULL
-	int erase(T const& t);	//删除成功返回1, 不存在则返回0
+	T* find(T const& t);
+	T* insert(T const& t);
+	int erase(T const& t);
 
-	T* min();		//返回最小数据项的地址
-	T* max();		//返回最大数据项的地址
-	int traverse(int visit(T*));	//自定义visit函数, 从小到大遍历所有数据, 一旦visit返回非0值, 终止并返回该值
-
-	int isunique(){return unique;}	//若设置了惟一性,返回1, 否则返回0
-	void set_unique(){unique=1;}	//设置数据项的惟一性, 不允许"相等"的数据项存在
-	void set_nounique(){unique=0;}	//取消数据项的惟一性, 允许"相等"的数据项存在
+	void print();
+	T* min();
+	T* max();
+	int traverse(int visit(T*));
 	bptree();
 	~bptree();
 
@@ -61,8 +112,92 @@ class bptree{
 	bp_node *_root;
 
 	T* find_t(bp_node*& node, T const& t, int& i);
-//	void split(bp_node* node, bp_node*& node_1, int leaf); //use once, inline for fast
+//	void split(bp_node* node, bp_node*& node_1, int leaf);
+
+  public:
+	int check_cind(bp_node *node);
+	int check_key(bp_node *node);
+	int check_child(bp_node *node);
+	int check_all(bp_node *node);
+	int check();
 };
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::check_cind(bp_node *node)
+{
+	int i;
+	bp_node *node_p = node->parent;
+
+	assert(node);
+	if (node==_root) {
+		assert(!node_p);
+		return 0;
+	}
+	for (i=0; i<node_p->keynum; i++)
+		if (node == node_p->child[i])
+			break;
+	assert(node==node_p->child[i]);
+	return 1;
+}
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::check_key(bp_node *node)
+{
+	int i;
+	if (node!=_root)
+		assert(node->keynum>=MIN_T-1);
+	for (i=0; i<node->keynum; i++)
+		assert(node->key[i]);
+	return node->keynum;
+}
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::check_child(bp_node *node)
+{
+	int i;
+	if (node==_root && !node->child[0])
+		return -1;
+	if (!node->child[0])
+		for (i=0; i<MAX_T+1; i++)
+			assert(!node->child[i]);
+	else
+		for (i=0; i<=node->keynum; i++)
+			(assert(node->child[i]), assert(node==node->child[i]->parent));
+	return 1;
+}
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::check_all(bp_node *node)
+{
+	check_cind(node);
+	check_key(node);
+	check_child(node);
+	return 1;
+}
+
+__tt(index_t, T)
+int
+bptree<index_t, T>::check()
+{
+	int i;
+	bp_node *node;
+	queue<bp_node*> q;
+
+	q.push(_root);
+	while (!q.empty()) {
+		node = q.front();
+		q.pop();
+		check_all(node);
+		if (node->child[0])
+			for (i=0; i<=node->keynum; i++)
+				q.push(node->child[i]);
+	}
+	return 1;
+}
 
 __tt(index_t, T)
 bptree<index_t, T>::bptree(): unique(0)
@@ -109,7 +244,7 @@ bptree<index_t, T>::find_t(bp_node*& node, T const& t, int& i)
 {
 	if (!node)
 		node = _root;
-	for (;;) {
+	for (;;)
 		if (node->child[0]) {
 			for (i=0; i<node->keynum; i++)
 				if (t<=*(index_t*)node->key[i])			// <=
@@ -122,7 +257,6 @@ bptree<index_t, T>::find_t(bp_node*& node, T const& t, int& i)
 					break;
 			break;
 		}
-	}
 	if (t==*(T*)node->key[i])
 		return (T*)node->key[i];
 	return NULL;
@@ -319,7 +453,7 @@ bptree<index_t, T>::insert(T const& t)
 			node->keynum = MIN_T;
 		}
 		node_1->keynum = MAX_T-MIN_T;
-//split end
+//split end	
 //		split(node, node_1, leaf);
 		node_p = node->parent;
 		if (!node_p) {
@@ -347,6 +481,62 @@ bptree<index_t, T>::insert(T const& t)
 		leaf ? (leaf=0) : 0;
 	}
 	return NULL;
+}
+
+__tt(index_t, T)
+void
+bptree<index_t, T>::print()
+{
+	const int fl=0x1, fc=0x2, f_lcr=0xf, f_child=0x10;
+	int i, line, flag=0;
+	bp_node *node=_root;
+	queue<bp_node*> q;
+
+	cout<<'{';
+	q.push(node);
+	q.push(NULL);
+	line = q.size();
+	flag|=fl;
+	while (!q.empty()) {
+		node = q.front();
+		q.pop();
+		if (line)
+			line--;
+		else {
+			cout<<'\n';
+			line = q.size();
+			if (!(flag&f_child))
+				break;
+			else
+				flag&=~f_child;
+		}
+		if (node) {
+			flag|=fc;
+			node->print();
+			cout<<' ';
+		}
+		else {
+			if (flag&fl) {
+				if (flag&fc)
+					cout<<'\b';
+				cout<<"} ";
+				flag&=~f_lcr;
+			}
+			else {
+				cout<<'{';
+				flag|=fl;
+			}
+			continue;
+		}
+		q.push(NULL);
+		if (node->child[0])
+			for (i=0; i<=node->keynum; i++) {
+				q.push(node->child[i]);
+				flag|=f_child;
+			}
+		q.push(NULL);
+	}
+	cout<<endl;
 }
 
 __tt(index_t, T)
