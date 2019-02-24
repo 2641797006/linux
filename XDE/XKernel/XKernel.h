@@ -48,7 +48,7 @@ class XKernel
 	XK_BTC* GetNode(unsigned int uid); //未找到时返回NULL, 成功则返回XK_BTC类指针
 	unsigned int AddNode(XDE_Table *ptb){return insert(ptb, UT_XTable);}	//add成功返回uid(1~65535)
 	unsigned int AddNode(XDE_Tree  *ptr){return insert(ptr, UT_XTree);}	//失败返回0
-	unsigned int AddNode(WorkGroup *pwg){return insert(pwg, UT_WorkGroup);} //uid超过65535时会失败
+	unsigned int AddNode(WorkGroup *pwg){return insert(pwg, UT_WorkGroup);} //随机uid重复100次以上时会失败
 	int DeleteNode(unsigned int uid);	//删除成功返回1, 不存在则返回0
 
 	XKernel(){ xk_tree.set_unique(); rand.seed(666);}	//uid是惟一的, 随机的(1~65535)
