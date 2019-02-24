@@ -40,7 +40,6 @@ class XK_BTC
 	int operator<=(const unsigned int i)const{return uid<=i;}
 	int operator>=(const unsigned int i)const{return uid>=i;}
 	int operator==(const unsigned int i)const{return uid==i;}
-	void operator=(const unsigned int i){uid = i;}
 };
 
 class XKernel
