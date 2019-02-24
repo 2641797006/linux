@@ -291,7 +291,7 @@ bptree<index_t, T>::insert(T const& t)
 					break;
 			break;
 		}
-	if (unique && (t==*(T*)node->key[i]))
+	if (unique && (i<node->keynum) && (t==*(T*)node->key[i]))
 		return (T*)node->key[i];
 	for (j=node->keynum; j>i; j--)
 		node->key[j] = node->key[j-1];

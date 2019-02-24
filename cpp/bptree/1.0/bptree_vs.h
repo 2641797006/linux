@@ -193,6 +193,13 @@ bptree<index_t, T>::check()
 		q.pop();
 		check_all(node);
 		if (node->child[0])
+			for (i=0; i<node->keynum; i++)
+				cout<<*(Mindex_t*)node->key[i]<<' ';
+		else
+			for (i=0; i<node->keynum; i++)
+				cout<<*(MT*)node->key[i]<<' ';
+		cout<<'\n';
+		if (node->child[0])
 			for (i=0; i<=node->keynum; i++)
 				q.push(node->child[i]);
 	}
@@ -425,7 +432,7 @@ bptree<index_t, T>::insert(T const& t)
 					break;
 			break;
 		}
-	if (unique && (t==*(T*)node->key[i]))
+	if (unique && (i<node->keynum) && (t==*(T*)node->key[i]))
 		return (T*)node->key[i];
 	for (j=node->keynum; j>i; j--)
 		node->key[j] = node->key[j-1];
