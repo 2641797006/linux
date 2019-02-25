@@ -29,9 +29,6 @@ class md5sum
 	string const& operator()(string const&);
 	string const& operator()(string const& str, string const& salt){return (*this)(str+salt);}
 
-//	string const& md5(FILE *fp);
-//	string const& md5(fstream const&);
-
   private:
 	uint32_t A, B, C, D;
 	uint32_t a, b, c, d;
