@@ -20,16 +20,23 @@
 #define HH(a, b, c, d, x, str, ac) a = b + (RL((a + H(b,c,d) + x + ac),str))
 #define II(a, b, c, d, x, str, ac) a = b + (RL((a + I(b,c,d) + x + ac),str))
 
+#define _24k_MD5_UPPER	0x0001
+
 namespace _24k{
 using namespace std;
 
 class md5sum
 {
   public:
+	void set_upper(){flag|=_24k_MD5_UPPER;}
+	void set_lower(){flag&=~_24k_MD5_UPPER;}
 	string const& operator()(string const&);
 	string const& operator()(string const& str, string const& salt){return (*this)(str+salt);}
 
+	md5sum():flag(0){}
+
   private:
+	uint32_t flag;
 	uint32_t A, B, C, D;
 	uint32_t a, b, c, d;
 	uint32_t x[16];
@@ -59,7 +66,10 @@ md5sum::operator()(string const& str)
 		loop(), memset(x, 0, 64);
 	memcpy(x+14, bit_len, 8);
 	loop();
-	sprintf((char*)x, "%08x%08x%08x%08x", PP(A), PP(B), PP(C), PP(D));
+	if (flag&_24k_MD5_UPPER)
+		sprintf((char*)x, "%08X%08X%08X%08X", PP(A), PP(B), PP(C), PP(D));
+	else
+		sprintf((char*)x, "%08x%08x%08x%08x", PP(A), PP(B), PP(C), PP(D));
 	s_null.assign((char*)x);
 	return s_null;
 }
