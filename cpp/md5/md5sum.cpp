@@ -15,10 +15,10 @@
 
 #define PP(x) ((x<<24)|((x<<8)&0xff0000)|((x>>8)&0xff00)|(x>>24))
 
-#define FF(a, b, c, d, x, s, ac) a = b + (RL((a + F(b,c,d) + x + ac),s))
-#define GG(a, b, c, d, x, s, ac) a = b + (RL((a + G(b,c,d) + x + ac),s))
-#define HH(a, b, c, d, x, s, ac) a = b + (RL((a + H(b,c,d) + x + ac),s))
-#define II(a, b, c, d, x, s, ac) a = b + (RL((a + I(b,c,d) + x + ac),s))
+#define FF(a, b, c, d, x, str, ac) a = b + (RL((a + F(b,c,d) + x + ac),str))
+#define GG(a, b, c, d, x, str, ac) a = b + (RL((a + G(b,c,d) + x + ac),str))
+#define HH(a, b, c, d, x, str, ac) a = b + (RL((a + H(b,c,d) + x + ac),str))
+#define II(a, b, c, d, x, str, ac) a = b + (RL((a + I(b,c,d) + x + ac),str))
 
 namespace _24k{
 using namespace std;
@@ -26,9 +26,11 @@ using namespace std;
 class md5sum
 {
   public:
-	string const& md5(string const&);
-//	string const& md5(fstream const&);
+	string const& operator()(string const&);
+	string const& operator()(string const& str, string const& salt){return (*this)(str+salt);}
+
 //	string const& md5(FILE *fp);
+//	string const& md5(fstream const&);
 
   private:
 	uint32_t A, B, C, D;
@@ -40,23 +42,23 @@ class md5sum
 };
 
 string const&
-md5sum::md5(string const& s)
+md5sum::operator()(string const& str)
 {
 	uint32_t i, bit_len[2];
 
 	init();
-	bit_len[1] = s.length()/0x20000000;
-	bit_len[0] = s.length()%0x20000000*8;
+	bit_len[1] = str.length()/0x20000000;
+	bit_len[0] = str.length()%0x20000000*8;
 	memset(x, 0, 64);
-	memcpy(x, s.c_str(), s.length()<64 ? s.length() : 64);
-	for (i=0; i<s.length()/64; i++)
+	memcpy(x, str.c_str(), str.length()<64 ? str.length() : 64);
+	for (i=0; i<str.length()/64; i++)
 	{
 		loop();
 		memset(x, 0, 64);
-		memcpy(x, s.c_str()+i*64, 64);
+		memcpy(x, str.c_str()+i*64, 64);
 	}
-	((uint8_t*)x)[s.length()%64] = 128;
-	if (s.length()%64>55)
+	((uint8_t*)x)[str.length()%64] = 128;
+	if (str.length()%64>55)
 		loop(), memset(x, 0, 64);
 	memcpy(x+14, bit_len, 8);
 	loop();

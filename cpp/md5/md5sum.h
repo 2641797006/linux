@@ -1,17 +1,14 @@
 #ifndef _MD5SUM_H_
 #define _MD5SUM_H_
 
-#ifndef _GLIBCXX_STRING
-#include <string>
-#endif
-
 namespace _24k{
 using namespace std;
 
 class md5sum
 {
   public:
-	string const& md5(string const&);
+	string const& operator()(string const&);
+	string const& operator()(string const& str, string const& salt){return (*this)(str+salt);}
 
   private:
 	uint32_t A, B, C, D;
