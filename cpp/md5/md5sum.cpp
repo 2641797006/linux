@@ -40,7 +40,7 @@ md5sum::operator()(string const& str)
 	for (i=0; i<str.length()/64; i++)
 	{
 		loop();
-		memset(x, 0, 64);
+//		memset(x, 0, 64);
 		memcpy(x, str.c_str()+i*64, 64);
 	}
 	((uint8_t*)x)[str.length()%64] = 128;
