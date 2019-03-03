@@ -4,6 +4,9 @@ public class string{
 	public string() {_str = new StringBuilder();}
 	public string(String s) {_str = new StringBuilder(s);}
 
+	public void push_back(char c) {_str.append(c);}
+	public void pop_back() {_str.deleteCharAt(_str.length()-1);}
+
 	public int size() {return _str.length();}
 	public int length() {return _str.length();}
 	public int capacity() {return _str.capacity();}
@@ -42,9 +45,6 @@ public class string{
 	public string replace(int pos, int n, String s, int n1) {_str.replace(pos, pos+n, s.substring(0, n1)); return this;}
 	public string replace(int pos, int n, int n1, char c)
 		{StringBuilder s = new StringBuilder(); while(n1-->0)s.append(c); _str.replace(pos, pos+n, s.toString()); return this;}
-
-	public void push_back(char c) {_str.append(c);}
-	public void pop_back() {_str.deleteCharAt(_str.length()-1);}
 
 	public String c_str() {return _str.toString();}
 	public String toString() {return _str.toString();}
