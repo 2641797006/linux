@@ -88,17 +88,65 @@ bp_node::clrc()
 		child[i] = OFF_NULL;
 }
 
+/******** TODO: 修改 baseptr(), alloc(), free(), 以使用个性化偏移方式 ***************/
+void* baseptr() {return NULL;} //基址指针
+ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
+void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
+/************************************************************************************/
+
+void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
+
+
+__tt(index_t, T)
+class bp_iter{
+  public:
+	bp_iter& operator = (bp_iter const& it){node=it.node, key=it.key, kind=it.kind; return *this;}
+	int operator != (bp_iter const& it)const{return key != it.key;}
+	int operator == (bp_iter const& it)const{return key == it.key;}
+
+	bp_iter& operator ++ () {
+		bp_node *tmp_p = BPN(node);
+		if (kind<tmp_p->keynum-1)
+			key = tmp_p->key[++kind];
+		else if (tmp_p->next) {
+			node = tmp_p->next;
+			key = BPN(node)->key[0];
+			kind = 0;
+		} else
+			key = OFF_NULL;
+		return *this;
+	}
+
+	bp_iter operator ++ (int) {
+		bp_iter it = *this;
+		++(*this);
+		return it;
+	}
+
+	T& operator * () {
+		return *(T*)getptr(key);
+	}
+
+	ptrdiff_t node;
+	ptrdiff_t key;
+	int kind;
+};
+
 /* class bptree */	//具体B+树特性 请参照 baidu.com/s?wd=B%2B%E6%A0%91
 __tt(index_t, T)	//索引(index_t)与数据项(T)可以相同: bptree<int,int>, bptree<string(文件名),fstream(文件)>
 class bptree{
   public:
+	typedef bp_iter<index_t, T> iterator;
+
 	ptrdiff_t find(T const& t);	//返回找到的数据项地址, 没有则返回OFF_NULL
 	ptrdiff_t insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据地址. 其他返回OFF_NULL
 	int erase(T const& t);	//删除成功返回1, 不存在则返回0
 
-	ptrdiff_t min();		//返回最小数据项的地址
-	ptrdiff_t max();		//返回最大数据项的地址
-	int traverse(int visit(ptrdiff_t));	//自定义visit函数, 从小到大遍历所有数据, 一旦visit返回非0值, 终止并返回该值
+	T& front() {return *(T*)getptr(min());}
+	T& back() {return *(T*)getptr(max());}
+	iterator begin();
+	iterator end();
+	size_t size() {return _size;}
 
 	int isunique(){return unique;}	//若设置了惟一性,返回1, 否则返回0
 	void set_unique(){unique=1;}	//设置数据项的惟一性, 不允许"相等"的数据项存在
@@ -106,20 +154,17 @@ class bptree{
 	bptree();
 	~bptree();
 
+	ptrdiff_t min();		//返回最小数据项的地址
+	ptrdiff_t max();		//返回最大数据项的地址
+	int traverse(int visit(ptrdiff_t));	//自定义visit函数, 从小到大遍历所有数据, 一旦visit返回非0值, 终止并返回该值
+
 #ifdef _24k_BPTREE_PRINT
 	void print();
 #endif
 
-/******** TODO: 修改 baseptr(), alloc(), free(), 以使用个性化偏移方式 ***************/
-	void* baseptr() {return NULL;} //基址指针
-	ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
-	void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
-/************************************************************************************/
-
-	void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
-
   private:
 	int unique;
+	size_t _size;
 	ptrdiff_t _root;
 
 	ptrdiff_t find_t(ptrdiff_t& node, T const& t, int& i);
@@ -135,6 +180,46 @@ class bptree{
 	int check();
 #endif
 };
+
+__tt(index_t, T)
+bp_iter<index_t, T>
+bptree<index_t, T>::begin()
+{
+	bp_iter<index_t, T> it;
+	bp_node *tmp_p = BPN(_root);
+
+	while (tmp_p->child[0])
+		tmp_p = BPN(tmp_p->child[0]);
+	it.node = DIFF(tmp_p);
+	it.key = tmp_p->key[0];
+	it.kind = 0;
+	return it;
+}
+
+__tt(index_t, T)
+bp_iter<index_t, T>
+bptree<index_t, T>::end()
+{
+	bp_iter<index_t, T> it;
+	it.key = OFF_NULL;
+	return it;
+}
+/*
+__tt(index_t, T)
+bp_iter<index_t, T>
+bptree<index_t, T>::end()
+{
+	bp_iter<index_t, T> it;
+	bp_node *tmp_p = BPN(_root);
+
+	while (tmp_p->child[0])
+		tmp_p = BPN(tmp_p->child[tmp_p->keynum]);
+	it.node = DIFF(tmp_p);
+	it.kind = tmp_p->keynum-1;
+	it.key = tmp_p->key[it.kind];
+	return it;
+}
+*/
 
 #ifdef _24k_BPTREE_CHECK
 __tt(index_t, T)
@@ -226,7 +311,7 @@ bptree<index_t, T>::check()
 
 __tt(index_t, T)
 inline
-bptree<index_t, T>::bptree(): unique(0)
+bptree<index_t, T>::bptree(): unique(0), _size(0)
 {
 	_root = alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;
 }
@@ -313,6 +398,7 @@ bptree<index_t, T>::erase(T const& t)
 	while (++i<tmp_p->keynum)
 		tmp_p->key[i-1] = tmp_p->key[i];
 	leaf = 1;
+	_size--;
 	while (--tmp_p->keynum<MIN_T-1) {
 		node_p = tmp_p->parent;
 		if (!node_p) {
@@ -446,6 +532,7 @@ bptree<index_t, T>::insert(T const& t)
 	*(T*)getptr(tmp_p->key[i]) = t; //拷贝构造
 	leaf = 1;
 	node = DIFF(tmp_p);
+	_size++;
 	while (++tmp_p->keynum==MAX_T) {
 //split start
 		node_1 = alloc(sizeof(bp_node));
