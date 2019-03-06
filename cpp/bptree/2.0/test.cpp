@@ -21,26 +21,33 @@ main()
 	int i;
 	string s;
 	bptree<string, string> T;
+	bptree<string, string>::iterator it;
 
 	for (i=0; i<32; i++) {
 		T.insert(reserve_word[i]);
 		T.check();
-		cout<<i<<'\n';
+		cout<<"size="<<T.size()<<" front()="<<T.front()<<" back()="<<T.back()<<'\n';
 	}
 
-	for (i=0; i<32; i++) {
-		cout<<*(string*)((char*)T.baseptr()+T.find(reserve_word[i]))<<endl;
+/*	for (i=0; i<32; i++) {
+		cout<<*(string*)((char*)baseptr()+T.find(reserve_word[i]))<<endl;
 		T.check();
 		cout<<i<<'\n';
 	}
-
+*
 	for (i=0; i<32; i++) {
 		T.erase(reserve_word[i]);
-		T.print();
+	//	T.print();
 		T.check();
+		cout<<"size="<<T.size()<<" front()="<<T.front()<<" back()="<<T.back()<<'\n';
 		cout<<i<<'\n';
 	}
+*/
 	T.check();
-	cout<<"endl"<<endl;
+	T.print();
 
+	for (it=T.begin(); it!=T.end(); it++) {
+		cout<<*it<<endl;
+	}
+	cout<<"*****endl*****"<<endl;
 }
