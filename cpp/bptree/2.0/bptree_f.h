@@ -151,7 +151,10 @@ class bptree{
 	int isunique(){return unique;}	//若设置了惟一性,返回1, 否则返回0
 	void set_unique(){unique=1;}	//设置数据项的惟一性, 不允许"相等"的数据项存在
 	void set_nounique(){unique=0;}	//取消数据项的惟一性, 允许"相等"的数据项存在
-	bptree();
+
+	// << 构造函数 >>
+	bptree(): unique(0), _size(0)
+		{iter_null.key=OFF_NULL; _root=alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;}
 	~bptree();
 
 	ptrdiff_t min();		//返回最小数据项的地址
@@ -196,23 +199,6 @@ bptree<index_t, T>::begin()
 	it.kind = 0;
 	return it;
 }
-
-/*
-__tt(index_t, T)
-bp_iter<index_t, T>
-bptree<index_t, T>::end()
-{
-	bp_iter<index_t, T> it;
-	bp_node *tmp_p = BPN(_root);
-
-	while (tmp_p->child[0])
-		tmp_p = BPN(tmp_p->child[tmp_p->keynum]);
-	it.node = DIFF(tmp_p);
-	it.kind = tmp_p->keynum-1;
-	it.key = tmp_p->key[it.kind];
-	return it;
-}
-*/
 
 #ifdef _24k_BPTREE_CHECK
 __tt(index_t, T)
@@ -301,14 +287,6 @@ bptree<index_t, T>::check()
 }
 
 #endif
-
-__tt(index_t, T)
-inline
-bptree<index_t, T>::bptree(): unique(0), _size(0)
-{
-	iter_null.key = OFF_NULL;
-	_root = alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;
-}
 
 __tt(index_t, T)
 bptree<index_t, T>::~bptree()
