@@ -145,7 +145,7 @@ class bptree{
 	T& front() {return *(T*)getptr(min());}
 	T& back() {return *(T*)getptr(max());}
 	iterator begin();
-	iterator end();
+	iterator& end() {return iter_null;}
 	size_t size() {return _size;}
 
 	int isunique(){return unique;}	//若设置了惟一性,返回1, 否则返回0
@@ -167,6 +167,7 @@ class bptree{
 	size_t _size;
 	ptrdiff_t _root;
 
+	iterator iter_null;
 	ptrdiff_t find_t(ptrdiff_t& node, T const& t, int& i);
 
 #ifdef _24k_BPTREE_CHECK
@@ -196,14 +197,6 @@ bptree<index_t, T>::begin()
 	return it;
 }
 
-__tt(index_t, T)
-bp_iter<index_t, T>
-bptree<index_t, T>::end()
-{
-	bp_iter<index_t, T> it;
-	it.key = OFF_NULL;
-	return it;
-}
 /*
 __tt(index_t, T)
 bp_iter<index_t, T>
@@ -313,6 +306,7 @@ __tt(index_t, T)
 inline
 bptree<index_t, T>::bptree(): unique(0), _size(0)
 {
+	iter_null.key = OFF_NULL;
 	_root = alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;
 }
 
