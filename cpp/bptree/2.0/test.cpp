@@ -15,18 +15,27 @@ static const char *reserve_word[32] = {
     "volatile", "while"
 };
 
+#ifdef __linux__
+#define SLEEP()		system("sleep 1")
+#else
+#define SLEEP()		system("pause")
+#endif
+
 int
 main()
 {
 	int i;
 	string s;
 	bptree<string, string> T;
-	bptree<string, string>::iterator it;
+//	bptree<string, string>::iterator it;
 
 	for (i=0; i<32; i++) {
 		T.insert(reserve_word[i]);
 		T.check();
-		cout<<"size="<<T.size()<<" front()="<<T.front()<<" back()="<<T.back()<<'\n';
+//		cout<<"size="<<T.size()<<" front()="<<T.front()<<" back()="<<T.back()<<'\n';
+		T.print();
+		cout<<'\n';
+		SLEEP();
 	}
 
 /*	for (i=0; i<32; i++) {
@@ -43,11 +52,12 @@ main()
 		cout<<i<<'\n';
 	}
 */
-	T.check();
+/*	T.check();
 	T.print();
 
 	for (it=T.begin(); it!=T.end(); it++) {
 		cout<<*it<<endl;
 	}
 	cout<<"*****endl*****"<<endl;
+*/
 }
