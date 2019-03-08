@@ -27,7 +27,7 @@
 #define OFF_NULL		(0)
 
 //#define bp_node_init(node, ...)	(((bp_node*)getptr(node))->init(__VA_ARGS__)) //对结点进行构造
-//#define BP_NEW(off, T, ...)	(new(getptr(off)) T(__VA_ARGS__)) //在 off 偏移处对 T 类型进行构造
+#define BP_NEW(off, T, ...)	(new(getptr(off)) T(__VA_ARGS__)) //在 off 偏移处对 T 类型进行构造
 #define BPN(off)		((bp_node*)getptr(off)) //根据偏移获取<临时> bp_node 类型指针
 #define DIFF(p)			((char*)(p) - (char*)baseptr()) //根据指针获取偏移
 
@@ -516,7 +516,7 @@ bptree<index_t, T>::insert(T const& t)
 	for (j=tmp_p->keynum; j>i; j--)
 		tmp_p->key[j] = tmp_p->key[j-1];
 	tmp_p->key[i] = alloc(sizeof(T));//
-	*(T*)getptr(tmp_p->key[i]) = t; //拷贝构造
+	BP_NEW(tmp_p->key[i], T, t); //拷贝构造
 	leaf = 1;
 	node = DIFF(tmp_p);
 	_size++;
@@ -547,7 +547,7 @@ bptree<index_t, T>::insert(T const& t)
 		node_p = tmp_p->parent;
 		tmp_pp = BPN(node_p);
 		if (!node_p) { // node_p == OFF_NULL
-			_root = alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;
+			_root = alloc(sizeof(bp_node)), BP_NEW(_root, bp_node);
 			BPN(_root)->child[0] = node;
 			tmp_p->parent = _root;
 			tmp_p1->parent = _root;
@@ -561,7 +561,7 @@ bptree<index_t, T>::insert(T const& t)
 			tmp_pp->child[j+1] = tmp_pp->child[j];
 		}
 		if (leaf) {
-			tmp_pp->key[i] = alloc(sizeof(index_t));//
+			tmp_pp->key[i] = alloc(sizeof(index_t)), BP_NEW(tmp_pp->key[i], index_t);//
 			*(index_t*)getptr(tmp_pp->key[i]) = *(T*)getptr(tmp_p->key[MIN_T-1]);//提取索引
 		}
 		else
@@ -683,7 +683,7 @@ bptree<index_t, T>::print()
 #undef __tt
 #undef OFF_NULL
 //#undef bp_node_init
-//#undef BP_NEW
+#undef BP_NEW
 #undef BPN
 #undef DIFF
 
