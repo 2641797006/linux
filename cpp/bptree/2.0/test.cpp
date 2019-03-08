@@ -16,7 +16,7 @@ static const char *reserve_word[32] = {
 };
 
 #ifdef __linux__
-#define SLEEP()		system("sleep 1")
+#define SLEEP()		system("sleep 0")
 #else
 #define SLEEP()		system("pause")
 #endif

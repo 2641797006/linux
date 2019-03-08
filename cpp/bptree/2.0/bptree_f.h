@@ -55,6 +55,14 @@
 #define MIN_T	((MAX_T+1)/2)
 #endif
 
+/******** TODO: 修改 baseptr(), alloc(), free(), 以使用个性化偏移方式 ***************/
+inline void* baseptr() {return NULL;} //基址指针
+inline ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
+inline void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
+/************************************************************************************/
+
+inline void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
+
 namespace __tree{
 using namespace std;
 
@@ -82,14 +90,14 @@ bp_node_print(bp_node *tmp_p)
 	cout<<'{';
 	if (tmp_p->child[0]) {
 		for (i=0; i<tmp_p->keynum-1; i++)
-			cout<<*(index_t*)tmp_p->key[i]<<' ';
+			cout<<*(index_t*)getptr(tmp_p->key[i])<<' ';
 		if (tmp_p->keynum)	//or print '\b'
-			cout<<*(index_t*)tmp_p->key[i];
+			cout<<*(index_t*)getptr(tmp_p->key[i]);
 	} else {
 		for (i=0; i<tmp_p->keynum-1; i++)
-			cout<<*(T*)tmp_p->key[i]<<' ';
+			cout<<*(T*)getptr(tmp_p->key[i])<<' ';
 		if (tmp_p->keynum)	// '\b'
-			cout<<*(T*)tmp_p->key[i];
+			cout<<*(T*)getptr(tmp_p->key[i]);
 	}
 	cout<<'}';
 }
@@ -103,15 +111,6 @@ bp_node::clrc()
 	for (i=0; i<MAX_T+1; i++)
 		child[i] = OFF_NULL;
 }
-
-/******** TODO: 修改 baseptr(), alloc(), free(), 以使用个性化偏移方式 ***************/
-inline void* baseptr() {return NULL;} //基址指针
-inline ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
-inline void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
-/************************************************************************************/
-
-inline void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
-
 
 __tt(index_t, T)
 class bp_iter{
