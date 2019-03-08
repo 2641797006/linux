@@ -31,6 +31,22 @@
 #define BPN(off)		((bp_node*)getptr(off)) //根据偏移获取<临时> bp_node 类型指针
 #define DIFF(p)			((char*)(p) - (char*)baseptr()) //根据指针获取偏移
 
+#ifdef _MSC_VER
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#endif //_MSC_VER
+
 #ifndef MAX_T
 #define MAX_T	4
 #endif
@@ -89,12 +105,12 @@ bp_node::clrc()
 }
 
 /******** TODO: 修改 baseptr(), alloc(), free(), 以使用个性化偏移方式 ***************/
-void* baseptr() {return NULL;} //基址指针
-ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
-void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
+inline void* baseptr() {return NULL;} //基址指针
+inline ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
+inline void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
 /************************************************************************************/
 
-void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
+inline void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
 
 
 __tt(index_t, T)
