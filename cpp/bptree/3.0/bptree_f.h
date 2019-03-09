@@ -1,14 +1,20 @@
 #ifndef _BPTREE_F_H_
 #define _BPTREE_F_H_
 
-/******* offset *********/
-
-/*
- * TODO: < print B+ tree >
+/******* offset *********
+ * TODO: 需重载以下运算符
+ * T <= index_t
+ * T <= T
+ * T == T
+ * index_t = T
+ * T = T
+ *
+ * < print B+ tree >
  * 在include此文件前加上下面这一行
  * #define _24k_BPTREE_PRINT
  * 可以使用 bptree<index_t, T>::print() 输出B+树
  * 对于 bptree<index_t, T> 中 index_t 与 T 需要支持cout标准输出
+ * cout << index_t << T
  *
  */
 
@@ -30,19 +36,15 @@
 #define BPN(off)		((bp_node*)getptr(off)) //根据偏移获取<临时> bp_node 类型指针
 
 #ifdef _MSC_VER
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
+	#ifdef min
+		#undef min
+	#endif
+	#ifdef max
+		#undef max
+	#endif
 #endif //_MSC_VER
 
 #ifndef MAX_T
@@ -53,14 +55,14 @@
 #define MIN_T	((MAX_T+1)/2)
 #endif
 
+namespace _24k{
+
 /******** TODO: 修改 alloc(), free(), getptr(), 以使用个性化偏移方式 ***************/
 inline ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)NULL;}
 inline void free(ptrdiff_t off) {delete[] ((char*)NULL+off);}
 inline void* getptr(ptrdiff_t off) {return (void*)((char*)NULL+off);} //根据偏移获取<临时>指针
 /************************************************************************************/
 
-
-namespace _24k{
 using namespace std;
 
 class bp_node{	//B+树结点类

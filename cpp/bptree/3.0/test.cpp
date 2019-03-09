@@ -39,12 +39,18 @@ main()
 		SLEEP();
 	}
 
-/*	for (i=0; i<1000; i++) {
+	for (i=0; i<1000; i++) {
 		T2.insert(i);
 		T2.check();
 		T2.print();
 	}
-*/
+
+	for (i=0; i<1000; i++) {
+		T2.erase(999-i);
+		T2.check();
+		T2.print();
+	}
+
 /*	for (i=0; i<32; i++) {
 		cout<<*(string*)((char*)baseptr()+T.find(reserve_word[i]))<<endl;
 		T.check();
