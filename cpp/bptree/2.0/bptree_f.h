@@ -545,14 +545,14 @@ bptree<index_t, T>::insert(T const& t)
 //split end
 //		split(node, node_1, leaf);
 		node_p = tmp_p->parent;
-		tmp_pp = BPN(node_p);
 		if (!node_p) { // node_p == OFF_NULL
 			_root = alloc(sizeof(bp_node)), BP_NEW(_root, bp_node);
 			BPN(_root)->child[0] = node;
 			tmp_p->parent = _root;
 			tmp_p1->parent = _root;
-			tmp_pp = BPN(_root);
+			node_p = _root;
 		}
+		tmp_pp = BPN(node_p);
 		for (i=0; i<tmp_pp->keynum; i++)
 			if (tmp_pp->child[i]==node)
 				break;
