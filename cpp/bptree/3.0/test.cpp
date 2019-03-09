@@ -4,7 +4,7 @@
 #define _24k_BPTREE_PRINT
 #include "bptree_f.h"
 using namespace std;
-using namespace __tree;
+using namespace _24k;
 
 static const char *reserve_word[32] = {
     "auto", "break", "case", "char", "const", "continue",

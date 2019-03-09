@@ -7,7 +7,7 @@
  * TODO: < print B+ tree >
  * 在include此文件前加上下面这一行
  * #define _24k_BPTREE_PRINT
- * 可以输出B+树
+ * 可以使用 bptree<index_t, T>::print() 输出B+树
  * 对于 bptree<index_t, T> 中 index_t 与 T 需要支持cout标准输出
  *
  */
@@ -26,10 +26,8 @@
 // 请确保alloc(size)成功时不返回 OFF_NULL
 #define OFF_NULL		(0)
 
-//#define bp_node_init(node, ...)	(((bp_node*)getptr(node))->init(__VA_ARGS__)) //对结点进行构造
 #define BP_NEW(off, T, ...)	(new(getptr(off)) T(__VA_ARGS__)) //在 off 偏移处对 T 类型进行构造
 #define BPN(off)		((bp_node*)getptr(off)) //根据偏移获取<临时> bp_node 类型指针
-#define DIFF(p)			((char*)(p) - (char*)baseptr()) //根据指针获取偏移
 
 #ifdef _MSC_VER
 
@@ -55,15 +53,14 @@
 #define MIN_T	((MAX_T+1)/2)
 #endif
 
-/******** TODO: 修改 baseptr(), alloc(), free(), 以使用个性化偏移方式 ***************/
-inline void* baseptr() {return NULL;} //基址指针
-inline ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
-inline void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
+/******** TODO: 修改 alloc(), free(), getptr(), 以使用个性化偏移方式 ***************/
+inline ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)NULL;}
+inline void free(ptrdiff_t off) {delete[] ((char*)NULL+off);}
+inline void* getptr(ptrdiff_t off) {return (void*)((char*)NULL+off);} //根据偏移获取<临时>指针
 /************************************************************************************/
 
-inline void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
 
-namespace __tree{
+namespace _24k{
 using namespace std;
 
 class bp_node{	//B+树结点类
@@ -75,29 +72,28 @@ class bp_node{	//B+树结点类
 	ptrdiff_t	next;
 
 	void clrc();
-//	void init(ptrdiff_t p=OFF_NULL) {keynum=0, parent=p, next=OFF_NULL; clrc();} //相当于构造函数
 	bp_node(ptrdiff_t p=OFF_NULL): keynum(0), parent(p), next(OFF_NULL) {clrc();}
 };
 
 #ifdef _24k_BPTREE_PRINT
 
-__tt(index_t, T)
+__tt(index_t, T)	// cout << index_t, T
 void
-bp_node_print(bp_node *tmp_p)
+bp_node_print(ptrdiff_t node)
 {
 	int i;
 
 	cout<<'{';
-	if (tmp_p->child[0]) {
-		for (i=0; i<tmp_p->keynum-1; i++)
-			cout<<*(index_t*)getptr(tmp_p->key[i])<<' ';
-		if (tmp_p->keynum)	//or print '\b'
-			cout<<*(index_t*)getptr(tmp_p->key[i]);
+	if (BPN(node)->child[0]) {
+		for (i=0; i<BPN(node)->keynum-1; i++)
+			cout<<*(index_t*)getptr(BPN(node)->key[i])<<' ';
+		if (BPN(node)->keynum)	//or print '\b'
+			cout<<*(index_t*)getptr(BPN(node)->key[i]);
 	} else {
-		for (i=0; i<tmp_p->keynum-1; i++)
-			cout<<*(T*)getptr(tmp_p->key[i])<<' ';
-		if (tmp_p->keynum)	// '\b'
-			cout<<*(T*)getptr(tmp_p->key[i]);
+		for (i=0; i<BPN(node)->keynum-1; i++)
+			cout<<*(T*)getptr(BPN(node)->key[i])<<' ';
+		if (BPN(node)->keynum)	// '\b'
+			cout<<*(T*)getptr(BPN(node)->key[i]);
 	}
 	cout<<'}';
 }
@@ -120,11 +116,10 @@ class bp_iter{
 	int operator == (bp_iter const& it)const{return key == it.key;}
 
 	bp_iter& operator ++ () {
-		bp_node *tmp_p = BPN(node);
-		if (kind<tmp_p->keynum-1)
-			key = tmp_p->key[++kind];
-		else if (tmp_p->next) {
-			node = tmp_p->next;
+		if (kind<BPN(node)->keynum-1)
+			key = BPN(node)->key[++kind];
+		else if (BPN(node)->next) {
+			node = BPN(node)->next;
 			key = BPN(node)->key[0];
 			kind = 0;
 		} else
@@ -169,7 +164,7 @@ class bptree{
 
 	// << 构造函数 >>
 	bptree(): unique(0), _size(0)
-		{iter_null.key=OFF_NULL; _root=alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;}
+		{iter_null.key=OFF_NULL; _root=alloc(sizeof(bp_node)), BP_NEW(_root, bp_node);}
 	~bptree();
 
 	ptrdiff_t min();		//返回最小数据项的地址
@@ -205,12 +200,12 @@ bp_iter<index_t, T>
 bptree<index_t, T>::begin()
 {
 	bp_iter<index_t, T> it;
-	bp_node *tmp_p = BPN(_root);
+	ptrdiff_t node = _root;
 
-	while (tmp_p->child[0])
-		tmp_p = BPN(tmp_p->child[0]);
-	it.node = DIFF(tmp_p);
-	it.key = tmp_p->key[0];
+	while (BPN(node)->child[0])
+		node = BPN(node)->child[0];
+	it.node = node;
+	it.key = BPN(node)->key[0];
 	it.kind = 0;
 	return it;
 }
@@ -221,19 +216,18 @@ int
 bptree<index_t, T>::check_cind(ptrdiff_t node)
 {
 	int i;
-	bp_node *tmp_p;
+	ptrdiff_t node_p;
 
 	assert(node);
-	tmp_p = BPN(node);
+	node_p = BPN(node)->parent;
 	if (node == _root) {
-		assert(!tmp_p->parent);
+		assert(!node_p);
 		return 0;
 	}
-	tmp_p = BPN(tmp_p->parent);
-	for (i=0; i<tmp_p->keynum; i++)
-		if (node == tmp_p->child[i])
+	for (i=0; i<BPN(node_p)->keynum; i++)
+		if (node == BPN(node_p)->child[i])
 			break;
-	assert(node == tmp_p->child[i]);
+	assert(node == BPN(node_p)->child[i]);
 	return 1;
 }
 
@@ -242,13 +236,12 @@ int
 bptree<index_t, T>::check_key(ptrdiff_t node)
 {
 	int i;
-	bp_node *tmp_p = BPN(node);
 
 	if (node != _root)
-		assert(tmp_p->keynum >= MIN_T-1);
-	for (i=0; i<tmp_p->keynum; i++)
-		assert(tmp_p->key[i]);
-	return tmp_p->keynum;
+		assert(BPN(node)->keynum >= MIN_T-1);
+	for (i=0; i<BPN(node)->keynum; i++)
+		assert(BPN(node)->key[i]);
+	return BPN(node)->keynum;
 }
 
 __tt(index_t, T)
@@ -256,16 +249,15 @@ int
 bptree<index_t, T>::check_child(ptrdiff_t node)
 {
 	int i;
-	bp_node *tmp_p = BPN(node);
 
-//	if (node==_root && !tmp_p->child[0])
+//	if (node==_root && !BPN(node)->child[0])
 //		return -1;
-	if (!tmp_p->child[0])
+	if (!BPN(node)->child[0])
 		for (i=0; i<=MAX_T; i++)
-			assert(!tmp_p->child[i]);
+			assert(!BPN(node)->child[i]);
 	else
-		for (i=0; i<=tmp_p->keynum; i++)
-			assert(tmp_p->child[i]), assert(node == BPN(tmp_p->child[i])->parent);
+		for (i=0; i<=BPN(node)->keynum; i++)
+			assert(BPN(node)->child[i]), assert(node == BPN(BPN(node)->child[i])->parent);
 	return 1;
 }
 
@@ -285,7 +277,6 @@ bptree<index_t, T>::check()
 {
 	int i;
 	ptrdiff_t node;
-	bp_node *tmp_p;
 	queue<ptrdiff_t> q;
 
 	q.push(_root);
@@ -293,10 +284,9 @@ bptree<index_t, T>::check()
 		node = q.front();
 		q.pop();
 		check_all(node);
-		tmp_p = BPN(node);
-		if (tmp_p->child[0])
-			for (i=0; i<=tmp_p->keynum; i++)
-				q.push(tmp_p->child[i]);
+		if (BPN(node)->child[0])
+			for (i=0; i<=BPN(node)->keynum; i++)
+				q.push(BPN(node)->child[i]);
 	}
 	return 1;
 }
@@ -309,22 +299,20 @@ bptree<index_t, T>::~bptree()
 	int i;
 	ptrdiff_t node;
 	queue<ptrdiff_t> q;
-	bp_node *tmp_p;
 
 	q.push(_root);
 	while (!q.empty()) {
 		node = q.front();
 		q.pop();
-		tmp_p = BPN(node);
-		if (tmp_p->child[0]) {
-			for (i=0; i<=tmp_p->keynum; i++)
-				q.push(tmp_p->child[i]);
-			for (i=0; i<tmp_p->keynum; i++)
-				free(tmp_p->key[i]); // delete index_t
+		if (BPN(node)->child[0]) {
+			for (i=0; i<=BPN(node)->keynum; i++)
+				q.push(BPN(node)->child[i]);
+			for (i=0; i<BPN(node)->keynum; i++)
+				free(BPN(node)->key[i]); // delete index_t
 		}
 		else
-			for (i=0; i<tmp_p->keynum; i++)
-				free(tmp_p->key[i]); // delete T
+			for (i=0; i<BPN(node)->keynum; i++)
+				free(BPN(node)->key[i]); // delete T
 		free(node);
 	}
 }
@@ -342,27 +330,24 @@ __tt(index_t, T)
 ptrdiff_t
 bptree<index_t, T>::find_t(ptrdiff_t& node, T const& t, int& i)
 {
-	bp_node *tmp_p;
-
 	if (!node)
 		node = _root;
 	for (;;) {
-		tmp_p = BPN(node);
-		if (tmp_p->child[0]) {
-			for (i=0; i<tmp_p->keynum; i++)
-				if (t<=*(index_t*)getptr(tmp_p->key[i]))			// <=
+		if (BPN(node)->child[0]) {
+			for (i=0; i<BPN(node)->keynum; i++)
+				if (t<=*(index_t*)getptr(BPN(node)->key[i]))			// <=
 					break;
-			node = tmp_p->child[i];
+			node = BPN(node)->child[i];
 		}
 		else {
-			for (i=0; i<tmp_p->keynum-1; i++)
-				if (t<=*(T*)getptr(tmp_p->key[i]))			// <=
+			for (i=0; i<BPN(node)->keynum-1; i++)
+				if (t<=*(T*)getptr(BPN(node)->key[i]))			// <=
 					break;
 			break;
 		}
 	}
-	if (t==*(T*)getptr(tmp_p->key[i]))
-		return tmp_p->key[i];
+	if (t==*(T*)getptr(BPN(node)->key[i]))
+		return BPN(node)->key[i];
 	return OFF_NULL;
 }
 
@@ -371,8 +356,7 @@ int
 bptree<index_t, T>::erase(T const& t)
 {
 	int i, cind, leaf;
-	ptrdiff_t node=_root, node_p;
-	bp_node *tmp_p, *tmp_p1, *tmp_pp;
+	ptrdiff_t node=_root, node_1, node_p;
 
 	{
 		ptrdiff_t tp;
@@ -381,109 +365,104 @@ bptree<index_t, T>::erase(T const& t)
 			return 0;
 		free(tp);
 	}
-	tmp_p = BPN(node);
-	while (++i<tmp_p->keynum)
-		tmp_p->key[i-1] = tmp_p->key[i];
+	while (++i<BPN(node)->keynum)
+		BPN(node)->key[i-1] = BPN(node)->key[i];
 	leaf = 1;
 	_size--;
-	while (--tmp_p->keynum<MIN_T-1) {
-		node_p = tmp_p->parent;
+	while (--BPN(node)->keynum<MIN_T-1) {
+		node_p = BPN(node)->parent;
 		if (!node_p) {
-			tmp_pp = BPN(_root);
-			if (tmp_pp->keynum)
+			if (BPN(_root)->keynum)
 				break;
-			_root = tmp_pp->child[0];
+			_root = BPN(_root)->child[0];
 			if (_root)
 				BPN(_root)->parent = OFF_NULL;
 			else
-				_root = alloc(sizeof(bp_node)), new(BPN(_root)) bp_node;
+				_root = alloc(sizeof(bp_node)), BP_NEW(_root, bp_node);
 			free(node);
 			break;
 		}
-		tmp_pp = BPN(node_p);
-		for (cind=0; cind<tmp_pp->keynum; cind++)
-			if (tmp_pp->child[cind]==node)
+		for (cind=0; cind<BPN(node_p)->keynum; cind++)
+			if (BPN(node_p)->child[cind]==node)
 				break;
-		if (cind && (BPN(tmp_pp->child[cind-1])->keynum>=MIN_T)) {
-			i = tmp_p->keynum;
-			tmp_p1 = BPN(tmp_pp->child[cind-1]);
+		if (cind && (BPN(BPN(node_p)->child[cind-1])->keynum>=MIN_T)) {
+			i = BPN(node)->keynum;
+			node_1 = BPN(node_p)->child[cind-1];
 			if (!leaf) {
-				tmp_p->child[i+1] = tmp_p->child[i];
+				BPN(node)->child[i+1] = BPN(node)->child[i];
 				while (--i>=0) {
-					tmp_p->key[i+1] = tmp_p->key[i];
-					tmp_p->child[i+1] = tmp_p->child[i];
+					BPN(node)->key[i+1] = BPN(node)->key[i];
+					BPN(node)->child[i+1] = BPN(node)->child[i];
 				}
-				tmp_p->key[0] = tmp_pp->key[cind-1];
-				tmp_p->child[0] = tmp_p1->child[tmp_p1->keynum];
-				BPN(tmp_p->child[0])->parent = node;
-				tmp_pp->key[cind-1] = tmp_p1->key[tmp_p1->keynum-1];
+				BPN(node)->key[0] = BPN(node_p)->key[cind-1];
+				BPN(node)->child[0] = BPN(node_1)->child[BPN(node_1)->keynum];
+				BPN(BPN(node)->child[0])->parent = node;
+				BPN(node_p)->key[cind-1] = BPN(node_1)->key[BPN(node_1)->keynum-1];
 			}
 			else {
 				while (--i>=0)
-					tmp_p->key[i+1] = tmp_p->key[i];
-				tmp_p->key[0] = tmp_p1->key[tmp_p1->keynum-1];
-				*(index_t*)getptr(tmp_pp->key[cind-1]) = *(T*)getptr(tmp_p1->key[tmp_p1->keynum-2]);
+					BPN(node)->key[i+1] = BPN(node)->key[i];
+				BPN(node)->key[0] = BPN(node_1)->key[BPN(node_1)->keynum-1];
+				*(index_t*)getptr(BPN(node_p)->key[cind-1]) = *(T*)getptr(BPN(node_1)->key[BPN(node_1)->keynum-2]);
 			}
-			tmp_p->keynum++, tmp_p1->keynum--;
+			BPN(node)->keynum++, BPN(node_1)->keynum--;
 			return 1;
 		}
-		else if ((cind+1<=tmp_pp->keynum) && (BPN(tmp_pp->child[cind+1])->keynum>=MIN_T)) {
-			tmp_p1 = BPN(tmp_pp->child[cind+1]);
+		else if ((cind+1<=BPN(node_p)->keynum) && (BPN(BPN(node_p)->child[cind+1])->keynum>=MIN_T)) {
+			node_1 = BPN(node_p)->child[cind+1];
 			if (!leaf) {
-				tmp_p->key[tmp_p->keynum] = tmp_pp->key[cind];
-				tmp_pp->key[cind] = tmp_p1->key[0];
-				BPN(tmp_p1->child[0])->parent = node;
-				tmp_p->child[tmp_p->keynum+1] = tmp_p1->child[0];
-				for (i=1; i<tmp_p1->keynum; i++) {
-					tmp_p1->key[i-1] = tmp_p1->key[i];
-					tmp_p1->child[i-1] = tmp_p1->child[i];
+				BPN(node)->key[BPN(node)->keynum] = BPN(node_p)->key[cind];
+				BPN(node_p)->key[cind] = BPN(node_1)->key[0];
+				BPN(BPN(node_1)->child[0])->parent = node;
+				BPN(node)->child[BPN(node)->keynum+1] = BPN(node_1)->child[0];
+				for (i=1; i<BPN(node_1)->keynum; i++) {
+					BPN(node_1)->key[i-1] = BPN(node_1)->key[i];
+					BPN(node_1)->child[i-1] = BPN(node_1)->child[i];
 				}
-				tmp_p1->child[i-1] = tmp_p1->child[i];
+				BPN(node_1)->child[i-1] = BPN(node_1)->child[i];
 			}
 			else {
-				tmp_p->key[tmp_p->keynum] = tmp_p1->key[0];
-				*(index_t*)getptr(tmp_pp->key[cind]) = *(T*)getptr(tmp_p1->key[0]);
-				for (i=1; i<tmp_p1->keynum; i++)
-					tmp_p1->key[i-1] = tmp_p1->key[i];
+				BPN(node)->key[BPN(node)->keynum] = BPN(node_1)->key[0];
+				*(index_t*)getptr(BPN(node_p)->key[cind]) = *(T*)getptr(BPN(node_1)->key[0]);
+				for (i=1; i<BPN(node_1)->keynum; i++)
+					BPN(node_1)->key[i-1] = BPN(node_1)->key[i];
 			}
-			tmp_p->keynum++, tmp_p1->keynum--;
+			BPN(node)->keynum++, BPN(node_1)->keynum--;
 			return 1;
 		}
 		else {
-			if (cind+1>tmp_pp->keynum) {
-				tmp_p1 = tmp_p;
-				node = tmp_pp->child[--cind];
-				tmp_p = BPN(node);
+			if (cind+1>BPN(node_p)->keynum) {
+				node_1 = node;
+				node = BPN(node_p)->child[--cind];
 			}
 			else
-				tmp_p1 = BPN(tmp_pp->child[cind+1]);
+				node_1 = BPN(node_p)->child[cind+1];
 			if (!leaf) {
-				tmp_p->key[tmp_p->keynum] = tmp_pp->key[cind];
-				tmp_p->keynum++;
+				BPN(node)->key[BPN(node)->keynum] = BPN(node_p)->key[cind];
+				BPN(node)->keynum++;
 			}
 			else
-				free(tmp_pp->key[cind]);
-			while (++cind<tmp_pp->keynum) {
-				tmp_pp->key[cind-1] = tmp_pp->key[cind];
-				tmp_pp->child[cind] = tmp_pp->child[cind+1];
+				free(BPN(node_p)->key[cind]);
+			while (++cind<BPN(node_p)->keynum) {
+				BPN(node_p)->key[cind-1] = BPN(node_p)->key[cind];
+				BPN(node_p)->child[cind] = BPN(node_p)->child[cind+1];
 			}
 			if (!leaf) {
-				for (i=0; i<tmp_p1->keynum; i++) {
-					tmp_p->key[tmp_p->keynum+i] = tmp_p1->key[i];
-					BPN(tmp_p1->child[i])->parent = node;
-					tmp_p->child[tmp_p->keynum+i] = tmp_p1->child[i];
+				for (i=0; i<BPN(node_1)->keynum; i++) {
+					BPN(node)->key[BPN(node)->keynum+i] = BPN(node_1)->key[i];
+					BPN(BPN(node_1)->child[i])->parent = node;
+					BPN(node)->child[BPN(node)->keynum+i] = BPN(node_1)->child[i];
 				}
-				BPN(tmp_p1->child[i])->parent = node;
-				tmp_p->child[tmp_p->keynum+i] = tmp_p1->child[i];
+				BPN(BPN(node_1)->child[i])->parent = node;
+				BPN(node)->child[BPN(node)->keynum+i] = BPN(node_1)->child[i];
 			}
 			else {
-				for (i=0; i<tmp_p1->keynum; i++)
-					tmp_p->key[tmp_p->keynum+i] = tmp_p1->key[i];
+				for (i=0; i<BPN(node_1)->keynum; i++)
+					BPN(node)->key[BPN(node)->keynum+i] = BPN(node_1)->key[i];
 			}
-			tmp_p->keynum += tmp_p1->keynum;
+			BPN(node)->keynum += BPN(node_1)->keynum;
 			node = node_p;
-			tmp_p = tmp_pp;	// ***
-			free(DIFF(tmp_p1));
+			free(node_1);
 		}
 		leaf ? (leaf=0) : 0;
 	}
@@ -495,80 +474,76 @@ ptrdiff_t
 bptree<index_t, T>::insert(T const& t)
 {
 	int i, j, leaf;
-	ptrdiff_t node, node_1, node_p;
-	bp_node *tmp_p=BPN(_root), *tmp_p1, *tmp_pp;
+	ptrdiff_t node=_root, node_1, node_p;
 
 	for (;;)
-		if (tmp_p->child[0]) {
-			for (i=0; i<tmp_p->keynum; i++)
-				if (t<=*(index_t*)getptr(tmp_p->key[i]))
+		if (BPN(node)->child[0]) {
+			for (i=0; i<BPN(node)->keynum; i++)
+				if (t<=*(index_t*)getptr(BPN(node)->key[i]))
 					break;
-			tmp_p = BPN(tmp_p->child[i]);
+			node = BPN(node)->child[i];
 		}
 		else {
-			for (i=0; i<tmp_p->keynum; i++)
-				if (t<=*(T*)getptr(tmp_p->key[i]))
+			for (i=0; i<BPN(node)->keynum; i++)
+				if (t<=*(T*)getptr(BPN(node)->key[i]))
 					break;
 			break;
 		}
-	if (unique && (i<tmp_p->keynum) && (t==*(T*)getptr(tmp_p->key[i])))
-		return tmp_p->key[i];
-	for (j=tmp_p->keynum; j>i; j--)
-		tmp_p->key[j] = tmp_p->key[j-1];
-	tmp_p->key[i] = alloc(sizeof(T));//
-	BP_NEW(tmp_p->key[i], T, t); //拷贝构造
+	if (unique && (i<BPN(node)->keynum) && (t==*(T*)getptr(BPN(node)->key[i])))
+		return BPN(node)->key[i];
+	for (j=BPN(node)->keynum; j>i; j--)
+		BPN(node)->key[j] = BPN(node)->key[j-1];
+	BPN(node)->key[i] = alloc(sizeof(T));//
+	BP_NEW(BPN(node)->key[i], T); //构造
+	*(T*)getptr(BPN(node)->key[i]) = t; //赋值
 	leaf = 1;
-	node = DIFF(tmp_p);
 	_size++;
-	while (++tmp_p->keynum==MAX_T) {
+	while (++BPN(node)->keynum==MAX_T) {
 //split start
 		node_1 = alloc(sizeof(bp_node));
-		tmp_p1 = BPN(node_1), new(tmp_p1) bp_node(tmp_p->parent);
+		BP_NEW(node_1, bp_node, BPN(node)->parent);
 		if (!leaf) {
 			for (i=MIN_T; i<MAX_T; i++) {
-				tmp_p1->key[i-MIN_T] = tmp_p->key[i];
-				BPN(tmp_p->child[i])->parent = node_1;
-				tmp_p1->child[i-MIN_T] = tmp_p->child[i];
+				BPN(node_1)->key[i-MIN_T] = BPN(node)->key[i];
+				BPN(BPN(node)->child[i])->parent = node_1;
+				BPN(node_1)->child[i-MIN_T] = BPN(node)->child[i];
 			}
-			BPN(tmp_p->child[i])->parent = node_1;
-			tmp_p1->child[i-MIN_T] = tmp_p->child[i];
-			tmp_p->keynum = MIN_T-1;
+			BPN(BPN(node)->child[i])->parent = node_1;
+			BPN(node_1)->child[i-MIN_T] = BPN(node)->child[i];
+			BPN(node)->keynum = MIN_T-1;
 		}
 		else {
 			for (i=MIN_T; i<MAX_T; i++)
-				tmp_p1->key[i-MIN_T] = tmp_p->key[i];
-			tmp_p1->next = tmp_p->next;
-			tmp_p->next = node_1;
-			tmp_p->keynum = MIN_T;
+				BPN(node_1)->key[i-MIN_T] = BPN(node)->key[i];
+			BPN(node_1)->next = BPN(node)->next;
+			BPN(node)->next = node_1;
+			BPN(node)->keynum = MIN_T;
 		}
-		tmp_p1->keynum = MAX_T-MIN_T;
+		BPN(node_1)->keynum = MAX_T-MIN_T;
 //split end
-//		split(node, node_1, leaf);
-		node_p = tmp_p->parent;
+		node_p = BPN(node)->parent;
 		if (!node_p) { // node_p == OFF_NULL
 			_root = alloc(sizeof(bp_node)), BP_NEW(_root, bp_node);
 			BPN(_root)->child[0] = node;
-			tmp_p->parent = _root;
-			tmp_p1->parent = _root;
+			BPN(node)->parent = _root;
+			BPN(node_1)->parent = _root;
 			node_p = _root;
 		}
-		tmp_pp = BPN(node_p);
-		for (i=0; i<tmp_pp->keynum; i++)
-			if (tmp_pp->child[i]==node)
+		for (i=0; i<BPN(node_p)->keynum; i++)
+			if (BPN(node_p)->child[i]==node)
 				break;
-		for (j=tmp_pp->keynum; j>i; j--) {
-			tmp_pp->key[j] = tmp_pp->key[j-1];
-			tmp_pp->child[j+1] = tmp_pp->child[j];
+		for (j=BPN(node_p)->keynum; j>i; j--) {
+			BPN(node_p)->key[j] = BPN(node_p)->key[j-1];
+			BPN(node_p)->child[j+1] = BPN(node_p)->child[j];
 		}
 		if (leaf) {
-			tmp_pp->key[i] = alloc(sizeof(index_t)), BP_NEW(tmp_pp->key[i], index_t);//
-			*(index_t*)getptr(tmp_pp->key[i]) = *(T*)getptr(tmp_p->key[MIN_T-1]);//提取索引
+			BPN(node_p)->key[i] = alloc(sizeof(index_t)), BP_NEW(BPN(node_p)->key[i], index_t);//
+			*(index_t*)getptr(BPN(node_p)->key[i]) = *(T*)getptr(BPN(node)->key[MIN_T-1]);//提取索引
 		}
 		else
-			tmp_pp->key[i] = tmp_p->key[MIN_T-1];
-		tmp_pp->child[i+1] = node_1;
-		node = node_p; //
-		tmp_p = tmp_pp; // ***
+			BPN(node_p)->key[i] = BPN(node)->key[MIN_T-1];
+		BPN(node_p)->child[i+1] = node_1;
+		node = node_p;
 		leaf ? (leaf=0) : 0;
 	}
 	return OFF_NULL;
@@ -578,22 +553,22 @@ __tt(index_t, T)
 ptrdiff_t
 bptree<index_t, T>::min()
 {
-	bp_node *tmp_p = BPN(_root);
+	ptrdiff_t node = _root;
 
-	while(tmp_p->child[0])
-		tmp_p = BPN(tmp_p->child[0]);
-	return tmp_p->key[0];
+	while(BPN(node)->child[0])
+		node = BPN(node)->child[0];
+	return BPN(node)->key[0];
 }
 
 __tt(index_t, T)
 ptrdiff_t
 bptree<index_t, T>::max()
 {
-	bp_node *tmp_p = BPN(_root);
+	ptrdiff_t node = _root;
 
-	while(tmp_p->child[0])
-		tmp_p = BPN(tmp_p->child[tmp_p->keynum]);
-	return tmp_p->key[tmp_p->keynum-1];
+	while(BPN(node)->child[0])
+		node = BPN(node)->child[BPN(node)->keynum];
+	return BPN(node)->key[BPN(node)->keynum-1];
 }
 
 __tt(index_t, T)
@@ -601,19 +576,19 @@ int
 bptree<index_t, T>::traverse(int visit(ptrdiff_t))
 {
 	int i, ret;
-	bp_node *tmp_p = BPN(_root);
+	ptrdiff_t node = _root;
 
-	while (tmp_p->child[0])
-		tmp_p = BPN(tmp_p->child[0]);
+	while (BPN(node)->child[0])
+		node = BPN(node)->child[0];
 	for (;;) {
-		for (i=0; i<tmp_p->keynum; i++) {
-			ret = visit(tmp_p->key[i]);
+		for (i=0; i<BPN(node)->keynum; i++) {
+			ret = visit(BPN(node)->key[i]);
 			if (ret)
 				return ret;
 		}
-		if (!tmp_p->next)
+		if (!BPN(node)->next)
 			break;
-		tmp_p = BPN(tmp_p->next);
+		node = BPN(node)->next;
 	}
 	return 0;
 }
@@ -627,7 +602,6 @@ bptree<index_t, T>::print()
 	const int fl=0x1, fc=0x2, f_lcr=0xf, f_child=0x10;
 	int i, line, flag=0;
 	ptrdiff_t node=_root;
-	bp_node *tmp_p;
 	queue<ptrdiff_t> q;
 
 	cout<<'{';
@@ -648,13 +622,12 @@ bptree<index_t, T>::print()
 			else
 				flag &= ~f_child;
 		}
-		tmp_p = BPN(node);
 		if (node) {
 			if (flag & fc)
 				cout<<' ';
 			else
 				flag |= fc;
-			bp_node_print<index_t, T>(tmp_p);
+			bp_node_print<index_t, T>(node);
 		} else {
 			if (flag & fl) {
 				cout<<'}'<<' ';
@@ -666,9 +639,9 @@ bptree<index_t, T>::print()
 			continue;
 		}
 		q.push(OFF_NULL);
-		if (tmp_p->child[0])
-			for (i=0; i<=tmp_p->keynum; i++) {
-				q.push(tmp_p->child[i]);
+		if (BPN(node)->child[0])
+			for (i=0; i<=BPN(node)->keynum; i++) {
+				q.push(BPN(node)->child[i]);
 				flag |= f_child;
 			}
 		q.push(OFF_NULL);
@@ -678,13 +651,11 @@ bptree<index_t, T>::print()
 
 #endif
 
-}//namespace __tree
+}//namespace _24k
 
 #undef __tt
 #undef OFF_NULL
-//#undef bp_node_init
 #undef BP_NEW
 #undef BPN
-#undef DIFF
 
 #endif //_BPTREE_F_H_
