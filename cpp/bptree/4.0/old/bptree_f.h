@@ -135,15 +135,14 @@ class bptree
 
 	ptrdiff_t find(T const& t);	//返回找到的数据项地址, 没有则返回OFF_NULL
 	ptrdiff_t insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据地址. 其他返回OFF_NULL
-	bool erase(T const& t);	//删除成功返回1, 不存在则返回0
+	int erase(T const& t);	//删除成功返回1, 不存在则返回0
 
-	bool resize(size_t count);
 	T& front() {return *(T*)getptr(min());}
 	T& back() {return *(T*)getptr(max());}
-	size_t size() {return _size;}
-	bool empty() {return _size ? true : false;}
 	iterator begin();
 	iterator& end() {return iter_null;}
+	size_t size() {return _size;}
+	bool empty() {return _size ? true : false;}
 
 	bool isunique(){return unique;}	//若设置了惟一性,返回1, 否则返回0
 	void set_unique(){unique=1;}	//设置数据项的惟一性, 不允许"相等"的数据项存在
@@ -154,7 +153,7 @@ class bptree
 
 	bptree(): unique(0), _size(0)
 	{
-		pool_node.init(1), pool_index.init(1), pool_T.init(2);
+		pool_node.init(128), pool_index.init(128), pool_T.init(256);
 		iter_null.key=OFF_NULL, _root=__alloc(BP_NODE, sizeof(bp_node)), BP_NEW(_root, bp_node);
 	}
 	~bptree();
@@ -205,16 +204,6 @@ class bptree
 /********************************************************/
 
 __tt(index_t, T)
-bool
-bptree<index_t, T>::resize(size_t count)
-{
-	return
-	pool_node.resize(count/2+1) &&
-	pool_index.resize(count/2+1) &&
-	pool_T.resize(count);
-}
-
-__tt(index_t, T)
 void
 bptree<index_t, T>::savefile(string const& s)
 {
@@ -224,7 +213,6 @@ bptree<index_t, T>::savefile(string const& s)
 	pool_node.savefile(fp);
 	pool_index.savefile(fp);
 	pool_T.savefile(fp);
-
 	fclose(fp);
 }
 
@@ -234,21 +222,13 @@ bptree<index_t, T>::loadfile(string const& s)
 {
 	FILE *fp = fopen(s.c_str(), "rb");
 
-	pool_node.destroy();
-	pool_index.destroy();
-	pool_T.destroy();
-
 	fread(this, sizeof(*this), 1, fp);
-
 	pool_node.init(0);
 	pool_node.loadfile(fp);
-
 	pool_index.init(0);
 	pool_index.loadfile(fp);
-
 	pool_T.init(0);
 	pool_T.loadfile(fp);
-
 	fclose(fp);
 }
 
@@ -463,7 +443,7 @@ bptree<index_t, T>::find_t(ptrdiff_t& node, T const& t, int& i)
 }
 
 __tt(index_t, T)
-bool
+int
 bptree<index_t, T>::erase(T const& t)
 {
 	int i, cind, leaf;
