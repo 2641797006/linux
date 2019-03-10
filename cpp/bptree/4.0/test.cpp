@@ -1,6 +1,4 @@
 #include <iostream>
-#include <string>
-#define _24k_BPTREE_CHECK
 #define _24k_BPTREE_PRINT
 #include "bptree_f.h"
 using namespace std;
@@ -10,27 +8,18 @@ int
 main()
 {
 	int i;
-	bptree<int, int> T, load_t;
+	xbptree<int> tree_old, tree_new;
 
-	for (i=0; i<100; i++) {
-		T.insert(i);
-	}
+	for (i=0; i<100; i++)
+		tree_old.insert(i);
 
-	cout<<"T"<<endl;
-	T.print();
-T.erase(99);
-	T.savefile("_24k.bptree");
-	load_t.loadfile("_24k.bptree");
+	cout<<"tree_old:"<<endl;
+	tree_old.print();
 
-{
-bptree<int, int> tree;
-tree.loadfile("_24k.bptree");
-tree.print();
-cout<<"tree"<<endl;
-}
+	tree_old.savefile("_24k.bptree");
 
-	cout<<"load_t"<<endl;
-	load_t.print();
-//	load_t.check();
-	cout<<"endp"<<endl;
+	tree_new.loadfile("_24k.bptree");
+
+	cout<<"tree_new:"<<endl;
+	tree_new.print();
 }
