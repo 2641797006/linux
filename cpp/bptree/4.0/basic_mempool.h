@@ -1,5 +1,5 @@
-#ifndef _MEMPOOL_H_
-#define _MEMPOOL_H_
+#ifndef _BASIC_MEMPOOL_H_
+#define _BASIC_MEMPOOL_H_
 
 #ifndef _MEMORY_H
 #include <memory.h>
@@ -13,15 +13,15 @@ namespace _24k{
 __tt(T) class mp_size_t{T t;};
 
 __tt(T)
-class mempool{
+class basic_mempool{
   public:
 	ptrdiff_t alloc();
 	void free(ptrdiff_t);
 	void* getptr(ptrdiff_t off){return (void*)(base+off);}
 
-	mempool(){};
-	mempool(size_t count){init(count);} //使用此构造函数 或 使用init(count) 来构建内存池
-	~mempool(){destroy();}
+	basic_mempool(){};
+	basic_mempool(size_t count){init(count);} //使用此构造函数 或 使用init(count) 来构建内存池
+	~basic_mempool(){destroy();}
 
 	bool init(size_t count); //申请count个T大小的内存, 构建内存池
 	bool resize(size_t count); //调整内存池大小, 缩小内存池时会清空<内存分配记录>, count=0时同destroy();
@@ -44,7 +44,7 @@ class mempool{
 
 __tt(T)
 inline void
-mempool<T>::savefile(FILE *fp)
+basic_mempool<T>::savefile(FILE *fp)
 {
 	fwrite(base+1, sizeof(T), mp_size, fp);
 	fwrite(index, sizeof(ptrdiff_t), ind_size, fp);
@@ -52,7 +52,7 @@ mempool<T>::savefile(FILE *fp)
 
 __tt(T)
 inline void
-mempool<T>::loadfile(FILE *fp)
+basic_mempool<T>::loadfile(FILE *fp)
 {
 	fread(base+1, sizeof(T), mp_size, fp);
 	fread(index, sizeof(ptrdiff_t), ind_size, fp);
@@ -60,7 +60,7 @@ mempool<T>::loadfile(FILE *fp)
 
 __tt(T)
 inline void
-mempool<T>::reset()
+basic_mempool<T>::reset()
 {
 	mp_size = 0;
 	ind_size = 0;
@@ -68,7 +68,7 @@ mempool<T>::reset()
 
 __tt(T)
 bool
-mempool<T>::resize(size_t count)
+basic_mempool<T>::resize(size_t count)
 {
 	if (count < mp_capacity)
 		reset();
@@ -85,7 +85,7 @@ mempool<T>::resize(size_t count)
 
 __tt(T)
 bool
-mempool<T>::init(size_t count)
+basic_mempool<T>::init(size_t count)
 {
 	if (!count)
 		count = mp_capacity;
@@ -108,7 +108,7 @@ mempool<T>::init(size_t count)
 
 __tt(T)
 inline ptrdiff_t
-mempool<T>::alloc()
+basic_mempool<T>::alloc()
 {
 	return ind_size ? index[--ind_size] :
 		(mp_size==mp_capacity
@@ -118,7 +118,7 @@ mempool<T>::alloc()
 
 __tt(T)
 inline void
-mempool<T>::free(ptrdiff_t off)
+basic_mempool<T>::free(ptrdiff_t off)
 {
 	index[ind_size++] = off;
 }
@@ -128,4 +128,4 @@ mempool<T>::free(ptrdiff_t off)
 #undef __tt
 #undef OFF_NULL
 
-#endif //_MEMPOOL_H_
+#endif //_BASIC_MEMPOOL_H_

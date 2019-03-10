@@ -23,8 +23,8 @@
 #include <memory.h>
 #endif
 
-#ifndef _MEMPOOL_H_
-#include "mempool.h"
+#ifndef _BASIC_MEMPOOL_H_
+#include "basic_mempool.h"
 #endif
 
 #define __tt(T1, T2)	template <typename T1, typename T2>
@@ -167,9 +167,9 @@ class bptree
 	iterator iter_null;
 	ptrdiff_t find_t(ptrdiff_t& node, T const& t, int& i);
 
-	mempool<bp_node> pool_node;
-	mempool<index_t> pool_index;
-	mempool<T> pool_T;
+	basic_mempool<bp_node> pool_node;
+	basic_mempool<index_t> pool_index;
+	basic_mempool<T> pool_T;
 
 	ptrdiff_t alloc(uint32_t type);
 	void free(ptrdiff_t off);
