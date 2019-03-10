@@ -19,6 +19,10 @@
 #include <assert.h>
 #endif
 
+#ifndef _MEMORY_H
+#include <memory.h>
+#endif
+
 #ifndef _MEMPOOL_H_
 #include "mempool.h"
 #endif
@@ -70,17 +74,9 @@ class bp_node{	//B+树结点类
 	ptrdiff_t	child[MAX_T+1];
 	ptrdiff_t	next;
 
-	void clrc();
+	void clrc(){memset(child, 0, sizeof(ptrdiff_t)*(MAX_T+1));}
 	bp_node(ptrdiff_t p=OFF_NULL): keynum(0), parent(p), next(OFF_NULL) {clrc();}
 };
-
-inline void
-bp_node::clrc()
-{
-	int i;
-	for (i=0; i<MAX_T+1; i++)
-		child[i] = OFF_NULL;
-}
 
 /*****************************  迭代器  ****************************/
 
