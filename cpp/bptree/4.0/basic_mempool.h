@@ -19,13 +19,13 @@ class basic_mempool{
 	void free(ptrdiff_t);
 	void* getptr(ptrdiff_t off){return (void*)(base+off);}
 
-	basic_mempool(){};
+	basic_mempool(){base=NULL, index=NULL;}
 	basic_mempool(size_t count){init(count);} //使用此构造函数 或 使用init(count) 来构建内存池
 	~basic_mempool(){destroy();}
 
 	bool init(size_t count); //申请count个T大小的内存, 构建内存池
 	bool resize(size_t count); //调整内存池大小, 缩小内存池时会清空内存分配记录、重置内存池, count=0时同destroy();
-	void destroy(){::free(base+1); ::free(index);} //释放内存, 销毁内存池
+	void destroy(){base ? (::free(base+1), base=NULL) : NULL; index ? (::free(index), index=NULL) : NULL;} //释放内存, 销毁内存池
 	void reset(); //清空内存分配记录, 重置内存池
 	size_t size(){return mp_capacity;} //返回内存池容量(以T大小为单位)
 	bool empty(){return mp_size==ind_size;} //是否有已分配的内存
@@ -96,15 +96,18 @@ basic_mempool<T>::init(size_t count)
 		mp_capacity = count;
 		ind_size = 0;
 	}
-	base = (mp_size_t<T>*)malloc(sizeof(T)*count); // base+0 for OFF_NULL
-	if (!base)
-		return false;
-	--base;
 	index = (ptrdiff_t*)malloc(sizeof(ptrdiff_t)*count);
 	if (!index) {
-		::free(base+1);
+		base = NULL;
 		return false;
 	}
+	base = (mp_size_t<T>*)malloc(sizeof(T)*count);
+	if (!base) {
+		::free(index);
+		index = NULL;
+		return false;
+	}
+	--base; // base+0 for OFF_NULL
 	return true;
 }
 
