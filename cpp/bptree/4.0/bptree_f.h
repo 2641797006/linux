@@ -133,7 +133,7 @@ class bptree
 	ptrdiff_t insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据地址. 其他返回OFF_NULL
 	bool erase(T const& t);	//删除成功返回1, 不存在则返回0
 
-	bool resize(size_t count);
+	bool resize(size_t count); //调整B+树容量(只增大), 以免多次自动扩增内存
 	T& front() {return *(T*)getptr(min());}
 	T& back() {return *(T*)getptr(max());}
 	size_t size() {return _size;}
@@ -204,6 +204,8 @@ __tt(index_t, T)
 bool
 bptree<index_t, T>::resize(size_t count)
 {
+	if (count <= pool_T.size())
+		return true;
 	return
 	pool_node.resize(count/2+1) &&
 	pool_index.resize(count/2+1) &&

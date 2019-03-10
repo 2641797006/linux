@@ -10,6 +10,8 @@ main()
 	int i;
 	xbptree<int> tree_old, tree_new;
 
+	tree_old.resize(100);
+
 	for (i=0; i<100; i++)
 		tree_old.insert(i);
 
