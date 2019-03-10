@@ -24,9 +24,9 @@ class basic_mempool{
 	~basic_mempool(){destroy();}
 
 	bool init(size_t count); //申请count个T大小的内存, 构建内存池
-	bool resize(size_t count); //调整内存池大小, 缩小内存池时会清空<内存分配记录>, count=0时同destroy();
+	bool resize(size_t count); //调整内存池大小, 缩小内存池时会清空内存分配记录、重置内存池, count=0时同destroy();
 	void destroy(){::free(base+1); ::free(index);} //释放内存, 销毁内存池
-	void reset(); //清空内存分配记录
+	void reset(); //清空内存分配记录, 重置内存池
 	size_t size(){return mp_capacity;} //返回内存池容量(以T大小为单位)
 	bool empty(){return mp_size==ind_size;} //是否有已分配的内存
 
@@ -70,15 +70,17 @@ __tt(T)
 bool
 basic_mempool<T>::resize(size_t count)
 {
+	void *p;
 	if (count < mp_capacity)
 		reset();
-	index = (ptrdiff_t*)realloc(index, sizeof(ptrdiff_t)*count);
-	if (!index)
+	p = realloc(index, sizeof(ptrdiff_t)*count);
+	if (!p)
 		return false;
-	base = (mp_size_t<T>*)realloc(base+1, sizeof(T)*count); // base+0 for OFF_NULL
-	if (!base)
+	index = (ptrdiff_t*)p;
+	p = realloc(base+1, sizeof(T)*count); // base+0 for OFF_NULL
+	if (!p)
 		return false;
-	--base;
+	base = (mp_size_t<T>*)p - 1;
 	mp_capacity = count;
 	return true;
 }

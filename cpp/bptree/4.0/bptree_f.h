@@ -87,8 +87,8 @@ class bp_iter	// 迭代器
 
   public:
 	bp_iter& operator = (bp_iter const& it){tree=it.tree, node=it.node, key=it.key, kind=it.kind; return *this;}
-	int operator != (bp_iter const& it)const{return key != it.key;}
-	int operator == (bp_iter const& it)const{return key == it.key;}
+	bool operator != (bp_iter const& it)const{return key != it.key;}
+	bool operator == (bp_iter const& it)const{return key == it.key;}
 
 	bp_iter& operator ++ () {
 		if (kind<BPN(node)->keynum-1)
@@ -129,8 +129,8 @@ class bptree
 	typedef bp_iter<index_t, T> iterator;
 	friend iterator;
 
-	ptrdiff_t find(T const& t);	//返回找到的数据项地址, 没有则返回OFF_NULL
-	ptrdiff_t insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据地址. 其他返回OFF_NULL
+	ptrdiff_t find(T const& t);	//返回找到的数据项偏移, 没有则返回OFF_NULL
+	ptrdiff_t insert(T const& t);	//若调用了set_unique(), 则要插入的数据项已存在时不会插入,而返回已存在数据偏移. 其他返回OFF_NULL
 	bool erase(T const& t);	//删除成功返回1, 不存在则返回0
 
 	bool resize(size_t count); //调整B+树容量(只增大), 以免多次自动扩增内存
@@ -138,6 +138,7 @@ class bptree
 	T& back() {return *(T*)getptr(max());}
 	size_t size() {return _size;}
 	bool empty() {return _size ? true : false;}
+
 	iterator begin();
 	iterator& end() {return iter_null;}
 
@@ -153,10 +154,10 @@ class bptree
 		pool_node.init(1), pool_index.init(1), pool_T.init(2);
 		iter_null.key=OFF_NULL, _root=__alloc(BP_NODE, sizeof(bp_node)), BP_NEW(_root, bp_node);
 	}
-	~bptree();
+	~bptree(){_size=0, _root=OFF_NULL;}
 
-	ptrdiff_t min();		//返回最小数据项的地址
-	ptrdiff_t max();		//返回最大数据项的地址
+	ptrdiff_t min();		//返回最小数据项的偏移
+	ptrdiff_t max();		//返回最大数据项的偏移
 	int traverse(int visit(ptrdiff_t));	//自定义visit函数, 从小到大遍历所有数据, 一旦visit返回非0值, 终止并返回该值
 
   private:
@@ -174,12 +175,7 @@ class bptree
 	ptrdiff_t alloc(uint32_t type);
 	void free(ptrdiff_t off);
 	void* getptr(ptrdiff_t off);
-/*
-	void* baseptr() {return NULL;} //基址指针
-	ptrdiff_t alloc(size_t size) {return (new char[size])-(char*)baseptr();}
-	void free(ptrdiff_t off) {delete[] ((char*)baseptr()+off);}
-	void* getptr(ptrdiff_t off) {return (void*)((char*)baseptr()+off);} //根据偏移获取<临时>指针
-*/
+
 #ifdef _24k_BPTREE_PRINT
   public:
 	void print();
@@ -204,12 +200,10 @@ __tt(index_t, T)
 bool
 bptree<index_t, T>::resize(size_t count)
 {
-	if (count <= pool_T.size())
-		return true;
 	return
-	pool_node.resize(count/2+1) &&
-	pool_index.resize(count/2+1) &&
-	pool_T.resize(count);
+	( (count>>1)<=pool_node.size() ? 1 : pool_node.resize(count>>1) ) &&
+	( (count>>1)<=pool_index.size() ? 1 : pool_index.resize(count>>1) ) &&
+	( count<=pool_T.size() ? 1 : pool_T.resize(count) );
 }
 
 __tt(index_t, T)
@@ -401,30 +395,6 @@ bptree<index_t, T>::check()
 #endif
 
 /***********************************************************/
-
-__tt(index_t, T)
-bptree<index_t, T>::~bptree()
-{
-	int i;
-	ptrdiff_t node;
-	queue<ptrdiff_t> q;
-
-	q.push(_root);
-	while (!q.empty()) {
-		node = q.front();
-		q.pop();
-		if (BPN(node)->child[0]) {
-			for (i=0; i<=BPN(node)->keynum; i++)
-				q.push(BPN(node)->child[i]);
-			for (i=0; i<BPN(node)->keynum; i++)
-				free(BPN(node)->key[i]); // delete index_t
-		}
-		else
-			for (i=0; i<BPN(node)->keynum; i++)
-				free(BPN(node)->key[i]); // delete T
-		free(node);
-	}
-}
 
 __tt(index_t, T)
 inline ptrdiff_t
