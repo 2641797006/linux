@@ -778,6 +778,9 @@ bptree<index_t, T>::bp_node_print(ptrdiff_t node)
 
 #endif
 
+template <typename T>
+class xbptree: public bptree<T, T>{};
+
 }//namespace _24k
 
 #undef __tt
