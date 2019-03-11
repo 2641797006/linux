@@ -146,8 +146,8 @@ class bptree
 	void set_unique(){unique=1;}	//设置数据项的惟一性, 不允许"相等"的数据项存在
 	void set_nounique(){unique=0;}	//取消数据项的惟一性, 允许"相等"的数据项存在
 
-	void savefile(string const&);
-	void loadfile(string const&);
+	void savefile(const char*);
+	void loadfile(const char*);
 
 	bptree(): unique(0), _size(0)
 	{
@@ -208,9 +208,9 @@ bptree<index_t, T>::resize(size_t count)
 
 __tt(index_t, T)
 void
-bptree<index_t, T>::savefile(string const& s)
+bptree<index_t, T>::savefile(const char *fname)
 {
-	FILE *fp = fopen(s.c_str(), "wb");
+	FILE *fp = fopen(fname, "wb");
 
 	fwrite(this, sizeof(*this), 1, fp);
 	pool_node.savefile(fp);
@@ -222,9 +222,9 @@ bptree<index_t, T>::savefile(string const& s)
 
 __tt(index_t, T)
 void
-bptree<index_t, T>::loadfile(string const& s)
+bptree<index_t, T>::loadfile(const char *fname)
 {
-	FILE *fp = fopen(s.c_str(), "rb");
+	FILE *fp = fopen(fname, "rb");
 
 	pool_node.destroy();
 	pool_index.destroy();
