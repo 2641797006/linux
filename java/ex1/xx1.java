@@ -35,10 +35,11 @@ public class xx1{
 		}
 	}
 
+	private static int month[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
 	private static int leap(int year) {
 		return year%4==0 && year%100!=0 ? 1 : (year%400==0 ? 1 : 0);
 	}
-	private static int month[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	private static void print(String s) {System.out.print(s);}
 	private static void println(String s) {System.out.println(s);}
 	private static void printf(String fmt, Object... args) {System.out.printf(fmt, args);}
