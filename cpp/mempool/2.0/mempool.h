@@ -77,7 +77,8 @@ class mempool{
 							return OFF_NULL; \
 						status |= size; \
 					} \
-					return m##i.alloc()<<6 | i
+					size = m##i.alloc(); \
+					return size ? (size<<6 | i) : OFF_NULL
 
 ptrdiff_t
 mempool::alloc(size_t size)
@@ -305,6 +306,7 @@ mempool::loadfile(const char *fname)
 
 	if (!fp)
 		return false;
+	destroy();
 	readfile(fp);
 	fclose(fp);
 	return true;
@@ -313,7 +315,6 @@ mempool::loadfile(const char *fname)
 void
 mempool::readfile(FILE *fp)
 {
-	destroy();
 	fread(this, sizeof(*this), 1, fp);
 		MPCASE(2);
 		MPCASE(3);
