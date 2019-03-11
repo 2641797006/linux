@@ -30,8 +30,8 @@ class basic_mempool{
 	size_t size(){return mp_capacity;} //返回内存池容量(以T大小为单位)
 	bool empty(){return mp_size==ind_size;} //是否有已分配的内存
 
-	void savefile(FILE *fp);
-	void loadfile(FILE *fp);
+	void writefile(FILE *fp);
+	void readfile(FILE *fp);
 
   private:
 	mp_size_t<T> *base;
@@ -44,7 +44,7 @@ class basic_mempool{
 
 __tt(T)
 inline void
-basic_mempool<T>::savefile(FILE *fp)
+basic_mempool<T>::writefile(FILE *fp)
 {
 	if (!mp_capacity)
 		return;
@@ -54,7 +54,7 @@ basic_mempool<T>::savefile(FILE *fp)
 
 __tt(T)
 inline void
-basic_mempool<T>::loadfile(FILE *fp)
+basic_mempool<T>::readfile(FILE *fp)
 {
 	if (!mp_capacity)
 		return;

@@ -21,6 +21,8 @@ class mempool{
 
 	bool savefile(const char*);
 	bool loadfile(const char*);
+	void writefile(FILE*);
+	void readfile(FILE*);
 
 	mempool(){status=0;}
 	~mempool(){}
@@ -244,7 +246,7 @@ mempool::resize(size_t count, size_t size)
 }
 #undef MPCASE
 
-#define MPCASE(i)	m##i.savefile(fp)
+#define MPCASE(i)	m##i.writefile(fp)
 
 bool
 mempool::savefile(const char *fname)
@@ -253,6 +255,14 @@ mempool::savefile(const char *fname)
 
 	if (!fp)
 		return false;
+	writefile(fp);
+	fclose(fp);
+	return true;
+}
+
+void
+mempool::writefile(FILE *fp)
+{
 	fwrite(this, sizeof(*this), 1, fp);
 		MPCASE(2);
 		MPCASE(3);
@@ -283,12 +293,10 @@ mempool::savefile(const char *fname)
 		MPCASE(28);
 		MPCASE(29);
 		MPCASE(30);
-	fclose(fp);
-	return true;
 }
 #undef MPCASE
 
-#define MPCASE(i)	m##i.init(0), m##i.loadfile(fp)
+#define MPCASE(i)	m##i.init(0), m##i.readfile(fp)
 
 bool
 mempool::loadfile(const char *fname)
@@ -297,6 +305,14 @@ mempool::loadfile(const char *fname)
 
 	if (!fp)
 		return false;
+	readfile(fp);
+	fclose(fp);
+	return true;
+}
+
+void
+mempool::readfile(FILE *fp)
+{
 	destroy();
 	fread(this, sizeof(*this), 1, fp);
 		MPCASE(2);
@@ -328,8 +344,6 @@ mempool::loadfile(const char *fname)
 		MPCASE(28);
 		MPCASE(29);
 		MPCASE(30);
-	fclose(fp);
-	return true;
 }
 #undef MPCASE
 
