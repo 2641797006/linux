@@ -19,7 +19,7 @@ class basic_mempool{
 	void free(ptrdiff_t);
 	void* getptr(ptrdiff_t off){return (void*)(base+off);}
 
-	basic_mempool(){base=NULL, index=NULL;}
+	basic_mempool(){mp_capacity=0, base=NULL, index=NULL;}
 	basic_mempool(size_t count){init(count);} //使用此构造函数 或 使用init(count) 来构建内存池
 	~basic_mempool(){destroy();}
 
@@ -46,6 +46,8 @@ __tt(T)
 inline void
 basic_mempool<T>::savefile(FILE *fp)
 {
+	if (!mp_capacity)
+		return;
 	fwrite(base+1, sizeof(T), mp_size, fp);
 	fwrite(index, sizeof(ptrdiff_t), ind_size, fp);
 }
@@ -54,6 +56,8 @@ __tt(T)
 inline void
 basic_mempool<T>::loadfile(FILE *fp)
 {
+	if (!mp_capacity)
+		return;
 	fread(base+1, sizeof(T), mp_size, fp);
 	fread(index, sizeof(ptrdiff_t), ind_size, fp);
 }
@@ -89,9 +93,11 @@ __tt(T)
 bool
 basic_mempool<T>::init(size_t count)
 {
-	if (!count)
+	if (!count) {
+		if (!mp_capacity)
+			return false;
 		count = mp_capacity;
-	else {
+	} else {
 		mp_size = 0;
 		mp_capacity = count;
 		ind_size = 0;
@@ -99,12 +105,14 @@ basic_mempool<T>::init(size_t count)
 	index = (ptrdiff_t*)malloc(sizeof(ptrdiff_t)*count);
 	if (!index) {
 		base = NULL;
+		mp_capacity = 0;
 		return false;
 	}
 	base = (mp_size_t<T>*)malloc(sizeof(T)*count);
 	if (!base) {
 		::free(index);
 		index = NULL;
+		mp_capacity = 0;
 		return false;
 	}
 	--base; // base+0 for OFF_NULL

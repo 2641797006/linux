@@ -17,6 +17,10 @@ class mempool{
 	void* getptr(ptrdiff_t);
 
 	bool resize(size_t count, size_t size); //保证有count个size大小的内存块, 以免多次扩增内存
+	void destroy(); //释放内存, 销毁内存池
+
+	bool savefile(const char*);
+	bool loadfile(const char*);
 
 	mempool(){status=0;}
 	~mempool(){}
@@ -195,14 +199,176 @@ mempool::getptr(ptrdiff_t off)
 }
 #undef MPCASE
 
-#define MPCASE
+#define MPCASE(i)	case 1UL<<i: \
+				return (status & size) \
+					? (count<=m##i.size() ? 1 : m##i.resize(count)) \
+					: (m##i.init(count) ? (status|=size) : 0)
 
-void
+bool
 mempool::resize(size_t count, size_t size)
 {
-
-
+	size = mpow(size);
+	switch (size) {
+	case 1: case 2: size=4;
+		MPCASE(2);
+		MPCASE(3);
+		MPCASE(4);
+		MPCASE(5);
+		MPCASE(6);
+		MPCASE(7);
+		MPCASE(8);
+		MPCASE(9);
+		MPCASE(10);
+		MPCASE(11);
+		MPCASE(12);
+		MPCASE(13);
+		MPCASE(14);
+		MPCASE(15);
+		MPCASE(16);
+		MPCASE(17);
+		MPCASE(18);
+		MPCASE(19);
+		MPCASE(20);
+		MPCASE(21);
+		MPCASE(22);
+		MPCASE(23);
+		MPCASE(24);
+		MPCASE(25);
+		MPCASE(26);
+		MPCASE(27);
+		MPCASE(28);
+		MPCASE(29);
+		MPCASE(30);
+	}
+	return false;
 }
+#undef MPCASE
+
+#define MPCASE(i)	m##i.savefile(fp)
+
+bool
+mempool::savefile(const char *fname)
+{
+	FILE *fp = fopen(fname, "wb");
+
+	if (!fp)
+		return false;
+	fwrite(this, sizeof(*this), 1, fp);
+		MPCASE(2);
+		MPCASE(3);
+		MPCASE(4);
+		MPCASE(5);
+		MPCASE(6);
+		MPCASE(7);
+		MPCASE(8);
+		MPCASE(9);
+		MPCASE(10);
+		MPCASE(11);
+		MPCASE(12);
+		MPCASE(13);
+		MPCASE(14);
+		MPCASE(15);
+		MPCASE(16);
+		MPCASE(17);
+		MPCASE(18);
+		MPCASE(19);
+		MPCASE(20);
+		MPCASE(21);
+		MPCASE(22);
+		MPCASE(23);
+		MPCASE(24);
+		MPCASE(25);
+		MPCASE(26);
+		MPCASE(27);
+		MPCASE(28);
+		MPCASE(29);
+		MPCASE(30);
+	fclose(fp);
+	return true;
+}
+#undef MPCASE
+
+#define MPCASE(i)	m##i.init(0), m##i.loadfile(fp)
+
+bool
+mempool::loadfile(const char *fname)
+{
+	FILE *fp = fopen(fname, "rb");
+
+	if (!fp)
+		return false;
+	destroy();
+	fread(this, sizeof(*this), 1, fp);
+		MPCASE(2);
+		MPCASE(3);
+		MPCASE(4);
+		MPCASE(5);
+		MPCASE(6);
+		MPCASE(7);
+		MPCASE(8);
+		MPCASE(9);
+		MPCASE(10);
+		MPCASE(11);
+		MPCASE(12);
+		MPCASE(13);
+		MPCASE(14);
+		MPCASE(15);
+		MPCASE(16);
+		MPCASE(17);
+		MPCASE(18);
+		MPCASE(19);
+		MPCASE(20);
+		MPCASE(21);
+		MPCASE(22);
+		MPCASE(23);
+		MPCASE(24);
+		MPCASE(25);
+		MPCASE(26);
+		MPCASE(27);
+		MPCASE(28);
+		MPCASE(29);
+		MPCASE(30);
+	fclose(fp);
+	return true;
+}
+#undef MPCASE
+
+#define MPCASE(i)	m##i.destroy()
+
+void
+mempool::destroy()
+{
+		MPCASE(2);
+		MPCASE(3);
+		MPCASE(4);
+		MPCASE(5);
+		MPCASE(6);
+		MPCASE(7);
+		MPCASE(8);
+		MPCASE(9);
+		MPCASE(10);
+		MPCASE(11);
+		MPCASE(12);
+		MPCASE(13);
+		MPCASE(14);
+		MPCASE(15);
+		MPCASE(16);
+		MPCASE(17);
+		MPCASE(18);
+		MPCASE(19);
+		MPCASE(20);
+		MPCASE(21);
+		MPCASE(22);
+		MPCASE(23);
+		MPCASE(24);
+		MPCASE(25);
+		MPCASE(26);
+		MPCASE(27);
+		MPCASE(28);
+		MPCASE(29);
+		MPCASE(30);
+}
+#undef MPCASE
 
 } //namespace _24k
 
