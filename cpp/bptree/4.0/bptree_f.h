@@ -215,9 +215,9 @@ bptree<index_t, T>::savefile(const char *fname)
 	if (!fp)
 		return false;
 	fwrite(this, sizeof(*this), 1, fp);
-	pool_node.savefile(fp);
-	pool_index.savefile(fp);
-	pool_T.savefile(fp);
+	pool_node.writefile(fp);
+	pool_index.writefile(fp);
+	pool_T.writefile(fp);
 
 	fclose(fp);
 	return true;
@@ -238,13 +238,13 @@ bptree<index_t, T>::loadfile(const char *fname)
 	fread(this, sizeof(*this), 1, fp);
 
 	pool_node.init(0);
-	pool_node.loadfile(fp);
+	pool_node.readfile(fp);
 
 	pool_index.init(0);
-	pool_index.loadfile(fp);
+	pool_index.readfile(fp);
 
 	pool_T.init(0);
-	pool_T.loadfile(fp);
+	pool_T.readfile(fp);
 
 	fclose(fp);
 	return true;
