@@ -154,7 +154,7 @@ class bptree
 		pool_node.init(1), pool_index.init(1), pool_T.init(2);
 		iter_null.key=OFF_NULL, _root=__alloc(BP_NODE, sizeof(bp_node)), BP_NEW(_root, bp_node);
 	}
-	~bptree(){_size=0, _root=OFF_NULL;}
+	~bptree(){}
 
 	ptrdiff_t min();		//返回最小数据项的偏移
 	ptrdiff_t max();		//返回最大数据项的偏移
