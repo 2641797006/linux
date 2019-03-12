@@ -15,7 +15,7 @@ public class xx1{
 			}
 			else
 				scan.nextLine();
-		weekfix = LocalDate.of(year, 1, 1).getDayOfWeek().ordinal()+1;
+		weekfix = (LocalDate.of(year, 1, 1).getDayOfWeek().ordinal()+1)%7;
 		month[1] += leap(year);
 		printf(" %d年\n", year);
 		for (i=0; i<12; i++) {
