@@ -31,6 +31,7 @@ public class CalendarByConsole{
 			for (j=0; j<col; j++)
 				s[j] = "".format(" %2d月%20c\n", i*col+j+1, ' ') + getCalendarString(year, i*col+j+1);
 			merge_print(col, s);
+			System.out.write('\n');
 		}
 	}
 
@@ -60,7 +61,6 @@ public class CalendarByConsole{
 		}
 		while (++line<=6)
 			str.append("".format("%21c", ' ') + linefix);
-		str.append('\n');
 		return str.toString();
 	}
 
