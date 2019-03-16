@@ -2,7 +2,9 @@ import java.util.Scanner;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 
-public class CalendarByGUI{
+public class
+xx1{
+//CalendarByConsole{
 
 	public static void main(String[] args) throws java.io.IOException{
 		int year=0;
@@ -30,7 +32,7 @@ public class CalendarByGUI{
 
 		for (i=0; i<row; ++i) {
 			for (j=0; j<col; j++)
-				s[j] = "".format("%9c%2d月%12c\n", ' ', i*col+j+1, ' ') + getCalendarString(year, i*col+j+1);
+				s[j] = "".format("%13c%2d月%15c\n", ' ', i*col+j+1, ' ') + getCalendarString(year, i*col+j+1);
 			str.append(merge_print_string(col, s));
 			str.append('\n');
 		}
@@ -41,15 +43,15 @@ public class CalendarByGUI{
 		int i, line=0;
 		int weekfix = LocalDate.of(year, month, 1).getDayOfWeek().getValue()%7;
 		String linefix = "".format("%4c\n", ' ');
-		StringBuilder str = new StringBuilder(" 日 一 二 三 四 五 六" + linefix);
+		StringBuilder str = new StringBuilder(" SUN MON TUE WED THU FRI SAT" + linefix);
 
 		if (month == 2)
 			days_of_month[1] = 28 + leap(year);
 		--month;
 		for (i=0; i<weekfix; ++i)
-			str.append("   ");
+			str.append("    ");
 		for (i=1; i<=days_of_month[month]; ++i) {
-			str.append("".format("%3d", i));
+			str.append("".format("%4d", i));
 			if ((i+weekfix)%7 == 0) {
 				str.append(linefix);
 				++line;
@@ -57,12 +59,12 @@ public class CalendarByGUI{
 		}
 		if ((--i+weekfix)%7 != 0) {
 			while ((++i+weekfix)%7 != 0 )
-				str.append("   ");
-			str.append("   " + linefix);
+				str.append("    ");
+			str.append("    " + linefix);
 			++line;
 		}
 		while (++line<=6)
-			str.append("".format("%21c", ' ') + linefix);
+			str.append("".format("%28c", ' ') + linefix);
 		return str.toString();
 	}
 
