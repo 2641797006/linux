@@ -2,7 +2,7 @@ import java.util.Scanner;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 
-public class CalendarByGUI{
+public class CalendarByGUI_zh-cn{
 
 	public static void main(String[] args) throws java.io.IOException{
 		int year=0;
