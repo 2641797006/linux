@@ -2,23 +2,31 @@ import java.util.Scanner;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 
-public class CalendarByGUI_zh-cn{
+public class CalendarByGUI_zh_cn{
 
 	public static void main(String[] args) throws java.io.IOException{
 		int year=0;
-		Scanner scan = new Scanner(System.in);
+		String input = new String();
+		Scanner scan;
 		println("Please enter the year:");
-		for (;;)
+		for (;;) {
+			input = JOptionPane.showInputDialog(null, "请输入一个年份", "<简易日历>", JOptionPane.PLAIN_MESSAGE);
+			if (input==null) {
+				JOptionPane.showMessageDialog(null, "\u5c0f\u5b50\u002c\u0020\u4f60\u70b9\u54ea\u5462\u0021\u0021\u0021", "Exit error", JOptionPane.ERROR_MESSAGE);
+				continue;
+			}
+			scan = new Scanner(input);
 			if (scan.hasNextInt()) {
 				year = scan.nextInt();
 				if (year>0)
 					break;
-			}
-			else
-				scan.nextLine();
+			} else
+				JOptionPane.showMessageDialog(null, input, "input format error", JOptionPane.ERROR_MESSAGE);
+		}
 		printf(" %d年\n", year);
 		print(calendarOfYear(year, 3));
 		JOptionPane.showMessageDialog(null, calendarOfYear(year, 4), "".format(" %d年", year), JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Good Bye!", "Exit", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private static int days_of_month[]={31, -1, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
