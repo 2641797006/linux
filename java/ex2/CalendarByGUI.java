@@ -12,7 +12,7 @@ public class CalendarByGUI{
 		for (;;) {
 			input = JOptionPane.showInputDialog(null, "请输入一个年份", "<简易日历>", JOptionPane.PLAIN_MESSAGE);
 			if (input==null) {
-				JOptionPane.showMessageDialog(null, "No!!!", "error Exit", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "\u5c0f\u5b50\u002c\u0020\u4f60\u70b9\u54ea\u5462\u0021\u0021\u0021", "Exit error", JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
 			scan = new Scanner(input);
