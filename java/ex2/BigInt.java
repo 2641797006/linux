@@ -48,6 +48,7 @@ public:
 				sign=!sign;
 		} else
 			u_add(big);
+		zerofix();
 		return this;
 	}
 
@@ -75,15 +76,15 @@ public:
 	private int u_sub(BigInt big) { // unsign sub
 		if (abscmp(big) < 0) {
 			var big_t = new BigInt(big);
-			big_t.bs_sub(this);
+			big_t._bs_sub(this);
 			u_assign(big_t);
 			return -1;
 		}
-		bs_sub(big);
+		_bs_sub(big);
 		return 0;
 	}
 
-	private BigInt bs_sub(BigInt big) { // big - small (unsign)
+	private BigInt _bs_sub(BigInt big) { // big - small (unsign)
 		int i;
 		for (i=0; i<big.num.size(); ++i) {
 			num.set(i, (byte)(num.get(i) - big.num.get(i)));
@@ -96,6 +97,45 @@ public:
 			borrow(i);
 		}
 		rm_zero();
+		return this;
+	}
+
+	public BigInt mul(BigInt big) {
+		sign = sign==big.sign ? true : false;
+		u_mul(big);
+		zerofix();
+		return this;
+	}
+
+	public BigInt u_mul(BigInt big) {
+		int i, n;
+		BigInt b1, b2;
+		if (num.size() <= big.num.size()) {
+			b1 = new BigInt(this);
+			b2 = new BigInt(big);
+		} else {
+			b1 = new BigInt(big);
+			b2 = new BigInt(this);
+		}
+		num.clear();
+		num.add((byte)0);
+		n = b1.num.size();
+		for (i=0; i<n; ++i)
+			_sg_mul(b2, b1.num.get(i), i);
+		return this;
+	}
+
+	public BigInt _sg_mul(BigInt big, byte muler, int index) {
+		int i, n;
+		i = index;
+		n = big.num.size() + index;
+		for (; i<n; ++i) {
+			if (i >= num.size())
+				num.add((byte)0);
+			num.set(i, (byte) (num.get(i) + big.num.get(i-index)*muler));
+			if (num.get(i) >= 10)
+				carry(i);
+		}
 		return this;
 	}
 
@@ -115,6 +155,21 @@ public:
 			n /= 10;
 			num.add(b);
 		}
+	}
+
+	public void set(String str) {
+		int i=str.length(), diff;
+		sign = true;
+		if (str.charAt(0) == '-') {
+			sign = false;
+			diff = 1;
+		} else if (str.charAt(0) == '+')
+			diff = 1;
+		else
+			diff = 0;
+		num.clear();
+		while (--i>=diff)
+			num.add((byte) (str.charAt(i) & ~0x30));
 	}
 
 	public String toString() {
@@ -142,11 +197,12 @@ public:
 	}
 
 	private void carry(int index) { // num.get(index) >= 10
-		num.set(index, (byte)(num.get(index)-10));
+		int q = num.get(index)/10;
+		num.set(index, (byte)(num.get(index)%10));
 		if (++index < num.size())
-			num.set(index, (byte)(num.get(index)+1));
+			num.set(index, (byte)(num.get(index)+q));
 		else
-			num.add((byte)1);
+			num.add((byte)q);
 	}
 
 	private void borrow(int index) { // num.get(index) < 0
@@ -162,5 +218,10 @@ public:
 				num.remove(i);
 			else
 				break;
+	}
+
+	private void zerofix() { // 0 must be +0
+		if (num.size()==1 && num.get(0)==0)
+			sign = true;
 	}
 }
