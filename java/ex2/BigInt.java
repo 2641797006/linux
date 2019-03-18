@@ -222,7 +222,7 @@ public:
 		if (!sign)
 			str.append('-');
 		while (--i>=0)
-			str.append(num.get(i));
+			str.append( (char) (num.get(i) | 0x30) );
 		return str.toString();
 	}
 
