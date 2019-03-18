@@ -10,10 +10,9 @@ public class BigInt{
 	public BigInt(BigInt big) { init(big); }
 /*
 public:
+	BigInt assign(long); // long to BigInt
+	BigInt assign(String); // String to BigInt
 	BigInt assign(BigInt); //=
-	void set(long); // long to BigInt
-	void set(String); // String to BigInt
-	int cmp(BigInt);
 
 	BigInt add(long);
 	BigInt add(String);
@@ -27,6 +26,8 @@ public:
 	BigInt mul(String);
 	BigInt mul(BigInt);
 	// div
+
+	int cmp(BigInt);
 	long toLong();
 	String toString();
 */
@@ -37,6 +38,16 @@ public:
 			sign = true;
 		} else
 			assign(big);
+	}
+
+	public BigInt assign(long li) {
+		set(li);
+		return this;
+	}
+
+	public BigInt assign(String s) {
+		set(s);
+		return this;
 	}
 
 	public BigInt assign(BigInt big) {
