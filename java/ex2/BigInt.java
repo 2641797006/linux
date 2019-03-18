@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class BigInt{
-	private int sign; // +/-
+	private boolean sign; // +/-
 	private ArrayList<Byte> num;
 
 	public BigInt() { init(null); }
@@ -18,7 +18,7 @@ public:
 		num = new ArrayList<Byte>();
 		if (big == null) {
 			num.add((byte)0);
-			sign = 1;
+			sign = true;
 		} else
 			assign(big);
 	}
@@ -35,17 +35,17 @@ public:
 	}
 
 	public BigInt add(BigInt big) {
-		return __as(big, sign*big.sign < 0);
+		return __as(big, sign!=big.sign);
 	}
 
 	public BigInt sub(BigInt big) {
-		return __as(big, sign*big.sign > 0);
+		return __as(big, sign==big.sign);
 	}
 
 	private BigInt __as(BigInt big, boolean flag) {
 		if (flag) {
 			if (u_sub(big) < 0)
-				sign=-sign;
+				sign=!sign;
 		} else
 			u_add(big);
 		return this;
@@ -104,10 +104,10 @@ public:
 		byte b;
 		num.clear();
 		if (n<0) {
-			sign=-1;
-			n=-n;
+			sign = false;
+			n = -n;
 		} else
-			sign = 1;
+			sign = true;
 		if ( n == 0 )
 			num.add((byte)0);
 		while ( n != 0 ) {
@@ -121,7 +121,7 @@ public:
 		int i = num.size();
 		var str = new StringBuilder();
 
-		if (sign < 0)
+		if (!sign)
 			str.append('-');
 		while (--i>=0)
 			str.append(num.get(i));
