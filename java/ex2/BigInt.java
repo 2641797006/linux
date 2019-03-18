@@ -11,9 +11,12 @@ public:
 	BigInt assign(BigInt); //=
 	void set(long); // long to BigInt
 	void set(String); // String to BigInt
+	int cmp(BigInt);
 	BigInt add(BigInt);
 	BigInt sub(BigInt);
 	BigInt mul(BigInt);
+	// div
+	long toLong();
 	String toString();
 */
 	private void init(BigInt big) {
@@ -186,6 +189,20 @@ public:
 		while (--i>=0)
 			str.append(num.get(i));
 		return str.toString();
+	}
+
+	public long toLong() {
+		long li = 0;
+		int i = num.size();
+		while (--i>=0)
+			li = li * 10 + num.get(i);
+		return li;
+	}
+
+	public int cmp(BigInt big) {
+		if (sign != big.sign)
+			return sign ? 1 : -1;
+		return sign ? abscmp(big) : -abscmp(big);
 	}
 
 	private int abscmp(BigInt big) { // num compare, ignore sign
