@@ -9,7 +9,7 @@ public class bigint_test{
 			sum.mul(b.assign(pow).add(1));
 			pow.mul(2);
 		}
-		println(""+sum.toString());
+		println(sum.toString());
 	}
 
 	private static void print(String s) {System.out.print(s);}
