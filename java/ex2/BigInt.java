@@ -10,8 +10,10 @@ public class BigInt{
 public:
 	BigInt assign(BigInt); //=
 	void set(long); // long to BigInt
+	void set(String); // String to BigInt
 	BigInt add(BigInt);
 	BigInt sub(BigInt);
+	BigInt mul(BigInt);
 	String toString();
 */
 	private void init(BigInt big) {
@@ -103,11 +105,12 @@ public:
 	public BigInt mul(BigInt big) {
 		sign = sign==big.sign ? true : false;
 		u_mul(big);
+		rm_zero();
 		zerofix();
 		return this;
 	}
 
-	public BigInt u_mul(BigInt big) {
+	private BigInt u_mul(BigInt big) {
 		int i, n;
 		BigInt b1, b2;
 		if (num.size() <= big.num.size()) {
@@ -125,7 +128,7 @@ public:
 		return this;
 	}
 
-	public BigInt _sg_mul(BigInt big, byte muler, int index) {
+	private BigInt _sg_mul(BigInt big, byte muler, int index) {
 		int i, n;
 		i = index;
 		n = big.num.size() + index;
@@ -170,6 +173,8 @@ public:
 		num.clear();
 		while (--i>=diff)
 			num.add((byte) (str.charAt(i) & ~0x30));
+		rm_zero();
+		zerofix();
 	}
 
 	public String toString() {
