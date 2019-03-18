@@ -5,6 +5,8 @@ public class BigInt{
 	private ArrayList<Byte> num;
 
 	public BigInt() { init(null); }
+	public BigInt(long li) { init(null); set(li); }
+	public BigInt(String s) { init(null); set(s); }
 	public BigInt(BigInt big) { init(big); }
 /*
 public:
@@ -12,8 +14,17 @@ public:
 	void set(long); // long to BigInt
 	void set(String); // String to BigInt
 	int cmp(BigInt);
+
+	BigInt add(long);
+	BigInt add(String);
 	BigInt add(BigInt);
+
+	BigInt sub(long);
+	BigInt sub(String);
 	BigInt sub(BigInt);
+
+	BigInt mul(long);
+	BigInt mul(String);
 	BigInt mul(BigInt);
 	// div
 	long toLong();
@@ -39,8 +50,24 @@ public:
 		return this;
 	}
 
+	public BigInt add(long li) {
+		return add(new BigInt(li));
+	}
+
+	public BigInt add(String s) {
+		return add(new BigInt(s));
+	}
+
 	public BigInt add(BigInt big) {
 		return __as(big, sign!=big.sign);
+	}
+
+	public BigInt sub(long li) {
+		return sub(new BigInt(li));
+	}
+
+	public BigInt sub(String s) {
+		return sub(new BigInt(s));
 	}
 
 	public BigInt sub(BigInt big) {
@@ -103,6 +130,14 @@ public:
 		}
 		rm_zero();
 		return this;
+	}
+
+	public BigInt mul(long li) {
+		return mul(new BigInt(li));
+	}
+
+	public BigInt mul(String s) {
+		return mul(new BigInt(s));
 	}
 
 	public BigInt mul(BigInt big) {
