@@ -48,15 +48,6 @@ public:
 	public BigInt(String s) { this(); set(s); }
 	public BigInt(BigInt big) { this(); assign(big); }
 
-	private void init(BigInt big) {
-		num = new ArrayList<Byte>();
-		if (big == null) {
-			num.add((byte)0);
-			sign = true;
-		} else
-			assign(big);
-	}
-
 	public BigInt assign(long li) {
 		set(li);
 		return this;
