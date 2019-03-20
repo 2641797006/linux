@@ -46,11 +46,7 @@ public:
 
 	public BigInt(long li) { this(); set(li); }
 	public BigInt(String s) { this(); set(s); }
-
-	public BigInt(BigInt big) {
-		num = new ArrayList<Byte>();
-		assign(big);
-	}
+	public BigInt(BigInt big) { this(); assign(big); }
 
 	private void init(BigInt big) {
 		num = new ArrayList<Byte>();
