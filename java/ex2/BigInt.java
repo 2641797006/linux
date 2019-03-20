@@ -3,13 +3,13 @@ import java.util.ArrayList;
 public class BigInt{
 	private boolean sign; // +/-
 	private ArrayList<Byte> num;
-
-	public BigInt() { init(null); }
-	public BigInt(long li) { init(null); set(li); }
-	public BigInt(String s) { init(null); set(s); }
-	public BigInt(BigInt big) { init(big); }
 /*
 public:
+	BigInt();
+	BigInt(long);
+	BigInt(String);
+	BigInt(BigInt);
+
 	BigInt assign(long); // long to BigInt
 	BigInt assign(String); // String to BigInt
 	BigInt assign(BigInt); //=
@@ -37,6 +37,21 @@ public:
 	long toLong();
 	String toString();
 */
+
+	public BigInt() {
+		num = new ArrayList<Byte>();
+		num.add((byte)0);
+		sign = true;
+	}
+
+	public BigInt(long li) { this(); set(li); }
+	public BigInt(String s) { this(); set(s); }
+
+	public BigInt(BigInt big) {
+		num = new ArrayList<Byte>();
+		assign(big);
+	}
+
 	private void init(BigInt big) {
 		num = new ArrayList<Byte>();
 		if (big == null) {
