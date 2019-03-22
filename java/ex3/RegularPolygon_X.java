@@ -9,7 +9,8 @@ public class RegularPolygon_X{
 	private double cy[]; //顶点纵坐标
 	private double _area;
 //	private double _perimeter;
-	private double anglefix;
+	private double anglefix; //顺时针 (x+)
+		//TODO: y is Increase "downward", x is Increase to the right
 
 	private int flags; //记录数据是否发生改变
 	private final int fs_size = 	0x07;
@@ -88,12 +89,10 @@ public class RegularPolygon_X{
 
 	private void calculate_points_xy() { //计算各个顶点坐标
 		int i;
-		double angle=Math.PI/2.0+anglefix, top_angle=Math.PI*2.0/n, diagonal=side/2.0/Math.sin(top_angle/2.0);
+		double angle=anglefix, top_angle=Math.PI*2.0/n, diagonal=side/2.0/Math.sin(top_angle/2.0);
 
-		if (anglefix < 0) {
+		if (anglefix < 0)
 			angle = (Math.PI+top_angle)/2.0;
-		//	angle = n%2==0 ? (Math.PI+top_angle)/2.0 : Math.PI/2.0;
-		}
 		cx = new double[n];
 		cy = new double[n];
 		for (i=0; i<n; ++i) {
