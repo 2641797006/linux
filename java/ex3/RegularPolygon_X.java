@@ -9,7 +9,7 @@ public class RegularPolygon_X{
 	private double cy[]; //顶点纵坐标
 	private double _area;
 //	private double _perimeter;
-	private double anglefix; //顺时针 (x+)
+	private double anglefix; //Counterclockwise from x+
 		//TODO: y is Increase "downward", x is Increase to the right
 
 	private int flags; //记录数据是否发生改变
@@ -89,7 +89,7 @@ public class RegularPolygon_X{
 
 	private void calculate_points_xy() { //计算各个顶点坐标
 		int i;
-		double angle=anglefix, top_angle=Math.PI*2.0/n, diagonal=side/2.0/Math.sin(top_angle/2.0);
+		double angle=-anglefix, top_angle=Math.PI*2.0/n, diagonal=side/2.0/Math.sin(top_angle/2.0);
 
 		if (anglefix < 0)
 			angle = (Math.PI+top_angle)/2.0;
