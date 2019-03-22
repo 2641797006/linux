@@ -9,13 +9,15 @@ public class RegularPolygon_X{
 	private double cy[]; //顶点纵坐标
 	private double _area;
 //	private double _perimeter;
+	private double angle1;
 
 	private int flags; //记录数据是否发生改变
 	private final int fs_size = 	0x07;
 	private final int fs_area =	0x01;
 //	private final int fs_perimeter= 0x02;
 	private final int fs_xy = 	0x10;
-	private final int fs_points = 	0x14;
+	private final int fs_angle1 =	0x20;
+	private final int fs_points = 	0x34;
 	private final int fs_all = 	0xff;
 
 	public  RegularPolygon_X() {
@@ -31,10 +33,15 @@ public class RegularPolygon_X{
 	}
 
 	public  RegularPolygon_X(int _n, double _side, double _x, double _y) {
+		this(_n, _side, _x, _y, 0.0);
+	}
+
+	public  RegularPolygon_X(int _n, double _side, double _x, double _y, double angle) {
 		n = _n;
 		x = _x;
 		y = _y;
 		side = _side;
+		angle1 = angle;
 		flags = fs_all;
 	}
 
@@ -42,11 +49,13 @@ public class RegularPolygon_X{
 	public double getSide() { return side; }
 	public double getX() { return x; }
 	public double getY() { return y; }
+	public double getAngle1() { return angle1; }
 
 	public void setN(int _n) { n = _n; flags |= fs_size; }
 	public void setSide(double _side) { side = _side; flags |= fs_size; }
 	public void setX(double _x) { x = _x; flags |= fs_xy; }
 	public void setY(double _y) { y = _y; flags |= fs_xy; }
+	public void setAngle1(double _angle) { angle1 = Math.PI*_angle/180.0; flags |= fs_angle1; }
 
 	public double area() {
 		if ((flags&fs_area) != 0) {
@@ -79,7 +88,7 @@ public class RegularPolygon_X{
 
 	private void calculate_points_xy() { //计算各个顶点坐标
 		int i;
-		double angle=0, top_angle=Math.PI*2.0/n, diagonal=side/2.0/Math.sin(top_angle/2.0);
+		double angle=angle1, top_angle=Math.PI*2.0/n, diagonal=side/2.0/Math.sin(top_angle/2.0);
 
 		cx = new double[n];
 		cy = new double[n];

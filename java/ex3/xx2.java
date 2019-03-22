@@ -18,7 +18,9 @@ public class xx2 extends Application /* throws java.io.IOException*/{
 		x = scan.nextDouble();
 		y = scan.nextDouble();
 
-		var rp = new RegularPolygon(n, side, x, y);
+		var rp = new RegularPolygon_X(n, side, x, y);
+
+		rp.setAngle1(0);
 
 		cx = rp.getXPoints();
 		cy = rp.getYPoints();
