@@ -20,7 +20,7 @@ public class xx2 extends Application /* throws java.io.IOException*/{
 
 		var rp = new RegularPolygon_X(n, side, x, y);
 
-		rp.setAngle1(0);
+		rp.setAngleFix(-1);
 
 		cx = rp.getXPoints();
 		cy = rp.getYPoints();
