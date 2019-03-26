@@ -2,11 +2,11 @@ import java.time.LocalDate;
 import javafx.scene.paint.Color;
 
 public final class __{
-	public static String merge_to_print(int n, String ins, String... str) {
-		return merge_to_print(n, '\n', "", ins, "", str);
+	public static String string_merge(int n, String left, String ins, String right, String... str) {
+		return string_merge(n, '\n', left, ins, right, str);
 	}
 
-	public static String merge_to_print(int n, char delim, String left, String ins, String right, String... str) {
+	public static String string_merge(int n, char delim, String left, String ins, String right, String... str) {
 		int i;
 		int lf[] = new int[n];
 		int rlf[] = new int[n];
@@ -52,7 +52,7 @@ public final class __{
 		for (i=0; i<row; ++i) {
 			for (j=0; j<col; j++)
 				s[j] = "".format("%6c%2d月%10c\n", ' ', i*col+j+1, ' ') + getCalendarString(year, i*col+j+1);
-			str.append(merge_to_print(col, '\n', " ", "    ", " ", s));
+			str.append(string_merge(col, " ", "    ", " ", s));
 			str.append('\n');
 		}
 		str.deleteCharAt(str.length()-1);

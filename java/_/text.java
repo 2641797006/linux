@@ -15,16 +15,12 @@ public class text extends Application {
 		Text text = new Text();
 
 		text.setText(__.calendarOfYear(2019, 4));
-		text.setFill(__.RGB(0));
+		text.setFill(__.RGB(0x34974a));
+		text.setFont(new Font("Courier New", -1));
 
 		root.getChildren().add(text);
 
-		Font font = new Font(-1);
-		printf("font-size=%f\n", font.getSize());
-		Screen screen = Screen.getPrimary();
-		printf("dpi=%f\n", screen.getDpi());
-
-		Scene scene = new Scene(root, text.getLayoutBounds().getWidth(), text.getLayoutBounds().getHeight(), __.RGB(0xf0f0f2));
+		Scene scene = new Scene(root, text.getLayoutBounds().getWidth(), text.getLayoutBounds().getHeight(), __.RGB(0xffffff));
 
 		stage.setScene(scene);
 		stage.show();
