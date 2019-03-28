@@ -144,12 +144,16 @@ _24k(back) (_24k_list *list)
 _24k(iterator)
 _24k(first) (_24k_list *list)
 {
+	if ( ! list->size )
+		_24k_error("create iterator from an empty list\n", 0);
 	return &list->head->next->data;
 }
 
 _24k(iterator)
 _24k(last) (_24k_list *list)
 {
+	if ( ! list->size )
+		_24k_error("create iterator from an empty list\n", 0);
 	return &list->tail->prev->data;
 }
 
@@ -247,27 +251,63 @@ _24k(erase) (_24k_list *list, _24k(iterator) it)
 
 
 int
-_24k(push_back) (_24k_list *list, _24k_list_t *t)
-{
-	return _24k(insert)(list, _24k(tail)(list), t);
+_24k(push_back) (_24k_list *list, _24k_list_t *t) {
+	_24k(node) *p = (_24k(node)*) malloc ( sizeof(_24k(node)) );
+	if ( ! p )
+		return 0;
+	memcpy(&p->data, t, sizeof(_24k_list_t));
+	p->prev = list->tail->prev;
+	p->next = list->tail;
+	list->tail->prev = p;
+	p->prev->next = p;
+	++list->size;
+	return 1;
 }
 
 int
-_24k(push_front) (_24k_list *list, _24k_list_t *t)
-{
-	return _24k(insert)(list, _24k(first)(list), t);
+_24k(push_front) (_24k_list *list, _24k_list_t *t) {
+	_24k(node) *p = (_24k(node)*) malloc ( sizeof(_24k(node)) );
+	if ( ! p )
+		return 0;
+	memcpy(&p->data, t, sizeof(_24k_list_t));
+	p->next = list->head->next;
+	p->prev = list->head;
+	list->head->next = p;
+	p->next->prev = p;
+	++list->size;
+	return 1;
 }
 
 int
-_24k(pop_back) (_24k_list *list)
-{
-	return _24k(erase)(list, _24k(last)(list));
+_24k(pop_back) (_24k_list *list) {
+	_24k(node) *p;
+
+	if ( ! list->size ) {
+		_24k_error("pop a list which is empty\n", 0);
+		return 0;
+	}
+	p = list->tail->prev;
+	list->tail->prev = p->prev;
+	p->prev->next = list->tail;
+	free(p);
+	--list->size;
+	return 1;
 }
 
 int
-_24k(pop_front) (_24k_list *list)
-{
-	return _24k(erase)(list, _24k(first)(list));
+_24k(pop_front) (_24k_list *list) {
+	_24k(node) *p;
+
+	if ( ! list->size ) {
+		_24k_error("pop a list which is empty\n", 0);
+		return 0;
+	}
+	p = list->head->next;
+	list->head->next = p->next;
+	p->next->prev = list->head;
+	free(p);
+	--list->size;
+	return 1;
 }
 
 #undef _24k_list_lk__
