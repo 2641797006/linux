@@ -1,6 +1,6 @@
 #ifndef _24k_list_t
-#error: No define "_24k_list_t"
-#endif
+# error: No define "_24k_list_t"
+#else
 
 /*
  * T = _24k_list_t
@@ -9,19 +9,23 @@
  * 
  * bool T_list_init (T_list *list) // 初始化list
  * void T_list_destroy (T_list *list) // 销毁list
+ *
  * T T_list_front (T_list *list) // 返回list中首个元素
  * T T_list_back (T_list *list) // 返回list中最后一个元素
+ *
  * T_list_iterator T_list_first (T_list *list) // 返回指向首个元素的迭代器
  * T_list_iterator T_list_last (T_list *list) // 返回指向最后一个元素的迭代器
  * T_list_iterator T_list_head (T_list *list) // 首个元素前一个位置
  * T_list_iterator T_list_tail (T_list *list) // 最后一个元素后一个位置
  * bool T_list_prev (T_list_iterator *pit) // pit:迭代器地址, 使迭代器指向前一个元素
  * bool T_list_next (T_list_iterator *pit) // pit:迭代器地址, 使迭代器指向后一个元素
+ *
  * bool T_list_empty (T_list *list) // 判断list是否为空
  * size_t T_list_size (T_list *list) // 返回list中元素个数
  * void T_list_clear (T_list *list) // 清空list中所有元素
  * bool T_list_insert (T_list *list, T_list_iterator it, T *t) // 把元素t插入到迭代器it前面
  * bool T_list_erase (T_list *list, T_list_iterator it) // 删除迭代器it指向的元素
+ *
  * bool T_list_push_back (T_list *list, T *t) // 向list末尾插入元素t
  * bool T_list_push_front (T_list *list, T *t) // 向list首部插入元素t
  * bool T_list_pop_back (T_list *list) // 删除list末尾的一个元素
@@ -283,3 +287,5 @@ _24k(pop_front) (_24k_list *list)
 
 #undef _24k_list_t
 #undef _24k_sptr
+
+#endif
