@@ -2,6 +2,31 @@
 #error: No define "_24k_vector_t"
 #endif
 
+/*
+ * T = _24k_vector_t
+ * T_vector // vector type
+ * bool T_vector_init (T_vector *vec) // init T_vector vec
+ * void T_vector_destroy (T_vector *vec) // destroy T_vector vec
+ * bool T_vector_assign (T_vector *vec, size_t count, T *t) // 清空vec 并且 插入count个t
+ * T* T_vector_at (T_vector *vec, size_t pos) // 获取vec中第pos个元素的地址
+ * T* T_vector_front (T_vector *vec) // 获取vec首个元素的地址
+ * T* T_vector_back (T_vector *vec) // 获取vec最后一个元素的地址
+ * T* T_vector_data (T_vector *vec) // 返回vec的T数组首地址
+ * bool T_vector_empty (T_vector *vec) // 判断vec是否为空
+ * size_t T_vector_size (T_vector *vec) // 返回vec元素个数
+ * bool T_vector_reserve (T_vector *vec, size_t new_cap) // 保证vec可以容纳new_cap个元素, 避免多次扩展内存
+ * size_t T_vector_capacity (T_vector *vec) // 返回vec的可以容纳元素的数量
+ * void T_vector_shrink_to_fit (T_vector *vec) // 释放多余的内存
+ * void T_vector_clear (T_vector *vec) // 清空vec中所有元素
+ * bool T_vector_resize (T_vector *vec, size_t count) // 调整vec元素个数, 新增元素将被初始化为0
+ * bool T_vector_insert (T_vector *vec, size_t pos, T *t) // 在vec的pos位置插入元素t
+ * bool T_vector_erase (T_vector *vec, size_t pos) // 擦除vec中pos位置的元素
+ * bool T_vector_push_back (T_vector *vec, T *t) // 在vec末尾插入元素t
+ * bool T_vector_pop_back (T_vector *vec) // 删除vec最后一个元素
+ * int T_vector_traverse (T_vector *vec, int (*visit)(T*)) // 使用visit函数顺序访问vec中所有元素, 当visit返回非0时终止并返回该值
+ *
+ */
+
 #ifndef _STDLIB_H // malloc(), exit()
 #include <stdlib.h>
 #ifndef _STDLIB_H
@@ -40,7 +65,7 @@
 #define _24k_vector_init_size	0x4
 #define _24k_expand_times	2.0
 
-void
+static void
 _24k(fatal_error) (const char *fmt, ...) {
 #ifndef _24k_vector_not_print_error
 	va_list ap;
@@ -90,7 +115,7 @@ _24k(at) (_24k_vector *vec, size_t pos) {
 }
 
 _24k_vector_t*
-_24k(begin) (_24k_vector *vec) {
+_24k(front) (_24k_vector *vec) {
 	if ( ! vec->size ) {
 		_24k_error("%s: vector is empty\n", _24k_strmac(_24k(front)));
 		return 0;
@@ -99,7 +124,7 @@ _24k(begin) (_24k_vector *vec) {
 }
 
 _24k_vector_t*
-_24k(end) (_24k_vector *vec) {
+_24k(back) (_24k_vector *vec) {
 	if ( ! vec->size ) {
 		_24k_error("%s: vector is empty\n", _24k_strmac(_24k(back)));
 		return 0;
