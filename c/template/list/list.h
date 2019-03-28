@@ -37,9 +37,6 @@
 #define _24k_strmac__(x)	#x
 #define _24k_strmac(x)		_24k_strmac__(x)
 
-#define _24k_list_init_size	0x4
-#define _24k_expand_times	2.0
-
 void
 _24k(fatal_error) (const char *fmt, ...) {
 #ifndef _24k_list_not_print_error
@@ -99,7 +96,7 @@ _24k(destroy) (_24k_list *list) {
 _24k_list_t*
 _24k(front) (_24k_list *list) {
 	if ( ! list->size ) {
-		_24k_error("%s: vector is empty\n", _24k_strmac(_24k(front)));
+		_24k_error("%s: list is empty\n", _24k_strmac(_24k(front)));
 		return 0;
 	}
 	return &list->head->next->data;
@@ -108,7 +105,7 @@ _24k(front) (_24k_list *list) {
 _24k_list_t*
 _24k(back) (_24k_list *list) {
 	if ( ! list->size ) {
-		_24k_error("%s: vector is empty\n", _24k_strmac(_24k(back)));
+		_24k_error("%s: list is empty\n", _24k_strmac(_24k(back)));
 		return 0;
 	}
 	return &list->tail->prev->data;
@@ -133,6 +130,12 @@ _24k(clear) (_24k_list *list) {
 }
 
 int
+_24k(insert) (_24k_list *list, _24k(node) *p, _24k_list_t *t) {
+
+
+}
+
+int
 _24k(push_back) (_24k_list *list, _24k_list_t *t) {
 	_24k(node) *p = (_24k(node)*) malloc ( sizeof(_24k(node)) );
 	if ( ! p ) {
@@ -144,6 +147,7 @@ _24k(push_back) (_24k_list *list, _24k_list_t *t) {
 	p->next = list->tail;
 	list->tail->prev = p;
 	p->prev->next = p;
+	++list->size;
 	return 1;
 }
 
@@ -159,6 +163,7 @@ _24k(push_front) (_24k_list *list, _24k_list_t *t) {
 	p->prev = list->head;
 	list->head->next = p;
 	p->next->prev = p;
+	++list->size;
 	return 1;
 }
 
@@ -167,13 +172,14 @@ _24k(pop_back) (_24k_list *list) {
 	_24k(node) *p;
 
 	if ( ! list->size ) {
-		_24k_error("%s: vector is empty\n", _24k_strmac(_24k(pop_back)));
+		_24k_error("%s: list is empty\n", _24k_strmac(_24k(pop_back)));
 		return 0;
 	}
 	p = list->tail->prev;
 	list->tail->prev = p->prev;
 	p->prev->next = list->tail;
 	free(p);
+	--list->size;
 	return 1;
 }
 
@@ -182,40 +188,44 @@ _24k(pop_front) (_24k_list *list) {
 	_24k(node) *p;
 
 	if ( ! list->size ) {
-		_24k_error("%s: vector is empty\n", _24k_strmac(_24k(pop_front)));
+		_24k_error("%s: list is empty\n", _24k_strmac(_24k(pop_front)));
 		return 0;
 	}
 	p = list->head->next;
 	list->head->next = p->next;
 	p->next->prev = list->head;
 	free(p);
+	--list->size;
 	return 1;
 }
 
-
 int
-_24k(insert) (_24k_list *list, _24k_list_t *pos, _24k_list_t *t) {
+_24k(traverse) (_24k_list *list, int (*visit)(_24k_list_t*)) {
+	int r;
+	_24k(node) *p = list->head->next;
 
-
+	while ( p != list->tail ) {
+		r = visit( &p->data );
+		if ( r )
+			return r;
+		p = p->next;
+	}
+	return 0;
 }
 
+#undef _24k_list_lk__
+#undef _24k_list_lk
+#undef _24k_list
 
+#undef _24k__
+#undef _24k_
+#undef _24k
 
+#undef _24k_error__
+#undef _24k_error
 
+#undef _24k_strmac__
+#undef _24k_strmac
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#undef _24k_list_t
 
