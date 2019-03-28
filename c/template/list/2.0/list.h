@@ -2,6 +2,14 @@
 #error: No define "_24k_list_t"
 #endif
 
+/*
+ * T = _24k_list_t
+ * T_list // list type
+ * 
+ * T_
+ *
+ */
+
 #ifndef _STDLIB_H // malloc(), exit()
 #include <stdlib.h>
 #ifndef _STDLIB_H
@@ -115,7 +123,7 @@ _24k(back) (_24k_list *list)
 }
 
 _24k(iterator)
-_24k(begin) (_24k_list *list)
+_24k(first) (_24k_list *list)
 {
 	if ( ! list->size )
 		_24k_error("create iterator from an empty list\n", 0);
@@ -123,17 +131,45 @@ _24k(begin) (_24k_list *list)
 }
 
 _24k(iterator)
-_24k(end) (_24k_list *list)
+_24k(last) (_24k_list *list)
 {
 	if ( ! list->size )
 		_24k_error("create iterator from an empty list\n", 0);
 	return &list->tail->prev->data;
 }
 
+_24k(iterator)
+_24k(head) (_24k_list *list)
+{
+	return &list->head->data;
+}
+
+_24k(iterator)
+_24k(tail) (_24k_list *list)
+{
+	return &list->tail->data;
+}
+
+int
+_24k(prev) (_24k(iterator) *pit)
+{
+	_24k(node) *p = _24k_sptr( _24k(node), data, *pit );
+	if ( ! p->prev ) {
+		_24k_error("iterator out of bound\n", 0);
+		return 0;
+	}
+	*pit = &p->prev->data;
+	return 1;
+}
+
 int
 _24k(next) (_24k(iterator) *pit)
 {
 	_24k(node) *p = _24k_sptr( _24k(node), data, *pit );
+	if ( ! p->next ) {
+		_24k_error("iterator out of bound\n", 0);
+		return 0;
+	}
 	*pit = &p->next->data;
 	return 1;
 }
@@ -160,8 +196,13 @@ _24k(clear) (_24k_list *list)
 }
 
 int
-_24k(insert) (_24k_list *list, _24k(node) *p, _24k_list_t *t)
+_24k(insert) (_24k_list *list, _24k(iterator) it, _24k_list_t *t)
 {
+	_24k(node) *p = _24k_sptr( _24k(node), data, it );
+	if ( p == list->head ) {
+		_24k_error("insert pos error\n", 0);
+		return 0;
+	}
 	_24k(node) *p1 = (_24k(node)*) malloc ( sizeof(_24k(node)) );
 	if ( ! p1 )
 		return 0;
@@ -174,12 +215,19 @@ _24k(insert) (_24k_list *list, _24k(node) *p, _24k_list_t *t)
 	return 1;
 }
 
-void
-_24k(erase) (_24k_list *list, _24k(node) *p) {
+int
+_24k(erase) (_24k_list *list, _24k(iterator) it)
+{
+	_24k(node) *p = _24k_sptr( _24k(node), data, it );
+	if ( p == list->head || p == list->tail ) {
+		_24k_error("erase pos error\n", 0);
+		return 0;
+	}
 	p->next->prev = p->prev;
 	p->prev->next = p->next;
 	free(p);
 	--list->size;
+	return 1;
 }
 
 
@@ -243,20 +291,6 @@ _24k(pop_front) (_24k_list *list) {
 	return 1;
 }
 
-int
-_24k(traverse) (_24k_list *list, int (*visit)(_24k_list_t*)) {
-	int r;
-	_24k(node) *p = list->head->next;
-
-	while ( p != list->tail ) {
-		r = visit( &p->data );
-		if ( r )
-			return r;
-		p = p->next;
-	}
-	return 0;
-}
-
 #undef _24k_list_lk__
 #undef _24k_list_lk
 #undef _24k_list
@@ -269,4 +303,4 @@ _24k(traverse) (_24k_list *list, int (*visit)(_24k_list_t*)) {
 #undef _24k_error
 
 #undef _24k_list_t
-
+#undef _24k_sptr

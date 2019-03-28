@@ -1,47 +1,52 @@
 #include <stdio.h>
 
+typedef struct{
+	char c;
+	int i;
+}stu;
+
 #define _24k_list_t int
 #include "list.h"
 
-int print_int(int*);
+#define _24k_list_t stu
+#include "list.h"
 
 int
 main()
 {
 	int i;
+	stu s = { 'A', 0 };
 	int_list v1;
+	stu_list v2;
 
 	int_list_init(&v1);
+	stu_list_init(&v2);
 
-	for ( i=0; i<100; ++i ) {
+	for ( i=0; i<30; ++i ) {
 		int_list_push_back(&v1, &i);
-		int_list_push_front(&v1, &i);
+		s.i = i+60000;
+		stu_list_push_back(&v2, &s);
 	}
 
-	int_list_traverse(&v1, print_int);
-	puts("");
-
-	for ( i=0; i<50; ++i ) {
+	for ( i=0; i<10; ++i ) {
 		int_list_pop_back(&v1);
-		int_list_pop_front(&v1);
+		stu_list_pop_back(&v2);
 	}
 
-	int_list_traverse(&v1, print_int);
+	int_list_iterator it1 = int_list_first(&v1);
+	stu_list_iterator it2 = stu_list_first(&v2);
+
+	while ( it1 != int_list_tail(&v1) ) {
+		printf("%d ", *it1);
+		int_list_next(&it1);
+	}
 	puts("");
-
-	puts("iterator:");
-	int_list_iterator it = int_list_begin(&v1);
-	for (i=0; i<30; ++i) {
-		printf("it=%d\n", *it);
-		int_list_next(&it);
+	while ( it2 != stu_list_tail(&v2) ) {
+		printf("[%c,%d] ", it2->c, it2->i);
+		stu_list_next(&it2);
 	}
-
+	puts("");
 	int_list_destroy(&v1);
-}
-
-int print_int(int *p)
-{
-	printf("%d ", *p);
-	return 0;
+	stu_list_destroy(&v2);
 }
 
