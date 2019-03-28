@@ -131,9 +131,28 @@ _24k(clear) (_24k_list *list) {
 
 int
 _24k(insert) (_24k_list *list, _24k(node) *p, _24k_list_t *t) {
-
-
+	_24k(node) *p1 = (_24k(node)*) malloc ( sizeof(_24k(node)) );
+	if ( ! p1 ) {
+		_24k_error("%s: Memory allocation failed\n", _24k_strmac(_24k(insert)));
+		return 0;
+	}
+	memcpy(&p1->data, t, sizeof(_24k_list_t));
+	p1->next = p;
+	p1->prev = p->prev;
+	p->prev = p1;
+	p1->prev->next = p1;
+	++list->size;
+	return 1;
 }
+
+void
+_24k(erase) (_24k_list *list, _24k(node) *p) {
+	p->next->prev = p->prev;
+	p->prev->next = p->next;
+	free(p);
+	--list->size;
+}
+
 
 int
 _24k(push_back) (_24k_list *list, _24k_list_t *t) {
