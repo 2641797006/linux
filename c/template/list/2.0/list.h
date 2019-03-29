@@ -10,6 +10,7 @@
  * bool T_list_init (T_list *list) // 初始化list
  * void T_list_destroy (T_list *list) // 销毁list
  *
+ * bool T_list_assign (T_list *list, size_t count, T *t) // 清空list 并且 插入count个t
  * T T_list_front (T_list *list) // 返回list中首个元素
  * T T_list_back (T_list *list) // 返回list中最后一个元素
  *
@@ -272,6 +273,18 @@ int
 _24k(pop_front) (_24k_list *list)
 {
 	return _24k(erase)(list, _24k(first)(list));
+}
+
+int
+_24k(assign) (_24k_list *list, size_t count, _24k_list_t *t)
+{
+	size_t i;
+
+	_24k(clear)(list);
+	for (i=0; i<count; ++i)
+		if ( ! _24k(push_back)(list, t) )
+			return 0;
+	return 1;
 }
 
 #undef _24k_list_lk__
