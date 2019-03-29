@@ -10,7 +10,7 @@
  * bool T_vector_init (T_vector *vec) // init T_vector vec
  * void T_vector_destroy (T_vector *vec) // destroy T_vector vec
  *
- * bool T_vector_assign (T_vector *vec, size_t count, T *t) // 清空vec 并且 插入count个t
+ * bool T_vector_assign (T_vector *vec, size_t count, const T *t) // 清空vec 并且 插入count个t
  * T* T_vector_at (T_vector *vec, size_t pos) // 获取vec中第pos个元素的地址
  * T T_vector_front (T_vector *vec) // 获取vec首个元素
  * T T_vector_back (T_vector *vec) // 获取vec最后一个元素
@@ -31,9 +31,9 @@
  * void T_vector_clear (T_vector *vec) // 清空vec中所有元素
  * bool T_vector_resize (T_vector *vec, size_t count) // 调整vec元素个数, 新增元素将被初始化为0
  *
- * bool T_vector_insert (T_vector *vec, T_vector_iterator it, T *t) // 在迭代器it前面插入元素t
+ * bool T_vector_insert (T_vector *vec, T_vector_iterator it, const T *t) // 在迭代器it前面插入元素t
  * bool T_vector_erase (T_vector *vec, T_vector_iterator it) // 删除迭代器it指向的元素
- * bool T_vector_push_back (T_vector *vec, T *t) // 在vec末尾插入元素t
+ * bool T_vector_push_back (T_vector *vec, const T *t) // 在vec末尾插入元素t
  * bool T_vector_pop_back (T_vector *vec) // 删除vec最后一个元素
  *
  */
@@ -251,7 +251,7 @@ _24k(resize) (_24k_vector *vec, size_t count)
 }
 
 int
-_24k(insert) (_24k_vector *vec, _24k(iterator) it, _24k_vector_t *t)
+_24k(insert) (_24k_vector *vec, _24k(iterator) it, const _24k_vector_t *t)
 {
 	size_t pos = it - _24k(data)(vec);
 	_24k_vector_t *p;
@@ -285,7 +285,7 @@ _24k(erase) (_24k_vector *vec, _24k(iterator) it)
 }
 
 int
-_24k(push_back) (_24k_vector *vec, _24k_vector_t *t)
+_24k(push_back) (_24k_vector *vec, const _24k_vector_t *t)
 {
 	return _24k(insert)(vec, _24k(tail)(vec), t);
 }
@@ -297,7 +297,7 @@ _24k(pop_back) (_24k_vector *vec)
 }
 
 int
-_24k(assign) (_24k_vector *vec, size_t count, _24k_vector_t *t)
+_24k(assign) (_24k_vector *vec, size_t count, const _24k_vector_t *t)
 {
 	size_t i;
 
