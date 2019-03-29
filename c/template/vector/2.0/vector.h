@@ -119,7 +119,7 @@ _24k_vector_t*
 _24k(at) (_24k_vector *vec, size_t pos)
 {
 	if ( pos<0 || pos>=vec->size ) {
-		_24k_error("Index out of bound, pos=%d, size=%d\n", pos, vec->size);
+		_24k_error("Index out of bound, index=%d, size=%d\n", pos, vec->size);
 		return 0;
 	}
 	return vec->data + pos;
@@ -256,7 +256,7 @@ _24k(insert) (_24k_vector *vec, size_t pos, _24k_vector_t *t)
 	_24k_vector_t *p;
 
 	if ( pos<0 || pos>vec->size ) {
-		_24k_error("Index out of bound, pos=%d, size=%d\n", pos, vec->size);
+		_24k_error("Index out of bound, index=%d, size=%d\n", pos, vec->size);
 		return 0;
 	}
 	if ( vec->size == vec->capacity && ! _24k(reserve)(vec, vec->capacity * _24k_expand_times) )
@@ -274,7 +274,7 @@ _24k(erase) (_24k_vector *vec, size_t pos)
 	_24k_vector_t *p;
 
 	if (pos<0 || pos>=vec->size) {
-		_24k_error("Index out of bound, pos=%d, size=%d\n", pos, vec->size);
+		_24k_error("Index out of bound, index=%d, size=%d\n", pos, vec->size);
 		return 0;
 	}
 	p = vec->data + pos;
