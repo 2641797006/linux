@@ -10,7 +10,7 @@
  * bool T_list_init (T_list *list) // 初始化list
  * void T_list_destroy (T_list *list) // 销毁list
  *
- * bool T_list_assign (T_list *list, size_t count, T *t) // 清空list 并且 插入count个t
+ * bool T_list_assign (T_list *list, size_t count, const T *t) // 清空list 并且 插入count个t
  * T T_list_front (T_list *list) // 返回list中首个元素
  * T T_list_back (T_list *list) // 返回list中最后一个元素
  *
@@ -24,11 +24,11 @@
  * bool T_list_empty (T_list *list) // 判断list是否为空
  * size_t T_list_size (T_list *list) // 返回list中元素个数
  * void T_list_clear (T_list *list) // 清空list中所有元素
- * bool T_list_insert (T_list *list, T_list_iterator it, T *t) // 把元素t插入到迭代器it前面
+ * bool T_list_insert (T_list *list, T_list_iterator it, const T *t) // 把元素t插入到迭代器it前面
  * bool T_list_erase (T_list *list, T_list_iterator it) // 删除迭代器it指向的元素
  *
- * bool T_list_push_back (T_list *list, T *t) // 向list末尾插入元素t
- * bool T_list_push_front (T_list *list, T *t) // 向list首部插入元素t
+ * bool T_list_push_back (T_list *list, const T *t) // 向list末尾插入元素t
+ * bool T_list_push_front (T_list *list, const T *t) // 向list首部插入元素t
  * bool T_list_pop_back (T_list *list) // 删除list末尾的一个元素
  * bool T_list_pop_front (T_list *list) // 删除list首部的一个元素
  *
@@ -216,7 +216,7 @@ _24k(clear) (_24k_list *list)
 }
 
 int
-_24k(insert) (_24k_list *list, _24k(iterator) it, _24k_list_t *t)
+_24k(insert) (_24k_list *list, _24k(iterator) it, const _24k_list_t *t)
 {
 	_24k(node) *p = _24k_sptr( _24k(node), data, it );
 	if ( p == list->head ) {
@@ -252,13 +252,13 @@ _24k(erase) (_24k_list *list, _24k(iterator) it)
 
 
 int
-_24k(push_back) (_24k_list *list, _24k_list_t *t)
+_24k(push_back) (_24k_list *list, const _24k_list_t *t)
 {
 	return _24k(insert)(list, _24k(tail)(list), t);
 }
 
 int
-_24k(push_front) (_24k_list *list, _24k_list_t *t)
+_24k(push_front) (_24k_list *list, const _24k_list_t *t)
 {
 	return _24k(insert)(list, _24k(first)(list), t);
 }
@@ -276,7 +276,7 @@ _24k(pop_front) (_24k_list *list)
 }
 
 int
-_24k(assign) (_24k_list *list, size_t count, _24k_list_t *t)
+_24k(assign) (_24k_list *list, size_t count, const _24k_list_t *t)
 {
 	size_t i;
 
