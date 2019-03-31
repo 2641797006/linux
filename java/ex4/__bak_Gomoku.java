@@ -17,74 +17,45 @@ public class Gomoku
 	// 棋盘格子宽高
 	double grid_width, grid_height;
 	// 棋盘格线paint
-	Paint chessboard_stroke;
+	Paint chessboard_paint;
 	// 棋盘填充paint
-	Paint chessboard_fill;
+	Paint chessboard_fill_paint;
 
 	// 棋子椭圆横轴,纵轴
 	double chessman_HAxis, chessman_VAxis;
-	// 棋子边线paint
-	Paint chessmanB_stroke;
-	Paint chessmanW_stroke;
 	// 棋子填充paint
-	Paint chessmanB_fill;
-	Paint chessmanW_fill;
+	Paint chessman_paint0;
+	Paint chessman_paint1;
 
 	// 外边距,内边距
 	double margin, padding;
-	// 边框填充paint
-	Paint border_fill;
-/*
-public:
-	Gomoku();
+	Paint border_paint;
 
-	Canvas getCanvas();
-	GraphicsContext getGC();
-	double getWidth();
-	double getHeight();
-
-	Gomoku setStartXY (double x, double y);
-	Gomoku setMargin (double);
-	Gomoku setPadding (double);
-	Gomoku setBorderFill (Paint);
-
-	Gomoku setChessmanStroke (Paint B, Paint W);
-	Gomoku setChessmanFill (Paint B, Paint W);
-
-	Gomoku setChessboardStroke (Paint);
-	Gomoku setChessboardFill (Paint);
-	Gomoku setChessboardSize (int row_col, double grid_side);
-	Gomoku setChessboardSize (int row, int col, double grid_width, double grid_height);
-
-private:
-	Gomoku flushCanvasSize();
-	Gomoku flushChessboardStartXY();
-*/
 	public Gomoku()
 	{
 		canvas = new Canvas();
 
-		setStartXY(0,0);
-		setMargin(10);
-		setPadding(10);
-		setBorderFill ( Color.web("#FFBCD1") );
-
-		setChessmanStroke ( Color.BLACK, Color.WHITE );
-		setChessmanFill ( Color.BLACK, Color.WHITE );
-
-		setChessboardStroke ( Color.BLACK );
-		setChessboardFill ( Color.WHITE );
+		startX = 0;
+		startY = 0;
+		margin = 10;
+		padding = 10;
 		setChessboardSize ( 19, 25.0 );
+		setCanvasSize();
 
-		flushCanvasSize();
+		chessboard_paint = Color.BLACK;
+		chessboard_fill_paint = Color.WHITE;
+		chessman_paint0 = Color.BLACK;
+		chessman_paint1 = Color.WHITE;
+		border_paint = Color.PINK;
 	}
 
 	public Canvas getCanvas()
 	{
+//		setCanvasSize();
 		return this.canvas;
 	}
 
-	public GraphicsContext getGC()
+	GraphicsContext	getGC()
 	{
 		return this.canvas.getGraphicsContext2D();
 	}
@@ -103,47 +74,21 @@ private:
 	{
 		startX = x;
 		startY = y;
-		flushChessboardStartXY();
+		setChessboardStartXY();
 		return this;
 	}
 
 	public Gomoku setMargin (double margin)
 	{
 		this.margin = margin;
-		flushChessboardStartXY();
+		setChessboardStartXY();
 		return this;
 	}
 
 	public Gomoku setPadding (double padding)
 	{
 		this.padding = padding;
-		flushChessboardStartXY();
-		return this;
-	}
-
-	public Gomoku setChessmanStroke (Paint B, Paint W)
-	{
-		this.chessmanB_stroke = B;
-		this.chessmanW_stroke = W;
-		return this;
-	}
-
-	public Gomoku setChessmanFill (Paint B, Paint W)
-	{
-		this.chessmanB_fill = B;
-		this.chessmanW_fill = W;
-		return this;
-	}
-
-	public Gomoku setChessboardStroke (Paint paint)
-	{
-		this.chessboard_stroke = paint;
-		return this;
-	}
-
-	public Gomoku setChessboardFill (Paint paint)
-	{
-		this.chessboard_fill = paint;
+		setChessboardStartXY();
 		return this;
 	}
 
@@ -158,28 +103,20 @@ private:
 		this.chessboard_col = col;
 		this.grid_width = grid_width;
 		this.grid_height = grid_height;
-		// 棋子大小 与 棋盘格子 相关
-		this.chessman_HAxis = grid_width-1;
-		this.chessman_VAxis = grid_height-1;
-
-		flushChessboardStartXY();
+		this.chessman_HAxis = grid_width;
+		this.chessman_VAxis = grid_height;
+		setChessboardStartXY();
 		return this;
 	}
 
-	Gomoku flushChessboardStartXY()
+	Gomoku setChessboardStartXY()
 	{
 		this.chessboard_startX = this.startX + this.margin + this.padding + this.grid_width/2.0;
 		this.chessboard_startY = this.startY + this.margin + this.padding + this.grid_height/2.0;
 		return this;
 	}
 
-	public Gomoku setBorderFill (Paint paint)
-	{
-		this.border_fill = paint;
-		return this;
-	}
-
-	Gomoku flushCanvasSize ()
+	public Gomoku setCanvasSize ()
 	{
 		this.canvas.setWidth (this.chessboard_startX + this.grid_width*(this.chessboard_col-1) +
 					this.grid_width/2.0 + this.padding + this.margin);
@@ -197,10 +134,10 @@ private:
 
 	public Gomoku draw(GraphicsContext gc)
 	{
-		flushCanvasSize();
+		setCanvasSize();
 		gc.setFill(Color.WHITE);
 		gc.fillRect( startX, startY, getWidth(), getHeight() );
-		gc.setFill(border_fill);
+		gc.setFill(border_paint);
 		gc.fillRoundRect( startX+margin, startY+margin,
 				getWidth() - margin*2, getHeight() - margin*2,
 				padding, padding);
@@ -208,27 +145,11 @@ private:
 //		gc.fillRoundRect( startX+margin+padding, startY+margin+padding,
 //				getWidth()-margin-padding, getHeight()-margin-padding,
 //				grid_width/2.0, grid_height/2.0 );
-		chessboard_fill = Color.web("#AAF9F8");
-		fillChessboard();
 		chessboard();
 
 		setChessman(3, 6, 1);
 		setChessman(4, 6, 0);
 		setChessman(7, 3, 1);
-		return this;
-	}
-
-	public Gomoku fillChessboard ()
-	{
-		return fillChessboard ( getGC(), chessboard_fill );
-	}
-
-	public Gomoku fillChessboard (GraphicsContext gc, Paint paint)
-	{
-		gc.setFill(paint);
-		gc.fillRoundRect( this.chessboard_startX - this.grid_width/2.0, this.chessboard_startY - this.grid_height/2.0,
-					this.grid_width * this.chessboard_col, this.grid_height * this.chessboard_row,
-					this.grid_width/2.0, this.grid_height/2.0 );
 		return this;
 	}
 
@@ -268,7 +189,7 @@ private:
 
 	public void chessboard (GraphicsContext gc)
 	{
-		chessboard ( gc, this.chessboard_stroke,
+		chessboard ( gc, this.chessboard_paint,
 			this.chessboard_startX, this.chessboard_startY,
 			this.chessboard_row, this.chessboard_col,
 			this.grid_width, this.grid_height );
