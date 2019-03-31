@@ -5,34 +5,48 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Gomoku
 {
+protected
 	Canvas canvas;
 
 	// 绘图起点
+protected
 	double startX, startY;
 
 	// 棋盘左上角坐标
+protected
 	double chessboard_startX, chessboard_startY;
 	// 棋盘行列格线数
+protected
 	int chessboard_row, chessboard_col;
 	// 棋盘格子宽高
+protected
 	double grid_width, grid_height;
 	// 棋盘格线paint
+protected
 	Paint chessboard_stroke;
 	// 棋盘填充paint
+protected
 	Paint chessboard_fill;
 
 	// 棋子椭圆横轴,纵轴
+protected
 	double chessman_HAxis, chessman_VAxis;
 	// 棋子边线paint
+protected
 	Paint chessmanB_stroke;
+protected
 	Paint chessmanW_stroke;
 	// 棋子填充paint
+protected
 	Paint chessmanB_fill;
+protected
 	Paint chessmanW_fill;
 
 	// 外边距,内边距
+protected
 	double margin, padding;
 	// 边框填充paint
+protected
 	Paint border_fill;
 /*
 public:
@@ -300,8 +314,8 @@ private:
 				double x0, double y0, double width, double height)
 	{
 		double x, y;
-		x = x0 + row * width - HAxis/2.0;
-		y = y0 + col * height - VAxis/2.0;
+		x = x0 + col * width - HAxis/2.0;
+		y = y0 + row * height - VAxis/2.0;
 		gc.setStroke( stroke );
 		gc.strokeOval( x, y, HAxis, VAxis );
 		gc.setFill( fill );
