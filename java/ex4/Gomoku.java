@@ -1,3 +1,4 @@
+import java.lang.Math;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
@@ -8,7 +9,7 @@ public class Gomoku extends GomokuDraw {
 	public Gomoku()
 	{
 		flag = false;
-		setClickRange(this.grid_width * 3.34/10.0);
+		setClickRange(this.grid_width * 3.9/10.0);
 		canvas.setOnMouseClicked(new Message(this));
 	}
 
@@ -30,7 +31,6 @@ public class Gomoku extends GomokuDraw {
 	int[] click(double cx, double cy)
 	{
 		int row, col;
-		int c[] = new int[2];
 		if (cx < this.chessboard_startX-this.click_range || cx > this.chessboard_endX+this.click_range)
 			return null;
 		if (cy < this.chessboard_startY-this.click_range || cy > this.chessboard_endY+this.click_range)
@@ -42,14 +42,15 @@ public class Gomoku extends GomokuDraw {
 		if ( cx % this.grid_width > this.grid_width - this.click_range )
 			++col;
 		else if ( cx % this.grid_width > this.click_range )
-				return null;
+			return null;
 		if ( cy % this.grid_height > this.grid_height - this.click_range )
 			++row;
 		else if ( cy % this.grid_height > this.click_range )
-				return null;
-		c[0]=row;
-		c[1]=col;
-		return c;
+			return null;
+		if ( Math.pow(cx - col*this.grid_width, 2) + Math.pow(cy - row*this.grid_height, 2)
+				> Math.pow(this.click_range, 2) )
+			return null;
+		return new int[]{row, col};
 	}
 
 	class Message implements EventHandler<MouseEvent>
