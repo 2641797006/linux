@@ -4,25 +4,39 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
-
+import javafx.scene.control.Button;
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
+import javafx.event.ActionEvent;
 
-public class xx1 extends Application {
-	public void start(Stage stage) {
+public class xx1 extends Application
+{
+	public void start(Stage stage)
+	{
+		double offsetX;
 		Gomoku gomoku = new Gomoku();
+		offsetX = gomoku.getWidth();
 
 		Pane pane = new Pane();
-
-		gomoku.draw();
-
 		pane.getChildren().add(gomoku.getCanvas());
 
-		Scene scene = new Scene(pane, gomoku.getWidth(), gomoku.getHeight());
+		Button button = new Button();
+		button.setText("重新开始");
+		button.setLayoutX(offsetX+20);
+		button.setLayoutY(20);
+		button.setOnAction( new EventHandler<ActionEvent>(){
+			public void handle(ActionEvent event)
+			{
+				gomoku.reset();
+			}
+		} );
+		pane.getChildren().add(button);
+
+		Scene scene = new Scene(pane, gomoku.getWidth()*1.618, gomoku.getHeight());
 
 		stage.setScene(scene);
-		stage.setTitle("setTitle this");
+		stage.setTitle("Gomoku");
+		stage.setResizable(false);
+
 		stage.show();
-		gomoku.setChessman(18, 18, true);
 	}
 }
