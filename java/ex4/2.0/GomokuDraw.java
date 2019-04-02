@@ -142,6 +142,10 @@ private:
 	public GraphicsContext getGC() { return this.gc; }
 	public double getStartX() { return this.startX; }
 	public double getStartY() { return this.startY; }
+	public double getEndX() { return this.endX; }
+	public double getEndY() { return this.endY; }
+	public double getWidth() { return getEndX() - getStartX(); }
+	public double getHeight() { return getEndY() - getStartY(); }
 
 	public double getMargin() { return this.margin; }
 	public double getBorderWidth() { return this.borderWidth; }
@@ -196,6 +200,10 @@ private:
 
 /* -------棋盘--------- */
 
+	public double getChessboardStartX() { return this.chessboardStartX; }
+	public double getChessboardStartY() { return this.chessboardStartY; }
+	public double getChessboardEndX() { return this.chessboardEndX; }
+	public double getChessboardEndY() { return this.chessboardEndY; }
 	public int getChessboardRank() { return this.chessboardRank; }
 	public double getGridSide() { return this.gridSide; }
 	public Paint getChessboardStroke() { return this.chessboardStroke; }
