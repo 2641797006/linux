@@ -90,39 +90,50 @@ private:
 		this.startX = 0;
 		this.startY = 0;
 
-		setMargin(10);
-		setBorderWidth(10);
-		setBorderFill ( Color.WHITE );
+		this.margin = 10;
+		this.borderWidth = 10;
+		setMarginFill(Color.web("#f0f0f2"));
+		setBorderFill(Color.web("#ffbcd1"));
 
-		setChessmanStroke ( Color.BLACK, Color.WHITE );
-		setChessmanFill ( Color.BLACK, Color.WHITE );
+		this.chessboardRank = 19;
+		this.gridSide = 25;
+		setPadding(getGridSide()/2.0); // padding = gridSide/2.0
+		setChessboardStroke(Color.BLACK);
+		setChessboardFill(Color.web("#aaf9f8"));
 
-		setChessboardStroke ( Color.BLACK );
-		setChessboardFill ( Color.WHITE );
-		setChessboardRank(19);
-		setGridSide(25);
-		setChessboardSize ( getChessboardRank(), 25.0 );
-		setPadding( getGridSide()/2.0 );
+		setChessmanSide(getGridSide()-1);
+		setChessmanStrokeB(Color.PINK);
+		setChessmanStrokeW(Color.PINK);
+		setChessmanFillB(Color.BLACK);
+		setChessmanFillW(Color.WHITE);
 
-		flushCanvasSize();
-		setBorderFill( Color.web("#FFBCD1") );
+		setStarSide(getGridSide() * 3.6/10.0);
+		setStarStroke(null);
+		setStarFill(Color.web("#888a85"));
 	}
 
 	public GomokuDraw draw()
 	{
 		fillMargin();
-
 		fillBorder();
-
-		setChessboardStroke ( Color.BLACK );
-		setChessboardFill ( Color.web("#AAF9F8") );
+		fillChessboard();
 		fillChessboard();
 
 		drawChessboard();
-
-		setChessmanStroke(Color.PINK, Color.PINK);
-		setChessmanFill(Color.BLACK, Color.WHITE);
-
+		drawStar();
+		return this;
+	}
+	// draw star in 19*19
+	public GomokuDraw drawStar() {
+		drawStar( 3, 3);
+		drawStar( 9, 3);
+		drawStar(15, 3);
+		drawStar( 3, 9);
+		drawStar( 9, 9);
+		drawStar(15, 9);
+		drawStar( 3, 15);
+		drawStar( 9, 15);
+		drawStar(15, 15);
 		return this;
 	}
 
@@ -345,10 +356,10 @@ private:
 	GomokuDraw drawChessboard() {
 		int i;
 		gc.setStroke( this.chessboardStroke );
-		for (i=0; i<row; ++i)
+		for (i=0; i<this.chessboardRank; ++i)
 			gc.strokeLine(this.chessboardStartX, this.chessboardStartY+this.gridSide*i,
 					this.chessboardEndX, this.chessboardStartY+this.gridSide*i);
-		for (i=0; i<col; ++i)
+		for (i=0; i<this.chessboardRank; ++i)
 			gc.strokeLine(this.chessboardStartX+this.gridSide*i, this.chessboardStartY,
 					this.chessboardStartX+this.gridSide*i, this.chessboardEndY);
 		return this;
