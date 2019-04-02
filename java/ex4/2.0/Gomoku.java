@@ -62,7 +62,7 @@ public class Gomoku {
 		gdraw.draw();
 
 		this.pane.getChildren().add(this.canvas);
-		this.pane.getChildren().add(resetButton("重新开始", 50, 50));
+		this.pane.getChildren().add(resetButton("重新开始", this.oiStartX + (this.oiEndX-this.oiStartX)/2.0, 100));
 	}
 
 	public Pane getPane() { return this.pane; }
@@ -88,8 +88,8 @@ public class Gomoku {
 		Button button = new Button();
 
 		button.setText( text );
-		button.setLayoutX( this.gdraw.getWidth() + cx );
-		button.setLayoutY( cy );
+		button.setLayoutX( cx - button.getWidth()/2.0 );
+		button.setLayoutY( cy - button.getHeight()/2.0 );
 		button.setOnAction( new EventHandler<ActionEvent>(){
 			public void handle(ActionEvent event)
 			{
