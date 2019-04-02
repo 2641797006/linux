@@ -51,39 +51,73 @@ public class GomokuDraw
 	Paint starFill;
 /*
 public:
-	GomokuDraw();
+//main:
+	GomokuDraw(GraphicsContext gc);
+	GomokuDraw draw();
+	GraphicsContext getGC();
+	GomokuDraw setGC(GraphicsContext gc);
+//layout:
+	double getStartX();
+	double getStartY();
+	double getEndX();
+	double getEndY();
+	double getWidth();
+	double getHeight();
 
-	GomokuDraw fillMargin();
+	double getMargin();
+	double getBorderWidth();
+	double getPadding();
+	Paint getMarginFill();
+	Paint getBorderFill();
 
-	GomokuDraw setStartXY (double x, double y);
-	GomokuDraw setMargin (double);
-	GomokuDraw setPadding (double);
-	GomokuDraw setBorderFill (Paint);
+	GomokuDraw setStartX(double cx);
+	GomokuDraw setStartY(double cy);
+	GomokuDraw setMargin(double margin);
+	GomokuDraw setBorderWidth(double width);
+	GomokuDraw setPadding(double padding);
+	GomokuDraw setBorderFill(Paint paint);
+	GomokuDraw setMarginFill(Paint paint);
+//棋盘:
+	double getChessboardStartX();
+	double getChessboardStartY();
+	double getChessboardEndX();
+	double getChessboardEndY();
+	int getChessboardRank();
+	double getGridSide();
+	Paint getChessboardStroke();
+	Paint getChessboardFill();
 
-	GomokuDraw setChessmanStroke (Paint B, Paint W);
-	GomokuDraw setChessmanFill (Paint B, Paint W);
+	GomokuDraw setChessboardRank(int rank);
+	GomokuDraw setGridSide(double side);
+	GomokuDraw setChessboardStroke(Paint paint);
+	GomokuDraw setChessboardFill(Paint paint);
+//棋子:
+	double getChessmanSide();
+	Paint getChessmanStrokeB();
+	Paint getChessmanStrokeW();
+	Paint getChessmanFillB();
+	Paint getChessmanFillW();
 
-	GomokuDraw setChessboardStroke (Paint);
-	GomokuDraw setChessboardFill (Paint);
-	GomokuDraw setChessboardSize (int row_col, double grid_side);
-	GomokuDraw setChessboardSize (int row, int col, double gridSide, double gridSide);
+	GomokuDraw setChessmanSide(double side);
+	GomokuDraw setChessmanStrokeB(Paint paint);
+	GomokuDraw setChessmanStrokeW(Paint paint);
+	GomokuDraw setChessmanFillB(Paint paint);
+	GomokuDraw setChessmanFillW(Paint paint);
+//星位:
+	double getStarSide();
+	Paint getStarStroke();
+	Paint getStarFill();
 
-	GomokuDraw drawChessman (int row, int col, boolean flag); // false = B, true = W
-	GomokuDraw drawChessman (int row, int col, Paint stroke, Paint fill);
-	GomokuDraw drawChessman (GraphicsContext gc, int row, int col, Paint stroke, Paint fill);
-	static void drawChessman (GraphicsContext gc,
-				int row, int col, Paint stroke, Paint fill, double HAxis, double VAxis,
-				double x0, double y0, double width, double height);
-
-	GomokuDraw drawChessboard ();
-
-	GomokuDraw fillMargin(GraphicsContext gc, Paint paint);
-	GomokuDraw fillBorder (GraphicsContext gc, Paint paint)
-	GomokuDraw fillChessboard (GraphicsContext gc, Paint paint)
-
-private:
-	GomokuDraw flushXY();
+	GomokuDraw setStarSide(double side);
+	GomokuDraw setStarStroke(Paint paint);
+	GomokuDraw setStarFill(Paint paint);
+//draw:
+	GomokuDraw drawStar();
+	GomokuDraw drawStar(int row, int col);
+	GomokuDraw drawChessman(int row, int col, boolean flag);
+	GomokuDraw drawChessman(double cx, double cy, boolean flag);	
 */
+
 	public GomokuDraw(GraphicsContext gc)
 	{
 		this.gc = gc;
@@ -117,10 +151,10 @@ private:
 		fillMargin();
 		fillBorder();
 		fillChessboard();
-		fillChessboard();
 
 		drawChessboard();
 		drawStar();
+
 		return this;
 	}
 	// draw star in 19*19
