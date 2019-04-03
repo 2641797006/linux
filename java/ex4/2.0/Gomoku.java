@@ -10,14 +10,21 @@ import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.MouseDragEvent;
 
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
+
 public class Gomoku {
 	// 镶板
 	Pane pane;
+	// 界面坐标
+	double startX, startY;
+	double endX, endY;
 	// 画布
 	Canvas canvas;
 	// Gomoku绘图类
 	GomokuDraw gdraw;
 	// 棋盘上的棋子
+
 	byte[][] CM;
 	// 当前棋子颜色
 	boolean flag;
@@ -25,9 +32,9 @@ public class Gomoku {
 	int dragon;
 	// 有效点击范围
 	double clickRange;
-	// 界面坐标
-	double startX, startY;
-	double endX, endY;
+
+	// 
+	HBox hbox;
 	// 操作界面坐标
 	double oiStartX, oiStartY;
 	double oiEndX, oiEndY;
@@ -60,9 +67,19 @@ public class Gomoku {
 		this.canvas.setHeight(this.endY - this.startY);
 
 		gdraw.draw();
-
 		this.pane.getChildren().add(this.canvas);
-		this.pane.getChildren().add(resetButton("重新开始", this.oiStartX + (this.oiEndX-this.oiStartX)/2.0, 100));
+		this.pane.getChildren().add(this.hbox);
+
+		hbox = new HBox();
+		hbox.setLayoutX(this.oiStartX);
+		hbox.setLayoutY(150);
+
+		hbox.setMinWidth(HBox.USE_PREF_SIZE);
+		hbox.setMaxWidth(HBox.USE_PREF_SIZE);
+		hbox.setPrefWidth(this.oiEndX - this.oiStartX);
+
+		hbox.setAlignment(Pos.CENTER);
+		this.hbox.getChildren().add(resetButton("重新开始", 100, 100));
 	}
 
 	public Pane getPane() { return this.pane; }
@@ -88,8 +105,8 @@ public class Gomoku {
 		Button button = new Button();
 
 		button.setText( text );
-		button.setLayoutX( cx - button.getWidth()/2.0 );
-		button.setLayoutY( cy - button.getHeight()/2.0 );
+		button.setLayoutX( cx + this.oiStartX );
+		button.setLayoutY( cy + this.oiStartY );
 		button.setOnAction( new EventHandler<ActionEvent>(){
 			public void handle(ActionEvent event)
 			{
