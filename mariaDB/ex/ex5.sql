@@ -69,10 +69,10 @@ select `s`.`ID`, `s`.`Name`, `co`.`CourseName`, `ch`.`Score`
 	where `s`.`ID`=`ch`.`ID` and `ch`.`CourseID`=`co`.`CourseID`;
 
 --9
-select @ex5_score := `c`.`Score`
+select @_ex5_score := `c`.`Score`
 	from `ex5_Student` as `s`, `ex5_Choose` as `c`
 	where `s`.`Name`='张三' and `s`.`ID`=`c`.`ID` and `c`.`CourseID`='C1';
-select `ID`,`Score` from `ex5_Choose` where `CourseID`='C1' and `Score`<@ex5_score;
+select `ID`,`Score` from `ex5_Choose` where `CourseID`='C1' and `Score`<@_ex5_score;
 
 --10
 select `c1`.`ID`
