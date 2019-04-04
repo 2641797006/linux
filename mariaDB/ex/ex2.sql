@@ -19,3 +19,5 @@ insert into `ex2_student` values
 	('F0006', '吴六', '男', 19, 435.00);
 
 unlock tables;
+
+select * from ex2_student where age>=20 and score<500;
