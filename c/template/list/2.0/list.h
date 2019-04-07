@@ -2,6 +2,10 @@
 # error: No define "_24k_list_t"
 #else
 
+#if defined _MSC_VER && ! defined __func__
+#define __func__ __FUNCTION__
+#endif
+
 /*
  * T = _24k_list_t
  * T_list // list type
