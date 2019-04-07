@@ -22,8 +22,8 @@
  * T_list_iterator T_list_last (T_list *list) // 返回指向最后一个元素的迭代器
  * T_list_iterator T_list_head (T_list *list) // 首个元素前一个位置
  * T_list_iterator T_list_tail (T_list *list) // 最后一个元素后一个位置
- * bool T_list_prev (T_list_iterator *pit) // pit:迭代器地址, 使迭代器指向前一个元素
- * bool T_list_next (T_list_iterator *pit) // pit:迭代器地址, 使迭代器指向后一个元素
+ * T_list_iterator T_list_prev (T_list_iterator it) // 返回前一个迭代器
+ * T_list_iterator T_list_next (T_list_iterator it) // 返回后一个迭代器
  *
  * bool T_list_empty (T_list *list) // 判断list是否为空
  * size_t T_list_size (T_list *list) // 返回list中元素个数

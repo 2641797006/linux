@@ -24,8 +24,8 @@
  * T_vector_iterator T_vector_last (T_vector *vec) // 返回指向最后一个元素的迭代器
  * T_vector_iterator T_vector_head (T_vector *vec) // 首个元素前一个位置
  * T_vector_iterator T_vector_tail (T_vector *vec) // 最后一个元素后一个位置
- * bool T_vector_prev (T_vector_iterator *pit) // pit:迭代器地址, 使迭代器指向前一个元素
- * bool T_vector_next (T_vector_iterator *pit) // pit:迭代器地址, 使迭代器指向后一个元素
+ * T_vector_iterator T_vector_prev (T_vector_iterator it) // 返回前一个迭代器
+ * T_vector_iterator T_vector_next (T_vector_iterator it) // 返回后一个迭代器
  *
  * bool T_vector_empty (T_vector *vec) // 判断vec是否为空
  * size_t T_vector_size (T_vector *vec) // 返回vec元素个数
