@@ -2,6 +2,10 @@
 # error: No define "_24k_vector_t"
 #else
 
+#if defined _MSC_VER && ! defined __func__
+#define __func__ __FUNCTION__
+#endif
+
 /*
  * T = _24k_vector_t
  * T_vector // vector type
