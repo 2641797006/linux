@@ -1,5 +1,5 @@
 #ifndef list_t
-# error: No define list_t
+# error: 24k macro: No define list_t
 #else
 
 #include <stdlib.h>
@@ -195,6 +195,7 @@ list_assign (list *L, size_t count, const list_t *t)
 	return 1;
 }
 
+#undef _24k_sptr
 #undef list_t
 
 #endif
