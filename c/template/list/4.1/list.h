@@ -195,6 +195,58 @@ list_assign (list *L, size_t count, const list_t *t)
 	return 1;
 }
 
+void
+list_write (list *L, FILE *fp)
+{
+	list_iterator it = list_first(L);
+
+	fwrite(&L->size, sizeof(L->size), 1, fp);
+	while (it != list_tail(L)) {
+		fwrite(it, sizeof(list_t), 1, fp);
+		it = list_next(it);
+	}
+}
+
+void
+list_read (list *L, FILE *fp)
+{
+	int i=0;
+	size_t size;
+	list_t t;
+
+	list_init(L);
+	fread(&size, sizeof(size_t), 1, fp);
+	while (i < size) {
+		fread(&t, sizeof(list_t), 1, fp);
+		list_push_back(L, &t);
+		++i;
+	}
+}
+
+int
+list_save (list *L, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "w");
+	if ( ! fp )
+		return 0;
+	list_write(L, fp);
+	fclose(fp);
+	return 1;
+}
+
+int
+list_load (list *L, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "r");
+	if ( ! fp )
+		return 0;
+	list_read(L, fp);
+	fclose(fp);
+	return 1;
+}
+
 #undef _24k_sptr
 #undef list_t
 
