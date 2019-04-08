@@ -213,6 +213,49 @@ vector_assign (vector *vec, size_t count, const vector_t *t)
 	return 1;
 }
 
+void
+vector_write (vector *vec, FILE *fp)
+{
+	fwrite(&vec->size, sizeof(size_t), 1, fp);
+	fwrite(vector_data(vec), sizeof(vector_t), vec->size, fp);
+}
+
+void
+vector_read (vector *vec, FILE *fp)
+{
+	size_t size;
+
+	vector_init(vec);
+	fread(&size, sizeof(size_t), 1, fp);
+	vector_reserve(vec, size);
+	vec->size = size;
+	fread(vector_data(vec), sizeof(vector_t), vec->size, fp);
+}
+
+int
+vector_save (vector *vec, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "w");
+	if ( ! fp )
+		return 0;
+	vector_write(vec, fp);
+	fclose(fp);
+	return 1;
+}
+
+int
+vector_load (vector *vec, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "r");
+	if ( ! fp )
+		return 0;
+	vector_read(vec, fp);
+	fclose(fp);
+	return 1;
+}
+
 #undef _24k_vector_init_size
 #undef _24k_expand_times
 
