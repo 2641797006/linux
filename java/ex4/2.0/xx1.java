@@ -1,14 +1,6 @@
-
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.layout.Pane;
-import javafx.scene.control.Button;
-import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogEvent;
 
 public class xx1 extends Application
 {

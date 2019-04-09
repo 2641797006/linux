@@ -6,7 +6,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
-import javafx.scene.text.Text;
 
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
@@ -208,8 +207,9 @@ public class Gomoku {
 
 	Gomoku drawWinChessman(int row, int col)
 	{
-		gdraw.drawChessman(row, col, gdraw.getChessmanSide()*1.3, Color.PINK, Color.PINK);
-		gdraw.drawChessman(row, col, !this.flag);
+		gdraw.drawChessman(row, col, gdraw.getChessmanSide()*1.2, Color.PINK, Color.GOLD);
+		double d = this.flag ? 0 : 1;
+		gdraw.drawChessman(row, col, gdraw.getChessmanSide(), Color.PINK, Color.color(d, d, d, 0.666));
 		return this;
 	}
 
