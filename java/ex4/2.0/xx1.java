@@ -6,10 +6,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
 import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogEvent;
 
-public class xx4 extends Application
+public class xx1 extends Application
 {
 	public void start(Stage stage)
 	{

@@ -372,7 +372,7 @@ public:
 	}
 
 	public GomokuDraw drawChessman(double cx, double cy, boolean flag) {
-		return drawChessman(cx, cy, this.chessmanSide,
+		return drawChessman(cx - this.chessmanSide/2.0, cy - this.chessmanSide/2.0, this.chessmanSide,
 					flag ? this.chessmanStrokeW : this.chessmanStrokeB,
 					flag ? this.chessmanFillW : this.chessmanFillB);
 	}
