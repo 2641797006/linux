@@ -1,9 +1,13 @@
+#!/bin/bash
+
 #----DIY
+
+export CLASSPATH=/home/k24/java/CLASS
+export JNI_PATH=/usr/lib/jvm/java-11-openjdk-amd64/include
 
 alias jc='javac -d $CLASSPATH'
 alias jh='javah -classpath $CLASSPATH/..'
-
-export CLASSPATH=/home/k24/java/CLASS
+alias jcc='g++ -I $JNI_PATH -I $JNI_PATH/linux'
 
 #----DIY
 
