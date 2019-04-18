@@ -7,7 +7,17 @@ export JNI_PATH=/usr/lib/jvm/java-11-openjdk-amd64/include
 
 alias jc='javac -d $CLASSPATH'
 alias jh='javah -classpath $CLASSPATH/..'
-alias jcc='g++ -I $JNI_PATH -I $JNI_PATH/linux'
+alias jcc='g++ -I $JNI_PATH -I $JNI_PATH/linux -fPIC'
+alias ja='java -Djava.library.path=.'
 
 #----DIY
 
+<<!
+
+jc xx1.java
+jh k24.xx1
+jcc -c 001.c
+g++ -shared 001.o -o libxx1.so
+ja k24.xx1
+
+!
