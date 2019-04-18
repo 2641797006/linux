@@ -1,0 +1,9 @@
+#----DIY
+
+alias jc='javac -d $CLASSPATH'
+alias jh='javah -classpath $CLASSPATH/..'
+
+export CLASSPATH=/home/k24/java/CLASS
+
+#----DIY
+
