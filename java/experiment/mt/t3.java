@@ -16,39 +16,25 @@ public class t3{
 			if (pos < 0)
 				return n;
 			w = word(s, pos);
-			n += frontAdd(s, w);
+			n += frontAdd(s, w, pos);
 		}
 		return n;
 	}
 
-	int back(StringBuilder s) {
-		int n=0; pos;
-		StringBuilder w;
-		for (pos=0; pos<s.length(); ++pos) {
-			pos = s.indexOf(",");
-			if (pos < 0)
+	static int frontAdd(StringBuilder s, StringBuilder w, int pos) {
+		int i, p, n=0;
+		for (p=0; p<s.length(); p+=w.length()) {
+			p = s.indexOf(w, p);
+			if (p < 0)
 				return n;
-			pos = lastAlpha(s, pos);
-			if (pos < 0)
-				return n;
-			w = word(s, pos);
-			n += frontAdd(s, w);
-		}
-		return n;
-	}
-
-	static int frontAdd(StringBuilder s, StringBuilder w) {
-		int i, pos, n=0;
-		for (pos=0; pos<s.length(); pos+=w.length()) {
-			pos = s.indexOf(w, pos);
-			if (pos < 0)
-				return n;
-			for (i=pos; i>0; ++i)
+			for (i=p; i>0; --i)
 				if ( ! ctype.isspace(s.charAt(i)))
 					break;
 			if (ctype.isalpha(s.charAt(i))) {
 				s.insert(i+1, ',');
-				++n;
+				++p;
+				if (i+1 < pos)
+					++n;
 			}
 		}
 		return n;
