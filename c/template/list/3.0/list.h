@@ -289,6 +289,56 @@ _24k(assign) (_24k_list *list, size_t count, const _24k_list_t *t)
 	return 1;
 }
 
+void
+_24k(write) (_24k_list *list, FILE *fp)
+{
+	_24k(iterator) it = _24k(first)(list);
+
+	fwrite(&list->size, sizeof(size_t), 1, fp);
+	while (it != _24k(tail)(list)) {
+		fwrite(it, sizeof(_24k_list_t), 1, fp);
+		it = _24k(next)(it);
+	}
+}
+
+void
+_24k(read) (_24k_list *list, FILE *fp)
+{
+	size_t i, size;
+	_24k_list_t t;
+
+	_24k(init)(list);
+	fread(&size, sizeof(size_t), 1, fp);
+	for (i=0; i<size; ++i) {
+		fread(&t, sizeof(_24k_list_t), 1, fp);
+		_24k(push_back)(list, &t);
+	}
+}
+
+int
+_24k(save) (_24k_list *list, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "w");
+	if ( ! fp )
+		return 0;
+	_24k(write)(list, fp);
+	fclose(fp);
+	return 1;
+}
+
+int
+_24k(load) (_24k_list *list, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "r");
+	if ( ! fp )
+		return 0;
+	_24k(read)(list, fp);
+	fclose(fp);
+	return 1;
+}
+
 #undef _24k_list_lk__
 #undef _24k_list_lk
 #undef _24k_list
