@@ -310,6 +310,49 @@ _24k(assign) (_24k_vector *vec, size_t count, const _24k_vector_t *t)
 	return 1;
 }
 
+void
+_24k(write) (_24k_vector *vec, FILE *fp)
+{
+	fwrite(&vec->size, sizeof(size_t), 1, fp);
+	fwrite(_24k(data)(vec), sizeof(_24k_vector_t), _24k(size)(vec), fp);
+}
+
+void
+_24k(read) (_24k_vector *vec, FILE *fp)
+{
+	size_t size;
+
+	_24k(init)(vec);
+	fread(&size, sizeof(size_t), 1, fp);
+	_24k(reserve)(vec, size);
+	fread(_24k(data)(vec), sizeof(_24k_vector_t), size, fp);
+	vec->size = size;
+}
+
+int
+_24k(save) (_24k_vector *vec, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "w");
+	if ( ! fp )
+		return 0;
+	_24k(write)(vec, fp);
+	fclose(fp);
+	return 1;
+}
+
+int
+_24k(load) (_24k_vector *vec, const char *fname)
+{
+	FILE *fp;
+	fp = fopen(fname, "r");
+	if ( ! fp )
+		return 0;
+	_24k(read)(vec, fp);
+	fclose(fp);
+	return 1;
+}
+
 #undef _24k_vector_lk__
 #undef _24k_vector_lk
 #undef _24k_vector
