@@ -126,6 +126,8 @@ typedef struct _24k_list{
 	int (*save)(struct _24k_list*, const char*);
 	int (*load)(struct _24k_list*, const char*);
 
+	void (*destroy)(struct _24k_list*);
+
 }_24k_list;
 
 int _24k(init) (_24k_list*);
@@ -393,6 +395,8 @@ _24k(init) (_24k_list *list)
 	list->read = _24k(read);
 	list->save = _24k(save);
 	list->load = _24k(load);
+
+	list->destroy = _24k(destroy);
 
 	return 1;
 }

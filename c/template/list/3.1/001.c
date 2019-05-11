@@ -65,9 +65,9 @@ main()
 	}
 	puts("");
 
-	int_list_destroy(&L3);
+	L3.destroy(&L3);
 
-	int_list_destroy(&L1);
-	stu_list_destroy(&L2);
+	L1.destroy(&L1);
+	L2.destroy(&L2);
 }
 
