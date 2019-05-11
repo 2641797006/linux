@@ -2,8 +2,16 @@
 # error: No define "_24k_list_t"
 #else
 
-#if defined _MSC_VER && ! defined __func__
+#if defined _MSC_VER
+
+#ifndef __func__
 #define __func__ __FUNCTION__
+#endif
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #endif
 
 /*
