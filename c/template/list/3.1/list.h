@@ -249,7 +249,10 @@ _24k(insert) (_24k_list *list, _24k(iterator) it, const _24k_list_t *t)
 	_24k(node) *p1 = (_24k(node)*) malloc ( sizeof(_24k(node)) );
 	if ( ! p1 )
 		return 0;
-	memcpy(&p1->data, t, sizeof(_24k_list_t));
+
+//	memcpy(&p1->data, t, sizeof(_24k_list_t));
+	p1->data = *t;
+
 	p1->next = p;
 	p1->prev = p->prev;
 	p->prev = p1;
