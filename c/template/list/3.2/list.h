@@ -170,6 +170,10 @@ _24k(destroy) (_24k_list *list)
 		free(p);
 		p = tmp;
 	}
+
+	free(list->head);
+	free(list->tail);
+
 	list->head = NULL;
 	list->tail = NULL;
 	list->_size = 0;
