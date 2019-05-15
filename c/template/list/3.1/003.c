@@ -31,10 +31,23 @@ main()
 
 	it = L.begin(&L);
 	while (it != L.end(&L)) {
-		it1 = L.next(it);	// it1 = it的下一个
-		if (it->fit == 6)
+
+		if (it->fit == 6) {
+			it1 = L.next(it);	// it1 = it的下一个
 			L.erase(&L, it); // 删除L中it指向的数据, 此操作会使迭代器it失效
-		it = it1;
+			it = it1;
+			continue;
+		}
+
+		if (it->fit == 3) {
+			d.fit = 24000666;
+			it1 = L.next(it);       // it1 = it的下一个
+			L.insert(&L, it, &d); // 在迭代器位置插入数据, 新的数据会在it指向数据的前面
+			it = it1;
+			continue;
+		}
+
+		it = L.next(it);
 	}
 
 	print(&L); // 输出list
