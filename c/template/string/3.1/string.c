@@ -257,7 +257,7 @@ string_resize (string *s, size_t count)
 		s->_size = count;
 		*(s->_data + count) = 0;
 	} else {
-		if ( ! string_reserve(s, count) ) {
+		if ( string_reserve(s, count) ) {
 			memset(s->_data + s->_size, 0, (count - s->_size) * sizeof(char));
 			s->_size = count;
 		} else
