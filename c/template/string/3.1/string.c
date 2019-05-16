@@ -105,6 +105,8 @@ typedef struct string{
 	int (*find_last_of)(const struct string*, size_t, const char*);
 	int (*find_last_not_of)(const struct string*, size_t, const char*);
 
+	struct string* (*getline)(struct string*, FILE*);
+
 }string;
 
 string* string_init (string *s);
@@ -480,16 +482,15 @@ int
 string_find_last_of (const string *s, size_t pos, const char *cs)
 {
 	char *p;
-	string* s1 = (string*) malloc (sizeof(string));
+	string _s1, *s1=&_s1;
 	string_init(s1) -> assign(s1, s->c_str(s)) -> reverse(s1);
 
 	pos = s1->size(s1) - pos - 1;
 	p = strpbrk(s1->c_str(s1) + pos, cs);
-	if ( ! p )
-		return -1;
 	pos = s1->size(s1) - (p - s1->c_str(s1)) - 1;
 	s1->destroy(s1);
-	free(s1);
+	if ( ! p )
+		return -1;
 	return pos;
 }
 
@@ -497,17 +498,37 @@ int
 string_find_last_not_of (const string *s, size_t pos, const char *cs)
 {
 	size_t n;
-	string* s1 = (string*) malloc (sizeof(string));
+	string _s1, *s1=&_s1;
 	string_init(s1) -> assign(s1, s->c_str(s)) -> reverse(s1);
 
 	pos = s1->size(s1) - pos - 1;
 	n = strspn(s1->c_str(s1) + pos, cs);
-	if ( pos + n == s1->size(s1) )
-		return -1;
-	pos = s1->size(s1) - n - 1;
+	pos += n;
+	pos = s1->size(s1) - pos - 1;
 	s1->destroy(s1);
-	free(s1);
-	return pos + n;
+	if ( pos == s1->size(s1) )
+		return -1;
+	return pos;
+}
+
+string*
+string_getline(string *s, FILE *fp, int delim)
+{
+	int c;
+	s->clear(s);
+	for (;;) {
+		c = fgetc(fp);
+		if (c == EOF || c == delim)
+			break;
+		s->push_back(s, c);
+	}
+	return s;
+}
+
+string*
+string_getline__(string *s, FILE *fp)
+{
+	return string_getline(s, fp, '\n');
 }
 
 string*
@@ -523,6 +544,7 @@ string_init (string *s)
 #define _24k(f)		s->f = string##_##f
 
 	s->length = string_size;
+	s->getline = string_getline__;
 
 	_24k(at);
 	_24k(front);
