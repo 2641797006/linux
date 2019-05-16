@@ -590,4 +590,7 @@ string_init (string *s)
 	return s;
 }
 
+#undef _24k_error
+#undef _24k_error__
+
 #endif
