@@ -34,6 +34,8 @@
 #endif
 #endif
 
+#include <ctype.h>
+
 #define _24k_error__(fmt, ...)	string_fatal_error(__FILE__, __func__, __LINE__, fmt, __VA_ARGS__)
 #define _24k_error(fmt, ...)	_24k_error__(fmt, __VA_ARGS__)
 
@@ -105,7 +107,10 @@ typedef struct string{
 	int (*find_last_of)(const struct string*, size_t, const char*);
 	int (*find_last_not_of)(const struct string*, size_t, const char*);
 
-	struct string* (*getline)(struct string*, FILE*);
+	struct string* (*fgetline)(struct string*, FILE*, int);
+	struct string* (*getline)(struct string*);
+	struct string* (*fgets)(struct string*, FILE*);
+	struct string* (*gets)(struct string*);
 
 }string;
 
@@ -512,7 +517,7 @@ string_find_last_not_of (const string *s, size_t pos, const char *cs)
 }
 
 string*
-string_getline(string *s, FILE *fp, int delim)
+string_fgetline(string *s, FILE *fp, int delim)
 {
 	int c;
 	s->clear(s);
@@ -526,9 +531,41 @@ string_getline(string *s, FILE *fp, int delim)
 }
 
 string*
-string_getline__(string *s, FILE *fp)
+string_getline(string *s)
 {
-	return string_getline(s, fp, '\n');
+	return string_fgetline(s, stdin, '\n');
+}
+
+string*
+string_fgets(string *s, FILE *fp)
+{
+	int c;
+	s->clear(s);
+	for (;;) {
+		c = fgetc(fp);
+		if ( ! isspace(c) )
+			break;
+	}
+	if (c == EOF)
+		return s;
+	ungetc(c, stdin);
+	for (;;) {
+		c = fgetc(fp);
+		if (c == EOF)
+			break;
+		if ( isspace(c) ) {
+			ungetc(c, stdin);
+			break;
+		}
+		s->push_back(s, c);
+	}
+	return s;
+}
+
+string*
+string_gets(string *s)
+{
+	return string_fgets(s, stdin);
 }
 
 string*
@@ -544,7 +581,6 @@ string_init (string *s)
 #define _24k(f)		s->f = string##_##f
 
 	s->length = string_size;
-	s->getline = string_getline__;
 
 	_24k(at);
 	_24k(front);
@@ -584,6 +620,10 @@ string_init (string *s)
 	_24k(reverse);
 	_24k(find_last_of);
 	_24k(find_last_not_of);
+	_24k(fgetline);
+	_24k(getline);
+	_24k(fgets);
+	_24k(gets);
 
 #undef _24k
 

@@ -33,7 +33,7 @@ main()
 	puts(s->c_str(s));
 
 	for (;;) {
-		s->getline(s, stdin);
+		s->getline(s);
 		if (s->size(s) > 0)
 			L->push_back(L, s);
 		print(L);
