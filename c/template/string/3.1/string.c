@@ -82,8 +82,8 @@ typedef struct string{
 	struct string* (*clear)(struct string*);
 	struct string* (*resize)(struct string*, size_t);
 
-	struct string* (*insert)(struct string*, string_iterator, char);
-	struct string* (*erase)(struct string*, string_iterator);
+	struct string* (*insert)(struct string*, size_t, char);
+	struct string* (*erase)(struct string*, size_t);
 	struct string* (*push_back)(struct string*, char);
 	struct string* (*pop_back)(struct string*);
 	struct string* (*assign)(struct string*, const char*);
@@ -272,9 +272,8 @@ string_resize (string *s, size_t count)
 }
 
 string*
-string_insert (string *s, string_iterator it, char t)
+string_insert (string *s, size_t pos, char t)
 {
-	size_t pos = it - string_data(s);
 	char *p, *p1;
 	if ( pos<0 || pos>s->_size ) {
 		string_fatal_error(__FILE__, __func__, __LINE__, "Index out of bound, index=%d, size=%d\n", pos, s->_size);
@@ -293,9 +292,8 @@ string_insert (string *s, string_iterator it, char t)
 }
 
 string*
-string_erase (string *s, string_iterator it)
+string_erase (string *s, size_t pos)
 {
-	size_t pos = it - string_data(s);
 	char *p, *p1;
 	if (pos<0 || pos>=s->_size) {
 		string_fatal_error(__FILE__, __func__, __LINE__, "Index out of bound, index=%d, size=%d\n", pos, s->_size);
@@ -312,13 +310,13 @@ string_erase (string *s, string_iterator it)
 string*
 string_push_back (string *s, char t)
 {
-	return string_insert(s, string_end(s), t);
+	return string_insert(s, s->size(s), t);
 }
 
 string*
 string_pop_back (string *s)
 {
-	return string_erase(s, string_rbegin(s));
+	return string_erase(s, s->size(s)-1);
 }
 
 string*
