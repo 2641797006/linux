@@ -1,0 +1,2 @@
+
+char* at(string *s

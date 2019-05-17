@@ -60,7 +60,7 @@ typedef struct string{
 	size_t _size;
 	size_t _capacity;
 
-	char* (*at)(struct string*, size_t);
+	char (*at)(struct string*, size_t);
 	char (*front)(const struct string*);
 	char (*back)(const struct string*);
 	char* (*data)(struct string*);
@@ -125,14 +125,14 @@ string_destroy (string *s)
 	s->_capacity = 0;
 }
 
-char*
+char
 string_at (string *s, size_t pos)
 {
 	if ( pos<0 || pos>=s->_size ) {
 		_24k_error(__FILE__, __func__, __LINE__, "Index out of bound, index=%d, size=%d\n", pos, s->_size);
-		return NULL;
+		return 0;
 	}
-	return s->_data + pos;
+	return *( s->_data + pos );
 }
 
 char
