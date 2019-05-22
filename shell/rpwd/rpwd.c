@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <string.h>
-#include <ctype.h>
 
 void cat(FILE*);
 int rand_strf(FILE*, int, int* /*[3]*/);
@@ -213,9 +212,11 @@ cat(FILE *fp)
 {
 	int c;
 	rewind(fp);
-	while( ! feof(fp) ) {
+	for (;;) {
 		c=fgetc(fp);
-		if(isprint(c)||isspace(c))
+		if( ! feof(fp) )
 			fputc(c, stdout);
+		else
+			break;
 	}
 }
