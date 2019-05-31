@@ -64,6 +64,8 @@ typedef struct string{
 	struct string* (*fgets)(struct string*, FILE*);
 	struct string* (*gets)(struct string*);
 
+	struct string* (*swap)(struct string*, struct string*);
+
 }string;
 
 string* string_init (string *s);
@@ -169,5 +171,8 @@ string* string_string_init(string *s);
 
 void string_destroy(string *s);
 	// 释放s申请的内存, s将被置于 未初始化 状态
+
+string* string_swap(string *s1, string *s2);
+	// 交换字符串s1与s2的内容
 
 #endif
