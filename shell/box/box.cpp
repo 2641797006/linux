@@ -23,7 +23,7 @@ main(int argc, char **argv)
 		while (it != eof)
 			s += *it++ + '\n';
 	}
-	if (argc > 1 || s.size()) {
+	if (argc > 1 || ! s.size()) {
 		cout<<"Usage:     COMMAND | box"<<endl;
 		return 24-'k';
 	}
