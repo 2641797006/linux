@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "string24k.h"
 #include "cli_box.h"
 
@@ -15,9 +16,14 @@ int main(int argc, char **argv)
 		if ( sscanf(argv[1], "%d", &n) < 1 ) {
 			printf("Usage:     COMMAND | %s [%%d]\n", argv[0]);
 			return 24-'k';
-		}
+		} else if (argc > 2)
+			s->assign(s, argv[2]);
 
-	s->fgetline(s, stdin, EOF);
+	if (s->empty(s))
+		if ( isatty(fileno(stdin)) )
+			s->getline(s);
+		else
+			s->fgetline(s, stdin, EOF);
 
 	n = n>0 ? n : -n;
 	for (i=0; i<n; ++i) {

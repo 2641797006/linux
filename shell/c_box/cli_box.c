@@ -36,7 +36,7 @@ box_line(BOX *box, string *s, size_t pos1, size_t pos2)
 	string_add(box->strbuf, box->pyl);
 	for (i=0; i<left; ++i)
 		string_push_back(box->strbuf, ' ');
-	c = s->at(s, pos2);
+	c = s->data(s)[pos2];
 	s->data(s)[pos2] = 0;
 	string_append(box->strbuf, s->c_str(s) + pos1);
 	s->data(s)[pos2] = c;
