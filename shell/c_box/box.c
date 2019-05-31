@@ -14,7 +14,15 @@ int main(int argc, char **argv)
 
 	if (argc > 1)
 		if ( sscanf(argv[1], "%d", &n) < 1 ) {
-			printf("Usage:     COMMAND | %s [%%d]\n", argv[0]);
+			printf(
+"Usage: [command] | %s [-%%d]\n"
+"           (Read data from the previous command)\n"
+"   or  %s [-%%d] [string]\n"
+"           (Use parameter 2 as the input string)\n"
+"   or  %s [-%%d]\n"
+"           (Read a line from the keyboard)\n"
+,
+argv[0], argv[0], argv[0]);
 			return 24-'k';
 		} else if (argc > 2)
 			s->assign(s, argv[2]);
