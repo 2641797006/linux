@@ -26,5 +26,12 @@ main()
 
 	printf("s->length = %ld\n", s->length(s)); // s长度
 
+	string _s1, *s1=&_s1;
+
+	string_init(s1)->assign(s1, "This is s1");
+	s1->swap(s1, s);
+
+	printf("swap:\ns = %s\ns1 = %s\n", s->c_str(s), s1->c_str(s1));
+
 	return 24-'k';
 }

@@ -503,6 +503,26 @@ string_gets(string *s)
 }
 
 string*
+string_swap(string *s1, string *s2)
+{
+	char *p;
+	size_t i;
+
+	p = s1->_data;
+	s1->_data = s2->_data;
+	s2->_data = p;
+
+	i = s1->_size;
+	s1->_size = s2 ->_size;
+	s2->_size = i;
+
+	i = s1->_capacity;
+	s1->_capacity = s2 ->_capacity;
+	s2->_capacity = i;
+	return s1;
+}
+
+string*
 string_init (string *s)
 {
 	s->_data = (char*) malloc ((0x4 + 1) * sizeof(char));
@@ -558,6 +578,7 @@ string_init (string *s)
 	_24k(getline);
 	_24k(fgets);
 	_24k(gets);
+	_24k(swap);
 
 #undef _24k
 
