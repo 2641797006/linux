@@ -63,6 +63,7 @@ const char help_msg[] =
 "  --right                 set box's right string\n"
 "  --angle                 set box's angle string\n"
 "  --buttom                set box's buttom \"Char\"\n"
+"\n"
 ;
 
 // first : to return ':' while missing argument
