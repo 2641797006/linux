@@ -47,11 +47,11 @@ const char help_msg_short[] =
 ;
 
 const char help_msg[] =
-"Usage: [command] | %s [options] [[-]%%d]\n"
+"Usage: [command] | box [options] [[-]%d]\n"
 "           (Read data from the previous command)\n"
-"   or  %s [[-]%%d] -s/--string [string]\n"
+"   or  box [[-]%d] -s/--string [string]\n"
 "           (Use -s/--string to set the input string)\n"
-"   or  %s [[-]%%d]\n"
+"   or  box [[-]%d]\n"
 "           (Read a line from the keyboard)\n"
 "\n"
 "Options:\n"
