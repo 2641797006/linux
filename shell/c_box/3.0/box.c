@@ -63,7 +63,6 @@ const char help_msg[] =
 "  --right                 set box's right string\n"
 "  --angle                 set box's angle string\n"
 "  --buttom                set box's buttom \"Char\"\n"
-"\n"
 ;
 
 // first : to return ':' while missing argument
@@ -85,7 +84,7 @@ int get_similar(const char*);
 
 int main(int argc, char **argv)
 {
-	int i, level=1, opt, long_optind, align=0, help_short=0;
+	int i, level=1, opt, long_optind, align=0, help_opt=0;
 	char px='-';
 	const char *fname = argv[0], *arg_input=NULL, *pa="+", *pyl="| ", *pyr=" |";
 	string _s, *s=&_s;
@@ -137,12 +136,13 @@ int main(int argc, char **argv)
 		case opt_help:
 			arg_input = help_msg_short;
 			level=1, align=0, px='-', pa="+", pyl="| ", pyr=" |";
-			help_short=1;
+			help_opt=1;
 			goto getopt_end;
 		case lopt_help:
-			printf(help_msg, fname, fname, fname);
-			return 0;
-			break;
+			arg_input = help_msg;
+			level=3, align=-1, px='-', pa="+", pyl="| ", pyr=" |";
+			help_opt=1;
+			goto getopt_end;
 		case lopt_angle:
 			pa = optarg;
 			break;
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 			if ( sscanf(argv[1], "%d", &level ) == 1 )
 				break;
 			if ( (i = get_similar(argv[optind-1])) >= 0 )
-				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '" WHITE_S("--%s") "'?\n", argv[optind-1], long_options[i].name);
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '" L_CYAN_S("--%s") "'?\n", argv[optind-1], long_options[i].name);
 			if (optopt)
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'-%c'\n"), optopt);
 			else
@@ -197,10 +197,10 @@ getopt_end:
 		s->swap(s, b->strbuf);
 	}
 
-	if (help_short)
+	if (help_opt)
 		printf("%s", L_PURPLE);
 	printf("%s", string_c_str(s));
-	if (help_short)
+	if (help_opt)
 		printf("%s", ENDCC);
 
 	return 24-'k';
