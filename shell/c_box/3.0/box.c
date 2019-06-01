@@ -198,7 +198,7 @@ getopt_end:
 	}
 
 	if (help_opt)
-		printf("%s", L_PURPLE);
+		printf("%s", L_CYAN);
 	printf("%s", string_c_str(s));
 	if (help_opt)
 		printf("%s", ENDCC);
