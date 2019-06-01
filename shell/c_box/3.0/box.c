@@ -92,14 +92,14 @@ int main(int argc, char **argv)
 
 	while (argc >= 2 && argv[1][0] != '-')
 		if ( sscanf(argv[1], "%d", &level ) < 1 )
-			_24k_error(fname, "unrecognized command line option " WHITE_S("‘%s’") ". Did you miss `-` or `--`?\n", argv[1]);
+			_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") ". Did you miss '-' or '--'?\n", argv[1]);
 		else
 			--argc, ++argv;
 	while ( (opt=getopt_long(argc, argv, short_options, long_options, &long_optind)) != -1 ) {
 		switch (opt) {
 		case opt_level: case lopt_level:
 			if (sscanf(optarg, "%d", &level) < 1)
-				_24k_error(fname, "argument `%s` expected %%d\n", optarg);
+				_24k_error(fname, "argument '%s' expected %%d\n", optarg);
 			break;
 		case opt_align:
 			if (optarg)
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 					align = 1;
 					break;
 				default:
-					_24k_error(fname, "expected 'l', 'r', or 'c' after option `%s`\n", "-a");
+					_24k_error(fname, "expected 'l', 'r', or 'c' after option '%s'\n", "-a");
 				}
 			else
 				align = 0;
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 				else if (strcmp(optarg, "right") == 0)
 					align = 1;
 				else
-					_24k_error(fname, "expected 'left', 'right', or 'center' after option `%s`\n", "--align");
+					_24k_error(fname, "expected 'left', 'right', or 'center' after option '%s'\n", "--align");
 			break;
 		case opt_string: case lopt_string:
 			arg_input = optarg;
@@ -155,19 +155,19 @@ int main(int argc, char **argv)
 			pyr = optarg;
 			break;
 		case ':':
-			_24k_error(fname, "missing argument after " WHITE_S("‘%s’\n"), argv[optind-1]);
+			_24k_error(fname, "missing argument after " WHITE_S("'%s'\n"), argv[optind-1]);
 			break;
 		case '?':
 			if ( sscanf(argv[1], "%d", &level ) == 1 )
 				break;
 			if ( (i = get_similar(argv[optind-1])) >= 0 )
-				_24k_error(fname, "unrecognized command line option " WHITE_S("‘%s’") "; did you mean `%s`?\n", argv[optind-1], long_options[i].name);
-			_24k_error(fname, "unrecognized command line option " WHITE_S("‘%s’\n"), argv[optind-1]);
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '--%s'?\n", argv[optind-1], long_options[i].name);
+			_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'\n"), argv[optind-1]);
 			break;
 		}
 		while (optind < argc && argv[optind][0] != '-')
 			if ( sscanf(argv[optind], "%d", &level ) < 1 )
-				_24k_error(fname, "unrecognized command line option " WHITE_S("‘%s’") ". Did you miss `-` or `--`?\n", argv[optind]);
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") ". Did you miss '-' or '--'?\n", argv[optind]);
 			else
 				++optind;
 	}
