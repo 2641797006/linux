@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 			if ( sscanf(argv[1], "%d", &level ) == 1 )
 				break;
 			if ( (i = get_similar(argv[optind-1])) >= 0 )
-				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '--%s'?\n", argv[optind-1], long_options[i].name);
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '" WHITE_S("--%s") "'?\n", argv[optind-1], long_options[i].name);
 			if (optopt)
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'-%c'\n"), optopt);
 			else
