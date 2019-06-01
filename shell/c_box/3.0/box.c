@@ -76,7 +76,7 @@ const struct option long_options[] = {
 	{"left", required_argument, NULL, lopt_left},
 	{"right", required_argument, NULL, lopt_right},
 	{"angle", required_argument, NULL, lopt_angle},
-	{"--help", no_argument, NULL, lopt_help},
+	{"help", no_argument, NULL, lopt_help},
 	{NULL, 0, NULL, 0}
 };
 
