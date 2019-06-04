@@ -150,6 +150,7 @@ typedef struct __list{
 	int (*traverse)(struct __list*, int (*)(__list_t*));
 	int (*rtraverse)(struct __list*, int (*)(__list_t*));
 	struct __list* (*find_if)(struct __list*, int (*)(const __list_t*));
+	int (*remove_if)(struct __list*, int (*)(const __list_t*));
 
 	void (*destroy)(struct __list*);
 
@@ -465,6 +466,22 @@ _(find_if) (__list *list, int (*f)(const __list_t*))
 }
 
 int
+_(remove_if) (__list *list, int (*f)(const __list_t*))
+{
+	int n=0;
+	_(iterator) it, it1;
+
+	it = list->begin(list);
+	while (it != list->end(list)) {
+		it1 = list->next(list, it);
+		if ( f(it) )
+			++n, list->erase(list, it);
+		it = it1;
+	}
+	return n;
+}
+
+int
 _(init) (__list *list)
 {
 	list->head = (_(node)*) malloc ( sizeof(_(node)) );
@@ -511,6 +528,7 @@ _(init) (__list *list)
 	list->traverse = _(traverse);
 	list->rtraverse = _(rtraverse);
 	list->find_if = _(find_if);
+	list->remove_if = _(remove_if);
 
 	list->destroy = _(destroy);
 
