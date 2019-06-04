@@ -449,17 +449,17 @@ __list*
 _(find_if) (__list *list, int (*f)(const __list_t*))
 {
 	int ret;
-	__list _L, *const L=&_L;
+	__list *L=(__list*)malloc(sizeof(__list));
 	_(iterator) it;
 
 	_(init)(L);
 
-	it = L->begin(L);
-	while (it != L->end(L)) {
+	it = list->begin(list);
+	while (it != list->end(list)) {
 		ret = f(it);
 		if ( ret )
 			L->push_back(L, it);
-		it = L->next(L, it);
+		it = list->next(list, it);
 	}
 
 	return L;
