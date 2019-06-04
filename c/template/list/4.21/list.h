@@ -147,6 +147,10 @@ typedef struct __list{
 	int (*save)(struct __list*, const char*);
 	int (*load)(struct __list*, const char*);
 
+	int (*traverse)(struct __list*, int (*)(__list_t*));
+	int (*rtraverse)(struct __list*, int (*)(__list_t*));
+	struct __list* (*find_if)(struct __list*, int (*)(const __list_t*));
+
 	void (*destroy)(struct __list*);
 
 	void (*set_copyer)( void (*) (__list_t*, const __list_t*) );
@@ -409,6 +413,58 @@ _(load) (__list *list, const char *fname)
 }
 
 int
+_(traverse) (__list *list, int (*f)(__list_t*))
+{
+	int ret;
+	_(iterator) it;
+
+	it = list->begin(list);
+	while (it != list->end(list)) {
+		ret = f(it);
+		if ( ret )
+			return ret;
+		it = list->next(list, it);
+	}
+	return 0;
+}
+
+int
+_(rtraverse) (__list *list, int (*f)(__list_t*))
+{
+	int ret;
+	_(iterator) it;
+
+	it = list->rbegin(list);
+	while (it != list->rend(list)) {
+		ret = f(it);
+		if ( ret )
+			return ret;
+		it = list->prev(list, it);
+	}
+	return 0;
+}
+
+__list*
+_(find_if) (__list *list, int (*f)(const __list_t*))
+{
+	int ret;
+	__list _L, *const L=&_L;
+	_(iterator) it;
+
+	_(init)(L);
+
+	it = L->begin(L);
+	while (it != L->end(L)) {
+		ret = f(it);
+		if ( ret )
+			L->push_back(L, it);
+		it = L->next(L, it);
+	}
+
+	return L;
+}
+
+int
 _(init) (__list *list)
 {
 	list->head = (_(node)*) malloc ( sizeof(_(node)) );
@@ -451,6 +507,10 @@ _(init) (__list *list)
 	list->read = _(read);
 	list->save = _(save);
 	list->load = _(load);
+
+	list->traverse = _(traverse);
+	list->rtraverse = _(rtraverse);
+	list->find_if = _(find_if);
 
 	list->destroy = _(destroy);
 

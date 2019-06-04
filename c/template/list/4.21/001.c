@@ -20,6 +20,13 @@ void destruct(STU *stu)
 	printf("destroy STU\n");
 }
 
+int fun1(STU_list *L, STU *s)
+{
+	if (*s->p >= 25)
+		return 1;
+	return 0;
+}
+
 int
 main()
 {
