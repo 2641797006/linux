@@ -522,6 +522,20 @@ string_swap(string *s1, string *s2)
 }
 
 string*
+string_split(const string *s, size_t pos1, size_t pos2)
+{
+	size_t i;
+	string *substr = (string*)malloc(sizeof(string));
+
+	string_init(substr);
+
+	for (i=pos1; i<pos2; ++i)
+		substr->push_back(substr, s->at(s, i));
+
+	return substr;
+}
+
+string*
 string_init (string *s)
 {
 	s->_data = (char*) malloc ((0x4 + 1) * sizeof(char));
@@ -578,6 +592,7 @@ string_init (string *s)
 	_(fgets);
 	_(gets);
 	_(swap);
+	_(split);
 
 #undef _
 

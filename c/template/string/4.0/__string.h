@@ -73,6 +73,7 @@ typedef struct string{
 	struct string* (*gets)(struct string*);
 
 	struct string* (*swap)(struct string*, struct string*);
+	struct string* (*split)(const struct string*, size_t, size_t);
 
 }string;
 
@@ -182,5 +183,8 @@ void string_destroy(string *s);
 
 string* string_swap(string *s1, string *s2);
 	/* 交换字符串s1与s2的内容 */
+
+string* (*split)(const string *s, size_t pos1, size_t pos2);
+	/* 返回字符串 s 的 pos1 到 pos2 的 子字符串, 不改变原字符串 */
 
 #endif
