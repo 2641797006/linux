@@ -1,4 +1,4 @@
-#include "string24k.h"
+#include "__string.h"
 
 #if defined _MSC_VER
 

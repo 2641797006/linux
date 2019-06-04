@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "string24k.h"
+#include "__string.h"
 
 int
 main()
