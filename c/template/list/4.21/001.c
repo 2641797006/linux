@@ -24,35 +24,38 @@ int
 main()
 {
 	int i;
-	STU s;
-	STU_list L1;
+	STU _s, *const s=&_s;
+	STU_list _L, *const L=&_L;
 
-	s.p = malloc(sizeof(int));
-	*s.p = 24;
+	STU_list_iterator it1;
 
-	STU_list_init(&L1);
+	s->p = malloc(sizeof(int));
+	*s->p = 24;
 
-	L1.set_copyer(copy);
-	L1.set_destructor(destruct);
+	STU_list_init(L);
+
+	L->set_copyer(copy);
+	L->set_destructor(destruct);
 
 	for ( i=0; i<10; ++i ) {
-		L1.push_back(&L1, &s);
-		++*s.p;
+		L->push_back(L, s);
+		++*s->p;
 	}
 
 	for ( i=0; i<5; ++i )
-		L1.pop_back(&L1);
+		L->pop_back(L);
 
-	STU_list_iterator it1 = L1.begin(&L1);
+/* 遍历L: */
 
-/* 遍历L1: */
-	while ( it1 != L1.end(&L1) ) {
+	it1 = L->begin(L);
+
+	while ( it1 != L->end(L) ) {
 		printf("%d ", *it1->p);
-		it1 = L1.next(&L1, it1);
+		it1 = L->next(L, it1);
 	}
 	puts("");
 
-	L1.destroy(&L1);
+	L->destroy(L);
 
 	return 0;
 }

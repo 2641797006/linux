@@ -279,13 +279,16 @@ int
 _(insert) (__list *list, _(iterator) it, const __list_t *t)
 {
 	_(node) *p = __sptr( _(node), data, it );
+	_(node) *p1 = (_(node)*) malloc ( sizeof(_(node)) );
 	if ( p == list->head ) {
+		free(p1);
 		__error("insert pos error\n", 0);
 		return 0;
 	}
-	_(node) *p1 = (_(node)*) malloc ( sizeof(_(node)) );
-	if ( ! p1 )
+	if ( ! p1 ) {
+		free(p1);
 		return 0;
+	}
 
 /*	memcpy(&p1->data, t, sizeof(__list_t)); */
 	if ( _(copyer) )
