@@ -9,7 +9,7 @@ main()
 
 	string_init(s)->assign(s, "Please input a string: ");	/* 初始化s, 并赋值 */
 /*	string_init(s); s->assign(s, "Please input a string: "); */
-	sub = s->split(s, 0, 9);
+	sub = s->split(s, 0, 18);
 	printf("substr = %s\n", sub->c_str(sub));
 
 	puts( s->c_str(s) );	/* 输出字符串s */

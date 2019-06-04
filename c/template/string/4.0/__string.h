@@ -77,8 +77,6 @@ typedef struct string{
 
 }string;
 
-string* string_init (string *s);
-
 /* s->function(s, ...); */
 
 char string_at(const string *s, size_t pos);
@@ -175,7 +173,7 @@ string* string_fgets(string *s, FILE *fp);
 string* string_gets(string *s);
 	/* 相当于 fgets(s, stdin); */
 
-string* string_string_init(string *s);
+string* string_init(string *s);
 	/* 初始化string s */
 
 void string_destroy(string *s);
