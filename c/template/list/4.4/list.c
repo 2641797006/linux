@@ -1,5 +1,5 @@
 
-// #define __list_t	your_type
+/* #define __list_t	your_type */
 
 #define __list_t int
 
