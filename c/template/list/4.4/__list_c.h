@@ -344,12 +344,7 @@ static
 int
 _(sort_cmp) (const void* p1, const void* p2)
 {
-	const __list_t *t1, *t2;
-
-	t1 = *(const __list_t**)p1;
-	t2 = *(const __list_t**)p2;
-
-	return _(sort_origin_cmp)(t1, t2);
+	return _(sort_origin_cmp)(*(const __list_t**)p1, *(const __list_t**)p2);
 }
 
 void
