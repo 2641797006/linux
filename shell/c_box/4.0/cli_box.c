@@ -12,7 +12,7 @@ BOX*
 box_buttom(BOX *box, size_t n)
 {
 	int i, w;
-	w = n + box->pyl->size(box->pyl) + box->pyr->size(box->pyr) - box->pa->size(box->pa) * 2;
+	w = n + box->pyl_size + box->pyr_size - box->pa_size * 2;
 	string_add(box->strbuf, box->pa);
 	for (i=0; i<w; ++i)
 		string_push_back(box->strbuf, box->px);
@@ -53,6 +53,7 @@ box_box(BOX *box, string *s)
 {
 	size_t pos1=0, pos2;
 	box->string_width(box, s);
+	box->frame_width_fix(box);
 	box->buttom(box, box->width);
 	for ( ; pos1 < s->size(s); ) {
 		pos2 = s->find_first_of(s, pos1, "\n");
@@ -114,6 +115,15 @@ box_clear(BOX *box)
 }
 
 BOX*
+box_frame_width_fix(BOX *this)
+{
+	this->pyl_size = this->width_fix(this->pyl, 0, this->pyl->size(this->pyl));
+	this->pyr_size = this->width_fix(this->pyr, 0, this->pyr->size(this->pyr));
+	this->pa_size = this->width_fix(this->pa, 0, this->pa->size(this->pa));
+	return this;
+}
+
+BOX*
 box_init(BOX *box, char x, const char *a, const char *yl, const char *yr)
 //	: flag(0), px(x), pa(a), pyl(yl), pyr(yr){}
 {
@@ -140,6 +150,7 @@ box_init(BOX *box, char x, const char *a, const char *yl, const char *yr)
 	_24k(width_fix);
 	_24k(clear);
 	_24k(box_cs);
+	_24k(frame_width_fix);
 
 #undef _24k
 

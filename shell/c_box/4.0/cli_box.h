@@ -19,6 +19,7 @@ typedef struct box{
 	struct box* (*box)(struct box*, string*);
 	struct box* (*clear)(struct box*);
 	struct box* (*box_cs)(struct box*, char*);
+	struct box* (*frame_width_fix)(struct box*);
 
 	size_t (*width_fix)(string*, size_t, size_t);
 	size_t (*string_width)(struct box*, string*);
@@ -28,6 +29,7 @@ typedef struct box{
 	char px;
 	string _pa, _pyl, _pyr;
 	string *pa, *pyl, *pyr;
+	size_t pa_size, pyl_size, pyr_size;
 	int width;
 	string _strbuf, *strbuf;
 }BOX;
