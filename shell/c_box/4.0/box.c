@@ -88,7 +88,7 @@ int get_similar(const char*);
 
 int main(int argc, char **argv)
 {
-	int i, level=1, opt, long_optind, align=0, help_opt=0, perline=0;
+	int i, level=1, opt, long_optind, align=0, help_opt=0, perline=0, m_optind=1;
 	char px='-';
 	const char *fname = argv[0], *arg_input=NULL, *pa="+", *pyl="| ", *pyr=" |";
 	string _s, *s=&_s;
@@ -166,11 +166,11 @@ int main(int argc, char **argv)
 			_24k_error(fname, "missing argument after " WHITE_S("'%s'\n"), argv[optind-1]);
 			break;
 		case '?':
-			if ( sscanf(argv[optind-1], "%d", &level ) == 1 )
+			if ( sscanf(argv[m_optind==optind ? optind : optind-1], "%d", &level ) == 1 )
 				break;
 			if ( (i = get_similar(argv[optind-1])) >= 0 )
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '" L_CYAN_S("--%s") "'?\n", argv[optind-1], long_options[i].name);
-			if (optopt)
+			if (m_optind == optind)
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'-%c'\n"), optopt);
 			else
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'\n"), argv[optind-1]);
@@ -181,6 +181,7 @@ int main(int argc, char **argv)
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") ". Did you miss '" YELLOW_S("-") "' or '" YELLOW_S("--") "'?\n", argv[optind]);
 			else
 				++optind;
+		m_optind = optind;
 	}
 
 getopt_end:
