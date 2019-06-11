@@ -22,6 +22,7 @@
 #define lopt_help	0x2404
 #define lopt_perline	0x2405
 #define lopt_table	0x2406
+#define lopt_hide	0x2407
 
 #define lopt_buttom	0x240
 #define lopt_left	0x241
@@ -65,6 +66,9 @@ const char help_msg[] =
 "  -h, --help              display this message\n"
 "  -p, --perline           print one box per line\n"
 "  -t, --table             print as a table\n"
+"\n"
+"  --hide                  hide the border of the box\n"
+"\n"
 "  --left                  set box's left string\n"
 "  --right                 set box's right string\n"
 "  --angle                 set box's angle string\n"
@@ -85,6 +89,7 @@ const struct option long_options[] = {
 	{"help", no_argument, NULL, lopt_help},
 	{"perline", no_argument, NULL, lopt_perline},
 	{"table", no_argument, NULL, lopt_table},
+	{"hide", no_argument, NULL, lopt_hide},
 	{NULL, 0, NULL, 0}
 };
 
@@ -92,7 +97,7 @@ int get_similar(const char*);
 
 int main(int argc, char **argv)
 {
-	int i, level=1, opt, long_optind, align=0, help_opt=0, perline=0, m_optind=1, as_table=0;
+	int i, level=1, opt, long_optind, align=0, help_opt=0, perline=0, m_optind=1, as_table=0, is_hide=0;
 	char px='-';
 	const char *fname = argv[0], *arg_input=NULL, *pa="+", *pyl="| ", *pyr=" |";
 	string _s, *s=&_s;
@@ -147,6 +152,9 @@ int main(int argc, char **argv)
 		case opt_table: case lopt_table:
 			as_table = 1;
 			break;
+		case lopt_hide:
+			is_hide = 1;
+			break;
 		case opt_help:
 			arg_input = help_msg_short;
 			level=1, align=0, px='-', pa="+", pyl="| ", pyr=" |";
@@ -192,6 +200,12 @@ int main(int argc, char **argv)
 	}
 
 getopt_end:
+
+	if ( is_hide ) {
+		px=0x7, pa="", pyl="", pyr="";
+		level = 1;
+	}
+
 	string_init(s);
 	box_init(b, px, pa, pyl, pyr)->set_align(b, align);
 
