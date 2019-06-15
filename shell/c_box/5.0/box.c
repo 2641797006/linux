@@ -23,6 +23,8 @@
 #define lopt_perline	0x2405
 #define lopt_table	0x2406
 #define lopt_hide	0x2407
+#define lopt_tab_4	0x2408
+#define lopt_tab_8	0x2409
 
 #define lopt_buttom	0x240
 #define lopt_left	0x241
@@ -73,6 +75,7 @@ const char help_msg[] =
 "  --right                 set box's right string\n"
 "  --angle                 set box's angle string\n"
 "  --buttom                set box's buttom \"Char\"\n"
+"  --tab=[4/8]             replace tab with 4 or 8 spaces\n"
 ;
 
 // first : to return ':' while missing argument
@@ -90,14 +93,18 @@ const struct option long_options[] = {
 	{"perline", no_argument, NULL, lopt_perline},
 	{"table", no_argument, NULL, lopt_table},
 	{"hide", no_argument, NULL, lopt_hide},
+	{"tab=4", no_argument, NULL, lopt_tab_4},
+	{"tab=8", no_argument, NULL, lopt_tab_8},
 	{NULL, 0, NULL, 0}
 };
 
 int get_similar(const char*);
+int replace_tab(string*, int);
 
 int main(int argc, char **argv)
 {
-	int i, level=1, opt, long_optind, align=0, help_opt=0, perline=0, m_optind=1, as_table=0, is_hide=0;
+	int i, level=1, opt, long_optind, m_optind=1, err_optind, align=0;
+	int help_opt=0, perline=0, as_table=0, is_hide=0, tab_to_space=0;
 	char px='-';
 	const char *fname = argv[0], *arg_input=NULL, *pa="+", *pyl="| ", *pyr=" |";
 	string _s, *s=&_s;
@@ -181,7 +188,15 @@ int main(int argc, char **argv)
 			_24k_error(fname, "missing argument after " WHITE_S("'%s'\n"), argv[optind-1]);
 			break;
 		case '?':
-			if ( sscanf(argv[m_optind==optind ? optind : optind-1], "%d", &level ) == 1 )
+			err_optind = m_optind==optind ? optind : optind-1;
+			if (strcmp(argv[err_optind], "--tab=4") == 0) {
+				tab_to_space = 4;
+				break;
+			} else if (strcmp(argv[err_optind], "--tab=8") == 0) {
+				tab_to_space = 8;
+				break;
+			}
+			if ( sscanf(argv[err_optind], "%d", &level ) == 1 )
 				break;
 			if ( (i = get_similar(argv[optind-1])) >= 0 )
 				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '" L_CYAN_S("--%s") "'?\n", argv[optind-1], long_options[i].name);
@@ -218,6 +233,9 @@ getopt_end:
 			s->getline(s);
 		} else
 			s->fgetline(s, stdin, EOF);
+
+	if ( tab_to_space )
+		replace_tab(s, tab_to_space);
 
 	if ( perline && ! as_table ) {
 		int c;
@@ -277,5 +295,28 @@ int get_similar(const char *s)
 				similar = n, index = i;
 	}
 	return index;
+}
+
+int
+replace_tab(string *s, int n)
+{
+	int i;
+	size_t pos1=0, pos2;
+	string _spaces, *spaces=&_spaces;
+	string_init(spaces);
+
+	for (i=0; i<n; ++i)
+		spaces->push_back(spaces, ' ');
+
+	for ( ;; ) {
+		pos2 = s->find_first_of(s, pos1, "\t");
+		if (pos2 == -1)
+			break;
+		s->replace(s, pos2, 1, spaces->c_str(spaces));
+		pos1 = pos2 + n;
+	}
+
+	spaces->destroy(spaces);
+	return 0;
 }
 
