@@ -15,6 +15,7 @@
 #define opt_help	'h'
 #define opt_perline	'p'
 #define opt_table	't'
+#define opt_version	'v'
 
 #define lopt_level	0x2401
 #define lopt_align	0x2402
@@ -26,6 +27,7 @@
 #define lopt_tab_4	0x2408
 #define lopt_tab_8	0x2409
 #define lopt_abc	0x2410
+#define lopt_version	0x2411
 
 #define lopt_buttom	0x240
 #define lopt_left	0x241
@@ -49,6 +51,15 @@ box_end() {
 	fprintf(stderr, "24k box terminated.\n");
 }
 
+const char box_version[] =
+"box (CLI) 5.07\n"
+"License: GPLv3+: GNU General Public License v3.0 or later <http://gnu.org/licenses/gpl.html>\n"
+"This software is free software: you are free to modify and republish it.\n"
+"There are no other guarantees within the law.\n"
+"\n"
+"Written by 24k.\n"
+;
+
 const char help_msg_short[] =
 "24k CLI box\n"
 "use --help for a list of possible options\n"
@@ -63,27 +74,29 @@ const char help_msg[] =
 "           (Read a line from the keyboard)\n"
 "\n"
 "Options:\n"
-"  -l, --level             set the number of boxes\n"
-"  -a, --align             set the alignment of the string in the box such as -ac or --align=center\n"
-"  -s, --string            set a string as input data\n"
-"  -h, --help              display this message\n"
-"  -p, --perline           print one box per line\n"
-"  -t, --table             print as a table\n"
+"  -l, --level=<%d>        Set the number of boxes\n"
+"  -a, --align             Set the alignment of the string in the box such as -ac or --align=center\n"
+"  -s, --string            Set a string as input data\n"
+"  -h, --help              Display this message\n"
+"  -p, --perline           Print one box per line\n"
+"  -t, --table             Print as a table\n"
+"  -v, --version           Display 24k box version information\n"
 "\n"
-"  --hide                  hide the border of the box\n"
+"  --hide                  Hide the border of the box\n"
 "\n"
-"  --left                  set box's left string\n"
-"  --right                 set box's right string\n"
-"  --angle                 set box's angle string\n"
-"  --buttom                set box's buttom \"Char\"\n"
-"  --abc                   use abc box\n"
-"  --tab=[4,8]             replace tab with 4 or 8 spaces\n"
+"  --left=<string>         Set box's left string\n"
+"  --right=<string>        Set box's right string\n"
+"  --angle=<string>        Set box's angle string\n"
+"  --buttom=<char>         Set box's buttom <char>\n"
+"  --abc                   Use abc box\n"
+"  --tab=[4,8]             Replace tab with 4 or 8 spaces\n"
 ;
 
 // first : to return ':' while missing argument
 const char short_options[] = ":l:a::s:tph";
 
 const struct option long_options[] = {
+	{"abc", no_argument, NULL, lopt_abc},
 	{"level", required_argument, NULL, lopt_level},
 	{"align", optional_argument, NULL, lopt_align},
 	{"string", required_argument, NULL, lopt_string},
@@ -97,7 +110,7 @@ const struct option long_options[] = {
 	{"hide", no_argument, NULL, lopt_hide},
 	{"tab=4", no_argument, NULL, lopt_tab_4},
 	{"tab=8", no_argument, NULL, lopt_tab_8},
-	{"abc", no_argument, NULL, lopt_abc},
+	{"version", no_argument, NULL, lopt_version},
 	{NULL, 0, NULL, 0}
 };
 
@@ -107,7 +120,7 @@ int replace_tab(string*, int);
 int main(int argc, char **argv)
 {
 	int i, level=1, opt, long_optind, m_optind=1, err_optind, align=0;
-	int help_opt=0, perline=0, as_table=0, is_hide=0, tab_to_space=1;
+	int with_color=0, perline=0, as_table=0, is_hide=0, tab_to_space=1;
 	int abc_sb=0;
 	char px='-';
 	const char *fname = argv[0], *arg_input=NULL, *pa="+", *pyl="| ", *pyr=" |";
@@ -163,6 +176,11 @@ int main(int argc, char **argv)
 		case opt_table: case lopt_table:
 			as_table = 1;
 			break;
+		case opt_version: case lopt_version:
+			arg_input = box_version;
+			align = -1;
+			with_color=1;
+			goto getopt_end;
 		case lopt_abc:
 			px='=', pa="ABC", pyl="sb ", pyr=" sb";
 			abc_sb = 1;
@@ -175,12 +193,12 @@ int main(int argc, char **argv)
 		case opt_help:
 			arg_input = help_msg_short;
 			align=0;
-			help_opt=1;
+			with_color=1;
 			goto getopt_end;
 		case lopt_help:
 			arg_input = help_msg;
 			align=-1;
-			help_opt=1;
+			with_color=1;
 			goto getopt_end;
 		case lopt_angle:
 			if ( abc_sb )
@@ -286,10 +304,10 @@ getopt_end:
 		s->swap(s, b->strbuf);
 	}
 
-	if (help_opt)
+	if (with_color)
 		printf("%s", L_CYAN);
 	printf("%s", string_c_str(s));
-	if (help_opt)
+	if (with_color)
 		printf("%s", ENDCC);
 
 	return 24-'k';
