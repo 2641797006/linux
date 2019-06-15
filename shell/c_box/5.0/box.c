@@ -25,6 +25,7 @@
 #define lopt_hide	0x2407
 #define lopt_tab_4	0x2408
 #define lopt_tab_8	0x2409
+#define lopt_tab_1	0x2410
 
 #define lopt_buttom	0x240
 #define lopt_left	0x241
