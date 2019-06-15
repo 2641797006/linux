@@ -75,7 +75,7 @@ const char help_msg[] =
 "  --right                 set box's right string\n"
 "  --angle                 set box's angle string\n"
 "  --buttom                set box's buttom \"Char\"\n"
-"  --tab=[4/8]             replace tab with 4 or 8 spaces\n"
+"  --tab=[1,4,8]           replace tab with 1, 4 or 8 space(s)\n"
 ;
 
 // first : to return ':' while missing argument
@@ -95,6 +95,7 @@ const struct option long_options[] = {
 	{"hide", no_argument, NULL, lopt_hide},
 	{"tab=4", no_argument, NULL, lopt_tab_4},
 	{"tab=8", no_argument, NULL, lopt_tab_8},
+	{"tab=1", no_argument, NULL, lopt_tab_1},
 	{NULL, 0, NULL, 0}
 };
 
@@ -194,6 +195,9 @@ int main(int argc, char **argv)
 				break;
 			} else if (strcmp(argv[err_optind], "--tab=8") == 0) {
 				tab_to_space = 8;
+				break;
+			} else if (strcmp(argv[err_optind], "--tab=1") == 0) {
+				tab_to_space = 1;
 				break;
 			}
 			if ( sscanf(argv[err_optind], "%d", &level ) == 1 )
