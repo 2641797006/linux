@@ -93,7 +93,7 @@ const char help_msg[] =
 ;
 
 // first : to return ':' while missing argument
-const char short_options[] = ":l:a::s:tph";
+const char short_options[] = ":l:a::s:tphv";
 
 const struct option long_options[] = {
 	{"abc", no_argument, NULL, lopt_abc},
