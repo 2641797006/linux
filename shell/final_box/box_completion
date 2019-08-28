@@ -1,0 +1,27 @@
+# box completion                                        -*- shell-script -*-
+#
+# The only unusual feature is that we don't parse "box --help -v" output
+# directly, because that would include the options of all the other backend
+# tools (linker, assembler, preprocessor, etc) without any indication that
+# you cannot feed such options to the box driver directly. and parse the
+# --help output of the compiler.
+
+_box()
+{
+    local cur prev words cword
+    _init_completion || return
+
+    case $prev in
+        -h|--help|-v|--version)
+            return
+            ;;
+    esac
+
+#   COMPREPLY=( $( compgen -W "$( box --hide --help 2>/dev/null | tr '\t' ' ' |\
+#           command sed -e '/^  *-/!d' -e 's/ *-\([^][ <>]*\).*/-\1/' )" -- "$cur" ) )
+    COMPREPLY=( $( compgen -W "-l -a -s -h -p -t -v --level --align --string --help --perline --table --version --hide --left --right --angle --buttom --abc --tab=4 --tab=8" -- "$cur" ) )
+} &&
+
+complete -F _box box
+
+# ex: filetype=sh
