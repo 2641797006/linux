@@ -1,10 +1,14 @@
 #ifndef _RBTREE_H_
 #define _RBTREE_H_
 
+#ifndef _GLIBCXX_QUEUE
+#include <queue>
+#endif
+
 #define __tt(T)	template <typename T>
 
 namespace _24k {
-
+using namespace std;
 enum RB_Color { rb_black, rb_red };
 
 __tt(T)
@@ -37,7 +41,8 @@ class RB_Node {
 
 __tt(T)
 class rbtree {
-  private:
+//  private:
+  public:
 	RB_Node<T> *root;
 	size_t _size;
 	unsigned int unique;
@@ -50,6 +55,10 @@ class rbtree {
 
 	void left_rotate(RB_Node<T>*);
 	void right_rotate(RB_Node<T>*);
+
+#ifdef _24k_RBTREE_PRINT
+	void print();
+#endif
 };
 
 __tt(T)
@@ -83,7 +92,7 @@ rbtree<T>::insert(T const& t)
 	else
 		node_p->right = node;
 // fix
-	while ( node_p && node_p->is_red() ) {
+	while ( (node_p = node->parent) && node_p->is_red() ) {
 		node_1 = node_p->parent;
 		if (node_p == node_1->left) {
 			if (node_1->right && node_1->right->is_red()) {
@@ -122,6 +131,7 @@ rbtree<T>::insert(T const& t)
 		}
 	}
 	root->turn_black();
+	++_size;
 	return true;
 }
 
@@ -168,6 +178,82 @@ rbtree<T>::right_rotate(RB_Node<T> *node)
 	node_1->right = node;
 	node->parent = node_1;
 }
+
+#ifdef _24k_RBTREE_PRINT
+
+__tt(T)
+void
+rbtree<T>::print()
+{
+	const int fl=0x1, fc=0x2, f_lcr=0xf;
+	int line, flag=0;
+	RB_Node<T> *node = root, *NIL = (RB_Node<T>*)-1;
+	queue<RB_Node<T>*> q;
+
+	cout<<'{';
+	q.push(node);
+	q.push(NULL);
+	line = q.size();
+	flag |= fl;
+	while ( ! q.empty() ) {
+		node = q.front();
+		q.pop();
+		if (line)
+			line--;
+		else {
+			cout<<'\n';
+			line = q.size();
+		}
+		if (node == NIL) {
+#ifdef __linux__
+			cout<<"\033[40;37m";
+#endif
+			cout<<"nil ";
+#ifdef __linux__
+			cout<<"\033[0m";
+#endif
+			continue;
+		}
+		if (node) {
+			if (flag & fc)
+				cout<<' ';
+			else
+				flag |= fc;
+#ifdef __linux__
+			if (node->is_black())
+				cout<<"\033[40;37m";
+			else
+				cout<<"\033[41;37m";
+#endif
+			cout<< node->key;
+#ifdef __linux__
+			cout<<"\033[0m";
+#endif
+		} else {
+			if (flag & fl) {
+				cout<<'}'<<' ';
+				flag &= ~f_lcr;
+			} else {
+				cout<<'{';
+				flag |= fl;
+			}
+			continue;
+		}
+		q.push(NULL);
+		if (node->left)
+			q.push(node->left);
+		else
+			q.push(NIL);
+		if (node->right)
+			q.push(node->right);
+		else
+			q.push(NIL);
+		q.push(NULL);
+	}
+	cout<<'\n';
+}
+
+#endif
 
 } // namespace _24k
 
