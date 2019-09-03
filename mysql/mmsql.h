@@ -28,7 +28,6 @@ class MMSQL {
 	string password;
 	string ip;
 	string dbname;
-	string tablename;
 
   public:
 	using RES = list<string*>&;
@@ -45,9 +44,7 @@ class MMSQL {
 	}
 
 	void set_dbname(string const& db) { dbname = db; mysql_select_db(mysql, db.c_str()); }
-	void set_tablename(string const& table) { tablename = table; }
 	string const& get_dbname() { return dbname; }
-	string const& get_tablename() { return tablename; }
 
 	bool connect()
 	{
