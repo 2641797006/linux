@@ -77,7 +77,18 @@ class MMSQL {
 	int result_col() { return col; }
 
 	string error() { return mysql_error(mysql); }
+	void print();
 };
+
+void
+MMSQL::print()
+{
+	for (auto x : result()) {
+		for (int i=0; i<result_col(); ++i)
+			cout<<x[i]<<' ';
+		cout<<'\n';
+	}
+}
 
 MMSQL::RES
 MMSQL::result()
@@ -87,8 +98,6 @@ MMSQL::result()
 		int i;
 		string *line;
 
-		if ( res )
-			mysql_free_result(res);
 		res = mysql_store_result(mysql);
 		if ( ! res )
 			return ls_result;
@@ -104,10 +113,10 @@ MMSQL::result()
 				line[i] = row[i] ? row[i] : "NULL";
 			ls_result.push_back(line);
 		}
+		mysql_free_result(res);
 	}
 	return ls_result;
 }
-
 
 } // namespace _24k;
 
