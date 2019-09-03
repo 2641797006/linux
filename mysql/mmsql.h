@@ -23,6 +23,7 @@ class MMSQL {
 	list<string*> ls_result;
 	int col;
 	int is_connect;
+	int is_save;
 
 	string username;
 	string password;
@@ -36,6 +37,7 @@ class MMSQL {
 		username=u, password=p, ip=i, dbname=db;
 		mysql = mysql_init(NULL);
 		res = NULL; col=0;
+		is_connect = false, is_save = true;
 	}
 
 	~MMSQL()
@@ -64,37 +66,46 @@ class MMSQL {
 		is_connect = false;
 	}
 
-	bool query(string const&);
-	RES result() { return ls_result; }
+	bool query(string const& cmd)
+	{
+		query_code = mysql_real_query(mysql, cmd.c_str(), cmd.size());
+		is_save = false;
+		return query_code == 0;
+	}
+
+	RES result();
 	int result_col() { return col; }
 
 	string error() { return mysql_error(mysql); }
 };
 
-bool
-MMSQL::query(string const& cmd)
+MMSQL::RES
+MMSQL::result()
 {
-	query_code = mysql_real_query(mysql, cmd.c_str(), cmd.size());
-	if ( ! query_code ) {
-		int i=0;
+	if ( ! is_save ) {
+		is_save = true;
+		int i;
 		string *line;
-		for (auto x : ls_result)
-			delete[] x;
+
 		if ( res )
 			mysql_free_result(res);
 		res = mysql_store_result(mysql);
 		if ( ! res )
-			return true;
+			return ls_result;
+
+		for (auto x : ls_result)
+			delete[] x;
+		ls_result.clear();
+
 		col = mysql_num_fields(res);
 		while ( (row = mysql_fetch_row(res)) ) {
 			line = new string[col];
 			for (i=0; i<col; ++i)
-				line[i] = row[i];
+				line[i] = row[i] ? row[i] : "NULL";
 			ls_result.push_back(line);
 		}
-		return true;
 	}
-	return false;
+	return ls_result;
 }
 
 
