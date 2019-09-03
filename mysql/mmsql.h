@@ -19,7 +19,6 @@ class MMSQL {
 	MYSQL *mysql;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	int query_code;
 	list<string*> ls_result;
 	int col;
 	int is_connect;
@@ -31,7 +30,7 @@ class MMSQL {
 	string dbname;
 
   public:
-	using RES = list<string*>&;
+	using RES = list<string*>;
 	MMSQL(string const& u, string const& p, string const& i, string const& db="")
 	{
 		username=u, password=p, ip=i, dbname=db;
@@ -68,29 +67,31 @@ class MMSQL {
 
 	bool query(string const& cmd)
 	{
-		query_code = mysql_real_query(mysql, cmd.c_str(), cmd.size());
 		is_save = false;
-		return query_code == 0;
+		return ! mysql_real_query(mysql, cmd.c_str(), cmd.size());
 	}
 
-	RES result();
+	RES& result();
+	RES&& move_result() { result(); return move(ls_result); }
 	int result_col() { return col; }
 
 	string error() { return mysql_error(mysql); }
-	void print();
+
+	void print() { print(ls_result); }
+	void print(RES const&);
 };
 
 void
-MMSQL::print()
+MMSQL::print(MMSQL::RES const& res)
 {
-	for (auto x : result()) {
+	for (auto x : res) {
 		for (int i=0; i<result_col(); ++i)
 			cout<<x[i]<<' ';
 		cout<<'\n';
 	}
 }
 
-MMSQL::RES
+MMSQL::RES&
 MMSQL::result()
 {
 	if ( ! is_save ) {
@@ -98,6 +99,8 @@ MMSQL::result()
 		int i;
 		string *line;
 
+		if ( res )
+			mysql_free_result(res);
 		res = mysql_store_result(mysql);
 		if ( ! res )
 			return ls_result;
@@ -113,12 +116,11 @@ MMSQL::result()
 				line[i] = row[i] ? row[i] : "NULL";
 			ls_result.push_back(line);
 		}
-		mysql_free_result(res);
 	}
 	return ls_result;
 }
 
 } // namespace _24k;
 
-#endif // _CPPSQL_H_
+#endif // _MMSQL_H_
 
