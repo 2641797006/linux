@@ -1,0 +1,1 @@
+g++ -Wall -pedantic ${1}.cpp -o $1 `mysql_config --libs`
