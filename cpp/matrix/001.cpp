@@ -18,14 +18,13 @@ int main()
 		{0, 1},
 		{3, 0},
 		{-1, 2}
+	}),
+	m3({
+		{1, 2, 3},
+		{2, 2, 1},
+		{3, 4, 3}
 	});
-	Matrix<int> m3=m2;
-
-	cout<<m1<<endl;
-	cout<<m2<<endl;
-	cout<<m1*m2<<endl;
-	cout<<m1<<endl;
-	m1*=m2;
-	cout<<m1<<endl;
+	cout<<m3<<endl;
+	cout<<m3.value()<<endl;
 }
 

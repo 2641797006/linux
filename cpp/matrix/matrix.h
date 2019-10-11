@@ -47,8 +47,9 @@ class Matrix{
 	void rand(int);
 	void rand(int left, int right);
 
-	Matrix<T> operator+ (Matrix<T> const&) const;
-	Matrix<T> operator- (Matrix<T> const&) const;
+	double value() const;
+//	Matrix<T> inverse();
+
 	Matrix<T>& operator+= (Matrix<T> const&);
 	Matrix<T>& operator-= (Matrix<T> const&);
 	Matrix<T>& operator*= (Matrix<T> const&);
@@ -66,6 +67,60 @@ class Matrix{
 
 }; // class Matrix
 
+__t(T)
+double
+Matrix<T>::value() const
+{
+	if ( row != col )
+		return 0;
+	double det=0, product;
+	int *arr = new int[row+2];
+	int *a=arr+1, *t=a+row-1;
+	int *p, *q, i, x=0x2, w=1, v=1;
+	for (p=a; p<=t; ++p)
+		*p = p - a;
+	arr[0] = -1;
+	a[row] = -1;
+	for (;;) {
+		for (p=a,product=1,i=0; p<=t; ++p,++i)
+			product *= (*this)(i, *p);
+		for (p=t-1,w=1; *(p+1)<*p; --p)
+			++w;
+		det += (x&=3, (x+=1)&2) ? product : -product;
+		(w-v-1)/2%2==1 ? ( x = ((x&2)==0 ? 2 : 0) ) : 0;
+		if ((uint)w >= row)
+			break;
+		v=w, q=p;
+		while (*++q > *p) {}
+		i=*--q;
+		*q=*p, *p=i;
+		++p, q=t;
+		while (p < q) {
+			i=*p, *p=*q, *q=i;
+			++p, --q;
+		}
+	}
+	delete[] arr;
+	return det;
+}
+
+
+/*
+__t(T)
+Matrix<T>
+inverse()
+{
+
+}
+*/
+/*
+__t(A)
+Matrix<A>
+operator/ (Matrix<A> const& m1, Matrix<A> const& m2)
+{
+
+}
+*/
 __t(T)
 Matrix<T>&
 Matrix<T>::operator= (Matrix<T> const& mat)
