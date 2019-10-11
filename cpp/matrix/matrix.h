@@ -35,6 +35,7 @@ class Matrix{
 	Matrix(Matrix<T> &&);
 	Matrix(initializer_list<initializer_list<T>>);
 	~Matrix();
+	Matrix<T>& operator= (Matrix<T> const&);
 
 	T& operator() (uint r, uint c) const;
 	bool rc(Matrix<T> const&) const;
@@ -46,11 +47,11 @@ class Matrix{
 	void rand(int);
 	void rand(int left, int right);
 
-//	Matrix<T> mul(Matrix<T> const&);
 	Matrix<T> operator+ (Matrix<T> const&) const;
 	Matrix<T> operator- (Matrix<T> const&) const;
 	Matrix<T>& operator+= (Matrix<T> const&);
 	Matrix<T>& operator-= (Matrix<T> const&);
+	Matrix<T>& operator*= (Matrix<T> const&);
 
 	__t(A)
 	friend Matrix<A> operator+ (Matrix<A> const&, Matrix<A> const&);
@@ -64,6 +65,21 @@ class Matrix{
 	friend ostream& operator<< (ostream&, Matrix<A> const&);
 
 }; // class Matrix
+
+__t(T)
+Matrix<T>&
+Matrix<T>::operator= (Matrix<T> const& mat)
+{
+	delete[] bp;
+	return *new(this) Matrix<T>(mat);
+}
+
+__t(T)
+Matrix<T>&
+Matrix<T>::operator*= (Matrix<T> const& mat)
+{
+	return (*this) = (*this) * mat;
+}
 
 __t(T)
 Matrix<T>::Matrix(initializer_list<initializer_list<T>> il)
@@ -104,20 +120,20 @@ operator* (Matrix<A> const& m1, Matrix<A> const& m2)
 	return mp;
 }
 
-__t(T)
-Matrix<T>
-Matrix<T>::operator- (Matrix<T> const& mat) const
+__t(A)
+Matrix<A>
+operator- (Matrix<A> const& m1, Matrix<A> const& m2)
 {
-	Matrix<T> sum(*this);
-	return sum-=(mat);
+	Matrix<A> m(m1);
+	return m -= m2;
 }
 
-__t(T)
-Matrix<T>
-Matrix<T>::operator+ (Matrix<T> const& mat) const
+__t(A)
+Matrix<A>
+operator+ (Matrix<A> const& m1, Matrix<A> const& m2)
 {
-	Matrix<T> sum(*this);
-	return sum+=(mat);
+	Matrix<A> m(m1);
+	return m += m2;
 }
 
 __t(T)

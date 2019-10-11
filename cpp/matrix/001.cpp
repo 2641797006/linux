@@ -19,9 +19,13 @@ int main()
 		{3, 0},
 		{-1, 2}
 	});
+	Matrix<int> m3=m2;
 
 	cout<<m1<<endl;
 	cout<<m2<<endl;
 	cout<<m1*m2<<endl;
+	cout<<m1<<endl;
+	m1*=m2;
+	cout<<m1<<endl;
 }
 
