@@ -9,6 +9,14 @@
 #include <cstdlib>
 #endif
 
+#ifndef _GLIBCXX_CSTRING
+#include <cstring>
+#endif
+
+#ifndef _GLIBCXX_INITIALIZER_LIST
+#include <initializer_list>
+#endif
+
 #define __t(T)	template<typename T>
 
 namespace akm{
@@ -23,6 +31,9 @@ class Matrix{
 
   public:
 	Matrix(int r, int c);
+	Matrix(Matrix<T> const&);
+	Matrix(Matrix<T> &&);
+	Matrix(initializer_list<initializer_list<T>>);
 	~Matrix();
 
 	T& operator() (uint r, uint c) const;
@@ -30,23 +41,106 @@ class Matrix{
 	bool cr(Matrix<T> const&) const;
 
 	void set(T const&);
+
 // for test
 	void rand(int);
 	void rand(int left, int right);
 
-	Matrix<T>& add(Matrix<T> const&);
-	Matrix<T>& sub(Matrix<T> const&);
+//	Matrix<T> mul(Matrix<T> const&);
+	Matrix<T> operator+ (Matrix<T> const&) const;
+	Matrix<T> operator- (Matrix<T> const&) const;
+	Matrix<T>& operator+= (Matrix<T> const&);
+	Matrix<T>& operator-= (Matrix<T> const&);
 
+	__t(A)
+	friend Matrix<A> operator+ (Matrix<A> const&, Matrix<A> const&);
+	__t(A)
+	friend Matrix<A> operator- (Matrix<A> const&, Matrix<A> const&);
+	__t(A)
+	friend Matrix<A> operator* (Matrix<A> const&, Matrix<A> const&);
 //	__t(A)
-//	friend Matrix<A>& operator+ (Matrix<A> const&, Matrix<A> const&);
+//	friend Matrix<A> operator/ (Matrix<A> const&, Matrix<A> const&);
 	__t(A)
 	friend ostream& operator<< (ostream&, Matrix<A> const&);
 
 }; // class Matrix
 
 __t(T)
+Matrix<T>::Matrix(initializer_list<initializer_list<T>> il)
+{
+	row = il.size();
+	col = 0;
+	for (auto &x : il)
+		if (x.size() > col)
+			col = x.size();
+	bp = new T[row*col];
+	uint r=0, c;
+	for (auto const& x : il) {
+		c=0;
+		for (auto const& y : x)
+			(*this)(r, c++) = y;
+		for (; c<col; ++c)
+			(*this)(r, c) = 0;
+		++r;
+	}
+}
+
+__t(A)
+Matrix<A>
+operator* (Matrix<A> const& m1, Matrix<A> const& m2)
+{
+	if ( ! m1.cr(m2) )
+		return m1;
+	Matrix<A> mp(m1.row, m2.col);
+	uint i, j, k;
+	double product;
+	for (i=0; i<mp.row; ++i)
+		for (j=0; j<mp.col; ++j) {
+			product = 0;
+			for (k=0; k<m1.col; ++k)
+				product += m1(i, k) * m2(k, j);
+			mp(i, j) = product;
+		}
+	return mp;
+}
+
+__t(T)
+Matrix<T>
+Matrix<T>::operator- (Matrix<T> const& mat) const
+{
+	Matrix<T> sum(*this);
+	return sum-=(mat);
+}
+
+__t(T)
+Matrix<T>
+Matrix<T>::operator+ (Matrix<T> const& mat) const
+{
+	Matrix<T> sum(*this);
+	return sum+=(mat);
+}
+
+__t(T)
+Matrix<T>::Matrix(Matrix<T> && mat)
+{
+	row = mat.row;
+	col = mat.col;
+	bp = mat.bp;
+	mat.bp = NULL;
+}
+
+__t(T)
+Matrix<T>::Matrix(Matrix<T> const& mat)
+{
+	row = mat.row;
+	col = mat.col;
+	bp = new T[row*col];
+	memcpy(bp, mat.bp, row*col*sizeof(T));
+}
+
+__t(T)
 Matrix<T>&
-Matrix<T>::sub(Matrix<T> const& mat)
+Matrix<T>::operator-= (Matrix<T> const& mat)
 {
 	if ( ! rc(mat) )
 		return *this;
@@ -59,7 +153,7 @@ Matrix<T>::sub(Matrix<T> const& mat)
 
 __t(T)
 Matrix<T>&
-Matrix<T>::add(Matrix<T> const& mat)
+Matrix<T>::operator+= (Matrix<T> const& mat)
 {
 	if ( ! rc(mat) )
 		return *this;
@@ -118,7 +212,7 @@ __t(T)
 bool
 Matrix<T>::cr(Matrix<T> const& mat) const
 {
-	return row==mat.col && col==mat.row;
+	return col==mat.row;
 }
 
 __t(A)

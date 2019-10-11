@@ -8,11 +8,20 @@ int main()
 {
 	srand(time(NULL));
 
-	Matrix<int> mat(4,6), mat2(4, 6);
-	mat.rand(10);
-	cout<<mat<<endl;
-	mat2.rand(-9, 1);
-	cout<<mat2<<endl;
-	cout<<mat.sub(mat2)<<endl;
+	Matrix<int> m1({
+		{4, -1, 2, 1},
+		{1, 1, 0, 3},
+		{0, 3, 1, 4},
+	}),
+	m2({
+		{1, 2},
+		{0, 1},
+		{3, 0},
+		{-1, 2}
+	});
+
+	cout<<m1<<endl;
+	cout<<m2<<endl;
+	cout<<m1*m2<<endl;
 }
 
