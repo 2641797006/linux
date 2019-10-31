@@ -3,8 +3,8 @@
 
 BitMap*
 bitmap_init(BitMap *this, QWORD n) {
-	this->qsize = n/64 + ((n%64) ? 1 : 0);
-	this->data = (QWORD*)malloc(this->qsize * 8);
+	this->qsize = (n>>6) + ((n&0x3f) ? 1 : 0);
+	this->data = (QWORD*)malloc(this->qsize << 3);
 	if ( ! this->data )
 		return NULL;
 	this->size = n;
@@ -14,7 +14,13 @@ bitmap_init(BitMap *this, QWORD n) {
 void
 bitmap_clear(BitMap *this)
 {
-	memset(this->data, 0, this->qsize*8);
+	memset(this->data, 0, this->qsize << 3);
+}
+
+void
+bitmap_set_all(BitMap *this)
+{
+	memset(this->data, 0xff, this->qsize << 3);
 }
 
 void
@@ -38,30 +44,24 @@ bool
 bitmap_is_set(BitMap *this, QWORD pos)
 {
 	--pos;
-	QWORD x = pos/64;
-	QWORD y = pos%64;
-	QWORD q = ((QWORD)1) << y;
-	return (this->data[x] & q) ? true : false;
+	QWORD q = ((QWORD)1) << (pos&0x3f);
+	return (this->data[pos>>6] & q) ? true : false;
 }
 
 void
 bitmap_set(BitMap *this, QWORD pos)
 {
 	--pos;
-	QWORD x = pos/64;
-	QWORD y = pos%64;
-	QWORD q = ((QWORD)1) << y;
-	this->data[x] |= q;
+	QWORD q = ((QWORD)1) << (pos&0x3f);
+	this->data[pos>>6] |= q;
 }
 
 void
 bitmap_reset(BitMap *this, QWORD pos)
 {
 	--pos;
-	QWORD x = pos/64;
-	QWORD y = pos%64;
-	QWORD q = ((QWORD)1) << y;
-	this->data[x] &= ~q;
+	QWORD q = ((QWORD)1) << (pos&0x3f);
+	this->data[pos>>6] &= ~q;
 }
 
 QWORD
@@ -127,9 +127,9 @@ qword_highest_bit(QWORD q) // 0 ~ 63
 QWORD
 bitmap_find_first(BitMap *this, bool *is_ok)
 {
-	QWORD i;
+	QWORD i, res;
 	for (i=0; i<this->qsize; ++i)
-		if (this->data[i])
+		if ( this->data[i] ^ 0xffffffffffffffff )
 			break;
 	if (i == this->qsize) {
 		if (is_ok)
@@ -138,6 +138,13 @@ bitmap_find_first(BitMap *this, bool *is_ok)
 	}
 	if (is_ok)
 		*is_ok = true;
-	return (i<<6) + qword_lowest_bit(this->data[i]) + 1;
+	res = (i<<6) + qword_lowest_bit( ~ this->data[i] ) + 1;
+	if (is_ok) {
+		if ( res <= this->size )
+			*is_ok = true;
+		else
+			*is_ok = false;
+	}
+	return res;
 }
 

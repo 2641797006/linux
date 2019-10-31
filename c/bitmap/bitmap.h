@@ -21,6 +21,7 @@ typedef struct BitMap {
 BitMap* bitmap_init (BitMap*, QWORD);
 void bitmap_destroy (BitMap*);
 void bitmap_clear (BitMap*);
+void bitmap_set_all (BitMap*);
 
 BitMap* create_bitmap (QWORD);
 bool bitmap_is_set (BitMap*, QWORD);
