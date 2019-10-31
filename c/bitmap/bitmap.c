@@ -138,6 +138,6 @@ bitmap_find_first(BitMap *this, bool *is_ok)
 	}
 	if (is_ok)
 		*is_ok = true;
-	return i*64 + qword_lowest_bit(this->data[i]) + 1;
+	return (i<<6) + qword_lowest_bit(this->data[i]) + 1;
 }
 
