@@ -43,7 +43,6 @@ create_bitmap(QWORD n)
 bool
 bitmap_is_set(BitMap *this, QWORD pos)
 {
-	--pos;
 	QWORD q = ((QWORD)1) << (pos&0x3f);
 	return (this->data[pos>>6] & q) ? true : false;
 }
@@ -51,7 +50,6 @@ bitmap_is_set(BitMap *this, QWORD pos)
 void
 bitmap_set(BitMap *this, QWORD pos)
 {
-	--pos;
 	QWORD q = ((QWORD)1) << (pos&0x3f);
 	this->data[pos>>6] |= q;
 }
@@ -59,7 +57,6 @@ bitmap_set(BitMap *this, QWORD pos)
 void
 bitmap_reset(BitMap *this, QWORD pos)
 {
-	--pos;
 	QWORD q = ((QWORD)1) << (pos&0x3f);
 	this->data[pos>>6] &= ~q;
 }
@@ -138,9 +135,9 @@ bitmap_find_first(BitMap *this, bool *is_ok)
 	}
 	if (is_ok)
 		*is_ok = true;
-	res = (i<<6) + qword_lowest_bit( ~ this->data[i] ) + 1;
+	res = (i<<6) + qword_lowest_bit( ~ this->data[i] );
 	if (is_ok) {
-		if ( res <= this->size )
+		if ( res < this->size )
 			*is_ok = true;
 		else
 			*is_ok = false;
