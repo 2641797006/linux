@@ -1,22 +1,26 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "bitmap.h"
 
 int main()
 {
-	bool f;
-	BitMap *bmap = create_bitmap(64);
+	bool is_ok;
+	BitMap *bmap = create_bitmap(10000);
 
-	bitmap_set(bmap, 3);
-	bitmap_set(bmap, 64);
+	bitmap_set(bmap, 3000);
+	bitmap_set(bmap, 6666);
 
-	printf("%016lX\n", bmap->data[0]);
-	printf("first: %lu\n", bitmap_find_first(bmap, &f));
+	printf("first: %lu\n", bitmap_find_first(bmap, NULL));
 
-	printf("bit3: %d\n", bitmap_is_set(bmap, 3));
-	bitmap_reset(bmap, 3);
-	printf("%016lX\n", bmap->data[0]);
-	printf("bit3: %d\n", bitmap_is_set(bmap, 3));
+	printf("bit3000: %d\n", bitmap_is_set(bmap, 3000));
+	bitmap_reset(bmap, 3000);
+	printf("bit3000: %d\n", bitmap_is_set(bmap, 3000));
 
-	printf("first: %lu\n", bitmap_find_first(bmap, &f));
+	printf("first: %lu ", bitmap_find_first(bmap, &is_ok));
+	printf("is_ok = %s\n", is_ok ? "true" : "false");
+
+	bitmap_reset(bmap, 6666);
+	printf("first: %lu ", bitmap_find_first(bmap, &is_ok));
+	printf("is_ok = %s\n", is_ok ? "true" : "false");
 }
 
