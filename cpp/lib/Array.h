@@ -38,8 +38,7 @@ Array<T>::Array(int len) {
 __t(T)
 Array<T>::Array(const T *arr, int len) {
 	new(this) Array(len);
-	for (int i=0; i<len; ++i)
-		data[i] = arr[i];
+	memcpy(data, arr, len*sizeof(T));
 }
 
 __t(T)
