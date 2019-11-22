@@ -67,7 +67,7 @@ Array<T>::~Array() {
 __t(T)
 Array<T>&
 Array<T>::operator= (Array const& other) {
-	~Array();
+	this->~Array();
 	new(this) Array(other);
 	return *this;
 }
@@ -75,15 +75,15 @@ Array<T>::operator= (Array const& other) {
 __t(T)
 Array<T>&
 Array<T>::operator= (Array && other) {
-	~Array();
-	new(this) Array(other);
+	this->~Array();
+	new(this) Array(move(other));
 	return *this;
 }
 
 __t(T)
 Array<T>&
 Array<T>::operator= (initializer_list<T> init) {
-	~Array();
+	this->~Array();
 	new(this) Array(init);
 	return *this;
 }
