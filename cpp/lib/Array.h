@@ -15,6 +15,7 @@ struct Array {
 	int length;
 
 	Array(int len=0);
+	Array(const T *arr, int len);
 	Array(Array const& other);
 	Array(Array && other);
 	Array(initializer_list<T> init);
@@ -32,6 +33,13 @@ __t(T)
 Array<T>::Array(int len) {
 	data = new T[len];
 	length = len;
+}
+
+__t(T)
+Array<T>::Array(const T *arr, int len) {
+	new(this) Array(len);
+	for (int i=0; i<len; ++i)
+		data[i] = arr[i];
 }
 
 __t(T)
