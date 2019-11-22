@@ -19,6 +19,8 @@ class Arrays {
 	Array<T> copyOfRange(Array<T> const& original, int from, int to);
 	__t(T) static
 	void fill(Array<T>& a, T const& val);
+	__t(T) static
+	void fill(Array<T>& a, int fromIndex, int toIndex, T const& val);
 };
 
 __t(T)
@@ -46,6 +48,13 @@ __t(T)
 void
 Arrays::fill(Array<T>& a, T const& val) {
 	for (int i=0; i<a.length; ++i)
+		a[i] = val;
+}
+
+__t(T)
+void
+Arrays::fill(Array<T>& a, int fromIndex, int toIndex, T const& val) {
+	for (int i=fromIndex; i<toIndex; ++i)
 		a[i] = val;
 }
 
