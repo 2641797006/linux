@@ -1,7 +1,6 @@
 #ifndef _ARRAY_H_
 #define _ARRAY_H_
 
-#include <string.h>
 #include <initializer_list>
 
 #define __t(T)	template <class T>
@@ -38,13 +37,15 @@ Array<T>::Array(int len) {
 __t(T)
 Array<T>::Array(const T *arr, int len) {
 	new(this) Array(len);
-	memcpy(data, arr, len*sizeof(T));
+	for (int i=0; i<len; ++i)
+		data[i] = arr[i];
 }
 
 __t(T)
 Array<T>::Array(Array const& other) {
 	new(this) Array(other.length);
-	memcpy(data, other.data, length*sizeof(T));
+	for (int i=0; i<length; ++i)
+		data[i] = other.data[i];
 }
 
 __t(T)
