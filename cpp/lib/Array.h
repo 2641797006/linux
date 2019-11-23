@@ -1,7 +1,10 @@
 #ifndef _ARRAY_H_
 #define _ARRAY_H_
 
+#include <cstddef> // NULL
+#include <utility> // move
 #include <initializer_list>
+#include <new> // placement new
 
 #define __t(T)	template <class T>
 
