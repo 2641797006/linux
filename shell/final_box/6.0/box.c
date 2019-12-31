@@ -1,0 +1,377 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <stdarg.h>
+#include <string.h>
+#include "ccolor.h"
+#include "string24k.h"
+#include "cli_box.h"
+#include "levens.h"
+
+#define opt_level	'l'
+#define opt_align	'a'
+#define opt_string	's'
+#define opt_help	'h'
+#define opt_perline	'p'
+#define opt_table	't'
+#define opt_version	'v'
+
+#define lopt_level	0x2401
+#define lopt_align	0x2402
+#define lopt_string	0x2403
+#define lopt_help	0x2404
+#define lopt_perline	0x2405
+#define lopt_table	0x2406
+#define lopt_hide	0x2407
+#define lopt_tab_4	0x2408
+#define lopt_tab_8	0x2409
+#define lopt_abc	0x2410
+#define lopt_version	0x2411
+
+#define lopt_buttom	0x240
+#define lopt_left	0x241
+#define lopt_right	0x242
+#define lopt_angle	0x243
+#define lopt_angle_left		0x244
+#define lopt_angle_right	0x245
+
+#define _24k_error__(name, fmt, ...)	( box_fatal_error(name, fmt, __VA_ARGS__), box_end(), exit(24-'k') )
+#define _24k_error(name, fmt, ...)	_24k_error__(name, fmt, __VA_ARGS__)
+
+void
+box_fatal_error (const char *name, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	fprintf(stderr, WHITE_S("%s: ") L_RED_S("error: "), name);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+}
+
+void
+box_end() {
+	fprintf(stderr, "24k box terminated.\n");
+}
+
+const char box_version[] =
+"box (CLI) 5.07\n"
+"License: GPLv3+: GNU General Public License v3.0 or later <http://gnu.org/licenses/gpl.html>\n"
+"This software is free software: you are free to modify and republish it.\n"
+"There are no other guarantees within the law.\n"
+"\n"
+"Written by 24k.\n"
+;
+
+const char help_msg_short[] =
+"24k CLI box\n"
+"use --help for a list of possible options\n"
+;
+
+const char help_msg[] =
+"Usage: [command] | box [options] [[-]%d]\n"
+"           (Read data from the previous command)\n"
+"   or  box [[-]%d] -s/--string [string]\n"
+"           (Use -s/--string to set the input string)\n"
+"   or  box [[-]%d]\n"
+"           (Read a line from the keyboard)\n"
+"\n"
+"Options:\n"
+"  -l, --level=<%d>        Set the number of boxes\n"
+"  -a, --align             Set the alignment of the string in the box such as -ac or --align=center\n"
+"  -s, --string            Set a string as input data\n"
+"  -h, --help              Display this message\n"
+"  -p, --perline           Print one box per line\n"
+"  -t, --table             Print as a table\n"
+"  -v, --version           Display 24k box version information\n"
+"\n"
+"  --hide                  Hide the border of the box\n"
+"\n"
+"  --left=<string>         Set box's left string\n"
+"  --right=<string>        Set box's right string\n"
+"  --angle=<string>        Set box's angle string\n"
+"  --angle-left=<string>   Set box's left angle string\n"
+"  --angle-right=<string>  Set box's right angle string\n"
+"  --buttom=<char>         Set box's buttom <char>\n"
+"  --abc                   Use abc box\n"
+"  --tab=[4,8]             Replace tab with 4 or 8 spaces\n"
+;
+
+// first : to return ':' while missing argument
+const char short_options[] = ":l:a::s:tphv";
+
+const struct option long_options[] = {
+	{"abc", no_argument, NULL, lopt_abc},
+	{"level", required_argument, NULL, lopt_level},
+	{"align", optional_argument, NULL, lopt_align},
+	{"string", required_argument, NULL, lopt_string},
+	{"buttom", required_argument, NULL, lopt_buttom},
+	{"left", required_argument, NULL, lopt_left},
+	{"right", required_argument, NULL, lopt_right},
+	{"angle", required_argument, NULL, lopt_angle},
+	{"angle-left", required_argument, NULL, lopt_angle_left},
+	{"angle-right", required_argument, NULL, lopt_angle_right},
+	{"help", no_argument, NULL, lopt_help},
+	{"perline", no_argument, NULL, lopt_perline},
+	{"table", no_argument, NULL, lopt_table},
+	{"hide", no_argument, NULL, lopt_hide},
+	{"tab=4", no_argument, NULL, lopt_tab_4},
+	{"tab=8", no_argument, NULL, lopt_tab_8},
+	{"version", no_argument, NULL, lopt_version},
+	{NULL, 0, NULL, 0}
+};
+
+int get_similar(const char*);
+int replace_tab(string*, int);
+
+int main(int argc, char **argv)
+{
+	int i, level=1, opt, long_optind, m_optind=1, err_optind, align=0;
+	int with_color=0, perline=0, as_table=0, is_hide=0, tab_to_space=1;
+	int abc_sb=0;
+	char px='-';
+	const char *fname = argv[0], *arg_input=NULL, *pal="+", *par="+", *pyl="| ", *pyr=" |";
+	string _s, *s=&_s;
+	BOX _b, *b=&_b;
+
+	while (argc >= 2 && argv[1][0] != '-')
+		if ( sscanf(argv[1], "%d", &level ) < 1 )
+			_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") ". Did you miss '" YELLOW_S("-") "' or '" YELLOW_S("--") "'?\n", argv[1]);
+		else
+			--argc, ++argv;
+	while ( (opt=getopt_long(argc, argv, short_options, long_options, &long_optind)) != -1 ) {
+		switch (opt) {
+		case opt_level: case lopt_level:
+			if (sscanf(optarg, "%d", &level) < 1)
+				_24k_error(fname, "argument '%s' expected %%d\n", optarg);
+			break;
+		case opt_align:
+			if (optarg)
+				switch (optarg[0]) {
+				case 'l':
+					align = -1;
+					break;
+				case 'c':
+					align = 0;
+					break;
+				case 'r':
+					align = 1;
+					break;
+				default:
+					_24k_error(fname, "expected '" L_GREEN_S("l") "', '" L_GREEN_S("r") "', or '" L_GREEN_S("c") "' after option '" YELLOW_S("%s") "'\n", "-a");
+				}
+			else
+				align = 0;
+			break;
+		case lopt_align:
+			if (optarg) {
+				if (strcmp(optarg, "left") == 0)
+					align = -1;
+				else if (strcmp(optarg, "center") == 0)
+					align = 0;
+				else if (strcmp(optarg, "right") == 0)
+					align = 1;
+				else
+					_24k_error(fname, "expected '" L_GREEN_S("left") "', '" L_GREEN_S("right") "', or '" L_GREEN_S("center") "' after option '" YELLOW_S("%s") "'\n", "--align");
+			}
+			break;
+		case opt_string: case lopt_string:
+			arg_input = optarg;
+			break;
+		case opt_perline: case lopt_perline:
+			perline = 1;
+			break;
+		case opt_table: case lopt_table:
+			as_table = 1;
+			break;
+		case opt_version: case lopt_version:
+			arg_input = box_version;
+			align = -1;
+			with_color=1;
+			goto getopt_end;
+		case lopt_abc:
+			px='=', pal="ABC", par="ABC", pyl="sb ", pyr=" sb";
+			abc_sb = 1;
+			break;
+		case lopt_hide:
+			if ( abc_sb )
+				break;
+			is_hide = 1;
+			break;
+		case opt_help:
+			arg_input = help_msg_short;
+			align=0;
+			with_color=1;
+			goto getopt_end;
+		case lopt_help:
+			arg_input = help_msg;
+			align=-1;
+			with_color=1;
+			goto getopt_end;
+		case lopt_angle:
+			if ( abc_sb )
+				break;
+			pal = optarg;
+			par = optarg;
+			break;
+		case lopt_angle_left:
+			if ( abc_sb )
+				break;
+			pal = optarg;
+			break;
+		case lopt_angle_right:
+			if ( abc_sb )
+				break;
+			par = optarg;
+			break;
+		case lopt_buttom:
+			if ( abc_sb )
+				break;
+			px = optarg[0];
+			break;
+		case lopt_left:
+			if ( abc_sb )
+				break;
+			pyl = optarg;
+			break;
+		case lopt_right:
+			if ( abc_sb )
+				break;
+			pyr = optarg;
+			break;
+		case ':':
+			_24k_error(fname, "missing argument after " WHITE_S("'%s'\n"), argv[optind-1]);
+			break;
+		case '?':
+			err_optind = m_optind==optind ? optind : optind-1;
+			if (strcmp(argv[err_optind], "--tab=4") == 0) {
+				tab_to_space = 4;
+				break;
+			} else if (strcmp(argv[err_optind], "--tab=8") == 0) {
+				tab_to_space = 8;
+				break;
+			}
+			if ( sscanf(argv[err_optind], "%d", &level ) == 1 )
+				break;
+			if ( (i = get_similar(argv[optind-1])) >= 0 )
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") "; did you mean '" L_CYAN_S("--%s") "'?\n", argv[optind-1], long_options[i].name);
+			if (m_optind == optind)
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'-%c'\n"), optopt);
+			else
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'\n"), argv[optind-1]);
+			break;
+		}
+		while (optind < argc && argv[optind][0] != '-')
+			if ( sscanf(argv[optind], "%d", &level ) < 1 )
+				_24k_error(fname, "unrecognized command line option " WHITE_S("'%s'") ". Did you miss '" YELLOW_S("-") "' or '" YELLOW_S("--") "'?\n", argv[optind]);
+			else
+				++optind;
+		m_optind = optind;
+	}
+
+getopt_end:
+
+	if ( is_hide && ! abc_sb ) {
+		px=0x7, pal="", par="", pyl="", pyr="";
+		level = 1;
+	}
+
+	string_init(s);
+	box_init(b, px, pal, par, pyl, pyr)->set_align(b, align);
+
+	if (arg_input)
+		s->assign(s, arg_input);
+
+	if (s->empty(s)) {
+		if ( isatty(fileno(stdin)) ) {
+			printf(">>> ");
+			s->getline(s);
+		} else
+			s->fgetline(s, stdin, EOF);
+	}
+
+	if ( tab_to_space )
+		replace_tab(s, tab_to_space);
+
+	if ( perline && ! as_table ) {
+		int c;
+		size_t pos1=0, pos2;
+		string _s1, *s1=&_s1;
+		string_init(s1);
+		for ( ; pos1 < s->size(s); ) {
+			pos2 = s->find(s, pos1, "\n");
+			if (pos2 == -1)
+				pos2 = s->size(s);
+			c = s->data(s)[pos2];
+			s->data(s)[pos2] = 0;
+			b->clear(b)->box_cs(b, s->data(s) + pos1);
+			s->data(s)[pos2] = c;
+			s1->add(s1, b->strbuf);
+			pos1 = pos2 + 1;
+		}
+		s->swap(s, s1);
+		s1->destroy(s1);
+	}
+
+	if ( as_table ) {
+		b->clear(b)->table(b, s);
+		s->swap(s, b->strbuf);
+	}
+
+	level = level>0 ? level : -level;
+	for (i=0; i<level; ++i) {
+		b->clear(b)->box(b, s);
+		s->swap(s, b->strbuf);
+	}
+
+	if (with_color)
+		printf("%s", L_CYAN);
+	printf("%s", string_c_str(s));
+	if (with_color)
+		printf("%s", ENDCC);
+
+	return 24-'k';
+}
+
+int get_similar(const char *s)
+{
+	int i, len, n, similar=0x7fffffff, index=-1;
+	for (i=0; i<2; ++i) {
+		if ( ! s[i] )
+			return -1;
+		if ( s[0] == '-' )
+			++s;
+	}
+	len = strlen(s);
+	for (i=0; ; ++i) {
+		if ( ! long_options[i].name )
+			break;
+		if ( (n = distance(s, len, long_options[i].name, strlen(long_options[i].name))) < 4 )
+			if ( n < similar )
+				similar = n, index = i;
+	}
+	return index;
+}
+
+int
+replace_tab(string *s, int n)
+{
+	int i;
+	size_t pos1=0, pos2;
+	string _spaces, *spaces=&_spaces;
+	string_init(spaces);
+
+	for (i=0; i<n; ++i)
+		spaces->push_back(spaces, ' ');
+
+	for ( ;; ) {
+		pos2 = s->find(s, pos1, "\t");
+		if (pos2 == -1)
+			break;
+		s->replace(s, pos2, 1, spaces->c_str(spaces));
+		pos1 = pos2 + n;
+	}
+
+	spaces->destroy(spaces);
+	return 0;
+}
+
