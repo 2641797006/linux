@@ -3,7 +3,7 @@ CC := gcc -Wall -pedantic-errors
 .PHONY: all
 all: box
 
-box: box.c
+box: box.c cli_box.o levens.o string24k.o
 	$(CC) box.c *.o -o box
 
 cli_box.o: cli_box.c cli_box.h
