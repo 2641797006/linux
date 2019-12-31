@@ -19,7 +19,7 @@ _box()
 
 #   COMPREPLY=( $( compgen -W "$( box --hide --help 2>/dev/null | tr '\t' ' ' |\
 #           command sed -e '/^  *-/!d' -e 's/ *-\([^][ <>]*\).*/-\1/' )" -- "$cur" ) )
-    COMPREPLY=( $( compgen -W "-l -a -s -h -p -t -v --level --align --string --help --perline --table --version --hide --left --right --angle --buttom --abc --tab=4 --tab=8" -- "$cur" ) )
+    COMPREPLY=( $( compgen -W "-l -a -s -h -p -t -v --level --align --string --help --perline --table --version --hide --left --right --angle --angle-left --angle-right --buttom --abc --tab=4 --tab=8" -- "$cur" ) )
 } &&
 
 complete -F _box box
